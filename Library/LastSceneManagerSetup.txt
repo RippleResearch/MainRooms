@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/CreativeCore_Shaders/Scenes/Empty Room.unity
+- path: Assets/Scenes/Impossible Cube Room.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
