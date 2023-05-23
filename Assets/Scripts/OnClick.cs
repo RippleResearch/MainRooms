@@ -34,7 +34,7 @@ public class OnClick : MonoBehaviour
                 CastClickRay();
                 StartCoroutine(rippleHappening());
             }
-            else
+            else if(pressesQueue.Count < 7)
             {
                 /*Debug.Log("2");*/
                 var cam = Camera.main;
@@ -103,7 +103,7 @@ public class OnClick : MonoBehaviour
     IEnumerator rippleHappening()
     {
 /*        print(Time.time);*/
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1.75f);
         isPressed = false;
     /*    print(Time.time);*/
     }
