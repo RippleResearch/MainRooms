@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Impossible Cube.unity
     guid: 2a33fe5b9c0cbb541a868ef86b9855a2
+  - enabled: 1
+    path: Assets/Scenes/DrumPad.unity
+    guid: 3fc64c373e9111547a335dd6b0de0369
   m_configObjects: {}

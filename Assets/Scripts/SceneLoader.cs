@@ -17,6 +17,6 @@ public class SceneLoader : MonoBehaviour
         Debug.Log(val);*/
         /*string dropDownValue = dropDownText.text;*/
         /*Debug.Log("1: " + dropDownValue);*/
-        SceneManager.LoadScene("Impossible Cube");
+        SceneManager.LoadScene("DrumPad");
     }
 }
