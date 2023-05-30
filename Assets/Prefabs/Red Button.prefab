@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4324939518388711890}
   - component: {fileID: 4324939518388711891}
   - component: {fileID: 6414878539427591798}
+  - component: {fileID: 3863537220401808945}
   m_Layer: 5
   m_Name: Red Button
   m_TagString: Untagged
@@ -123,8 +124,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6998634616854550649, guid: 12f7883246c2fa14aae1e7f31b2d79c7,
-          type: 3}
+      - m_Target: {fileID: 6998634616854550649, guid: 12f7883246c2fa14aae1e7f31b2d79c7, type: 3}
         m_TargetAssemblyTypeName: MainMenuScript, Assembly-CSharp
         m_MethodName: playButton
         m_Mode: 1
@@ -232,6 +232,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!65 &3863537220401808945
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4324939518388711893}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4324939519048403064
 GameObject:
   m_ObjectHideFlags: 0
