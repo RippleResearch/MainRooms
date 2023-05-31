@@ -5396,6 +5396,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 314171530281070475, guid: 12f7883246c2fa14aae1e7f31b2d79c7, type: 3}
+      propertyPath: m_text
+      value: Loop 1
+      objectReference: {fileID: 0}
     - target: {fileID: 314171530574822832, guid: 12f7883246c2fa14aae1e7f31b2d79c7, type: 3}
       propertyPath: m_text
       value: Snare 2
@@ -5410,7 +5414,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 314171531364688364, guid: 12f7883246c2fa14aae1e7f31b2d79c7, type: 3}
       propertyPath: m_text
-      value: Loop 1
+      value: Snare 3
       objectReference: {fileID: 0}
     - target: {fileID: 1732270696070134142, guid: 12f7883246c2fa14aae1e7f31b2d79c7, type: 3}
       propertyPath: m_audioClip
@@ -5508,6 +5512,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 6998634617363228984, guid: 12f7883246c2fa14aae1e7f31b2d79c7, type: 3}
+      propertyPath: m_text
+      value: Kick 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6998634617952303792, guid: 12f7883246c2fa14aae1e7f31b2d79c7, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
@@ -5549,6 +5557,10 @@ PrefabInstance:
       value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 9040500472902007859, guid: 12f7883246c2fa14aae1e7f31b2d79c7, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 6a7c9571e2f2dc5429c65e0eb840b95d, type: 3}
+    - target: {fileID: 9040500473964720724, guid: 12f7883246c2fa14aae1e7f31b2d79c7, type: 3}
       propertyPath: m_audioClip
       value: 
       objectReference: {fileID: 8300000, guid: 6a7c9571e2f2dc5429c65e0eb840b95d, type: 3}
