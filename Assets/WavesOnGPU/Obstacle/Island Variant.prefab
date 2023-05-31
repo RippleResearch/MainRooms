@@ -301,7 +301,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6943035794020017769, guid: 367f7a5fc7dceaf459d168b11de2c1c8, type: 3}
       propertyPath: m_Name
-      value: Island
+      value: Island Variant
       objectReference: {fileID: 0}
     - target: {fileID: 6943035794020017769, guid: 367f7a5fc7dceaf459d168b11de2c1c8, type: 3}
       propertyPath: m_NavMeshLayer

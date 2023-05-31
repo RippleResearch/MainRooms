@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - LoadButton
+  - MainMirrorCamera
+  - RearCam
+  - Locations
   layers:
   - Default
   - TransparentFX
@@ -12,10 +15,10 @@ TagManager:
   - 
   - Water
   - UI
-  - StencilLayer1
-  - StencilLayer2
-  - StencilLayer3
-  - StencilLayer4
+  - Block
+  - Sink
+  - 3DBlock
+  - Locations
   - 
   - 
   - 
