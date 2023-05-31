@@ -18,7 +18,7 @@ public class ChaseBoat : PatrolBoat
     public void OnTriggerEnter(Collider other)
     {
         Debug.Log("hit object");
-        Debug.Log(other.gameObject.tag.Equals("Locations"));
+        Debug.Log(isCorrectLocation(other.transform.position));
         if (!chase)
         {
             if (random.Next(0, 50) == 1)
@@ -32,14 +32,14 @@ public class ChaseBoat : PatrolBoat
             Debug.Log("hitting ship");
             CancelInvoke();
             chase = false;
-            beginMove();
+            beginMove(0, 10);
         }
 
-        if (other.gameObject.tag.Equals("Locations")) 
+        if (other.gameObject.tag.Equals("Locations") && isCorrectLocation(other.transform.position))  
         {
             Debug.Log("Destroying target and moving");
             Destroy(other.gameObject);
-            beginMove();
+            beginMove(0,10);
         }
             
     }

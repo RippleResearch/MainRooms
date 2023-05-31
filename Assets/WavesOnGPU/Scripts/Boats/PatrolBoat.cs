@@ -35,7 +35,7 @@ public abstract class PatrolBoat : MonoBehaviour
 
 
         //Start movement and update currentDestination
-        beginMove();
+        beginMove(0, 10);
     }
 
     /*
@@ -51,18 +51,23 @@ public abstract class PatrolBoat : MonoBehaviour
     }
 
 
-    public void beginMove()
+    public void beginMove(int minWait, int maxWait)
     {
         Debug.Log("Starting");
         Vector3 newLocation = (currentDestination = pickRandomPoint());
         initalizeAtPoint(newLocation);
-        StartCoroutine(move(newLocation, random.Next(0, 10)));
+        StartCoroutine(move(newLocation, random.Next(minWait, maxWait)));
     }
 
     protected void initalizeAtPoint(Vector3 point)
     {
         Debug.Log("Making new orb");
         Instantiate(LocationPrefab, new Vector3(point.x, 0, point.z), LocationPrefab.transform.rotation);
+    }
+
+    public bool isCorrectLocation(Vector3 location)
+    {
+        return (location.x == currentDestination.x && location.z == currentDestination.z);
     }
 
     /*
