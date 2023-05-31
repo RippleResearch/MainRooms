@@ -49,7 +49,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 37e4638b7803cb24f9a519afef12ec03, type: 2}
     - target: {fileID: 7659612346682448406, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
       propertyPath: m_Name
-      value: PatrolShip1
+      value: ChaseBoat
       objectReference: {fileID: 0}
     - target: {fileID: 7659612346682448412, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
       propertyPath: m_RootOrder
