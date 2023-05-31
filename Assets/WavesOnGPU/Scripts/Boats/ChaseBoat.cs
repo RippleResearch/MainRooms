@@ -6,6 +6,8 @@ using UnityEngine;
 public class ChaseBoat : PatrolBoat
 {
     public Transform target; //serves as temp destination of the ship we are chasing
+
+    private bool chase = false;
     /*
      * When using OnTrigger Enter make sure the
      * at least one object has a rigid body and the isKinematic setting
@@ -15,19 +17,33 @@ public class ChaseBoat : PatrolBoat
      */
     public void OnTriggerEnter(Collider other)
     {
-        if (random.Next(0, 50) == 1)
+        Debug.Log("hit object");
+        Debug.Log(other.gameObject.tag.Equals("Locations"));
+        if (!chase)
         {
-            InvokeRepeating("chaseBoat", 1f, .1f);
+            if (random.Next(0, 50) == 1)
+            {
+                InvokeRepeating("chaseBoat", 1f, .1f);
+                chase = true;
+            }
         }
-        if (other.gameObject.Equals(target.gameObject))
+        else if (chase && other.gameObject.Equals(target.gameObject))
         {
             Debug.Log("hitting ship");
             CancelInvoke();
+            chase = false;
+            beginMove();
         }
 
-
-        StartCoroutine(move(pickRandomLocation(), random.Next(1,10)));
+        if (other.gameObject.tag.Equals("Locations")) 
+        {
+            Debug.Log("Destroying target and moving");
+            Destroy(other.gameObject);
+            beginMove();
+        }
+            
     }
+
     public void chaseBoat()
     {
         myAgent.SetDestination(target.position);

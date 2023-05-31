@@ -1,35 +1,41 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-/*using Unity.VisualScripting.ReorderableList;*/
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
 public abstract class PatrolBoat : MonoBehaviour
 {
 
-    public float speed;
+    public float speed; //Change so these effect navmesh
     public float turnSpeed;
+
+    [Range(0.0f, 1f)]
+    public float trim = .5f;
+
+    public GameObject LocationPrefab;
+
     protected NavMeshAgent myAgent;
     protected System.Random random;
 
-    public GameObject[] locations;
-
     public Vector3 currentDestination;
+    
+    private Bounds waterBounds;
 
-    public void Start()
+    
+
+    public void Awake()
     {
-        random = new System.Random(); 
-        locations = GameObject.FindGameObjectsWithTag("Locations");
+        random = new System.Random();
         myAgent = GetComponent<NavMeshAgent>();
+        waterBounds = GameObject.Find("WaterSurface").GetComponent<Renderer>().bounds;
 
-        Debug.Assert(locations.Length != 0);
         Debug.Assert(myAgent != null); // make sure all boats have nav mesh       
+        Debug.Assert(waterBounds != null);
+        Debug.Assert(LocationPrefab != null);
 
 
         //Start movement and update currentDestination
-        myAgent.SetDestination(currentDestination = pickRandomLocation());
+        beginMove();
     }
 
     /*
@@ -40,24 +46,34 @@ public abstract class PatrolBoat : MonoBehaviour
     public IEnumerator move(Vector3 destination, float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
+        Debug.Log("Destination Set");
         myAgent.SetDestination((currentDestination = destination));
     }
 
-    /*
-     * Picks a random location for any of the values
-     * within the locations array. We onyl check the x and z
-     * value because we are moving across a 2D plane.
-     */
-    public Vector3 pickRandomLocation()
+
+    public void beginMove()
     {
-        Vector3 nextlocation;
-        do{
-            var randomIndex = random.Next(0, locations.Length);
-            nextlocation = locations[randomIndex].transform.position;
-        } while (currentDestination.x == nextlocation.x && currentDestination.z == nextlocation.z);
-        
-        Debug.Assert(currentDestination != nextlocation);
-        currentDestination = nextlocation;
-        return new Vector3(nextlocation.x, transform.position.y, nextlocation.z);
+        Debug.Log("Starting");
+        Vector3 newLocation = (currentDestination = pickRandomPoint());
+        initalizeAtPoint(newLocation);
+        StartCoroutine(move(newLocation, random.Next(0, 10)));
+    }
+
+    protected void initalizeAtPoint(Vector3 point)
+    {
+        Debug.Log("Making new orb");
+        Instantiate(LocationPrefab, new Vector3(point.x, 0, point.z), LocationPrefab.transform.rotation);
+    }
+
+    /*
+     * Change so it cant repeat just in case
+     */
+    protected Vector3 pickRandomPoint()
+    {
+        return new Vector3(
+            UnityEngine.Random.Range(waterBounds.min.x * trim, waterBounds.max.x * trim), 
+            transform.position.y, 
+            UnityEngine.Random.Range(waterBounds.min.z * trim, waterBounds.max.z * trim)
+            );
     }
 }
