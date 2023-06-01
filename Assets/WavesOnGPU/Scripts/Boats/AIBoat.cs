@@ -4,24 +4,17 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public abstract class AIBoat : MonoBehaviour
-{ 
-    //For random wait limits
+{
     public int waitMin, waitMax;
-
-    //Prefab of the new location they will move towards
     public GameObject LocationPrefab;
 
     protected NavMeshAgent navAgent;
     protected NavMeshPath navPath;
     protected System.Random random;
-
-    public Vector3 currentDestination;
-    
-    private Bounds waterBounds;
-
     protected GameObject targetObject;
 
-    
+    private Bounds waterBounds;
+
     public void Awake()
     {
         random = new System.Random();
@@ -32,36 +25,6 @@ public abstract class AIBoat : MonoBehaviour
         Debug.Assert(navAgent != null); // make sure all boats have nav mesh       
         Debug.Assert(waterBounds != null);
         Debug.Assert(LocationPrefab != null);
-    }
-
-    /// <summary>
-    /// General move funtion that sets destiantion
-    ///and waits a certain amount of time before moving to it.
-    /// </summary>
-    /// <param name="destination"></param>
-    /// <param name="waitTime"></param>
-    /// <returns></returns>    
-    public IEnumerator Move(Vector3 destination, float waitTime)
-    {
-        yield return new WaitForSeconds(waitTime);
-        currentDestination = destination;
-
-        Debug.Assert(navPath.status == NavMeshPathStatus.PathComplete);
-        navAgent.SetPath(navPath);   
-    }
-
-    /// <summary>
-    /// Picks a new location using PickRandomPoint()
-    /// then initalizes the newLocationPrefab at that spot
-    /// and begins the corutoine to move to the location
-    /// </summary>
-    /// <param name="minWait"></param>
-    /// <param name="maxWait"></param>
-    public void BeginMove(int minWait, int maxWait)
-    {
-        Vector3 newLocation = PickRandomPoint();
-        InitalizeAtPoint(newLocation);
-        StartCoroutine(Move(newLocation, random.Next(minWait, maxWait)));
     }
 
     /// <summary>
@@ -80,6 +43,34 @@ public abstract class AIBoat : MonoBehaviour
     }
 
     /// <summary>
+    /// Picks a new location using PickRandomPoint()
+    /// then initalizes the newLocationPrefab at that spot
+    /// and begins the corutoine to move to the location
+    /// </summary>
+    /// <param name="minWait"></param>
+    /// <param name="maxWait"></param>
+    public void BeginMove(int minWait, int maxWait)
+    {
+        Vector3 newLocation = PickRandomPoint();
+        InitalizeAtPoint(newLocation);
+        StartCoroutine(Move(newLocation, random.Next(minWait, maxWait)));
+    }
+
+    /// <summary>
+    /// General move funtion that sets destiantion
+    ///and waits a certain amount of time before moving to it.
+    /// </summary>
+    /// <param name="destination"></param>
+    /// <param name="waitTime"></param>
+    /// <returns></returns>    
+    public IEnumerator Move(Vector3 destination, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        Debug.Assert(navPath.status == NavMeshPathStatus.PathComplete);
+        navAgent.SetPath(navPath);
+    }
+
+    /// <summary>
     /// Initalize the LocationPrefab to a given Vector3 location with a y value of 0.
     /// Then sets the parent of the object to a temp gameObject.
     /// </summary>
@@ -88,16 +79,6 @@ public abstract class AIBoat : MonoBehaviour
     {
         targetObject = Instantiate(LocationPrefab, new Vector3(point.x, 0, point.z), LocationPrefab.transform.rotation);
         targetObject.transform.SetParent(GameObject.FindGameObjectWithTag("Temp").transform);
-    }
-
-    /// <summary>
-    /// Helper method to determine if the location given is the equal to the current destination.
-    /// </summary>
-    /// <param name="location"></param>
-    /// <returns></returns>
-    public bool IsCorrectLocation(Vector3 location)
-    {
-        return (location.x == currentDestination.x && location.z == currentDestination.z);
     }
 
     /// <summary>
@@ -120,7 +101,7 @@ public abstract class AIBoat : MonoBehaviour
         return rp;
     }
     /// <summary>
-    /// Set NavMesh AngularSpeed
+    /// Set NavMeshAgent AngularSpeed
     /// </summary>
     /// <param name="turnSpeed"></param>
     public void SetTurnSpeed(float turnSpeed)
@@ -129,7 +110,7 @@ public abstract class AIBoat : MonoBehaviour
     }
 
     /// <summary>
-    /// Set nav mesh speed
+    /// Set NavMeshAgent speed
     /// </summary>
     /// <param name="speed"></param>
     public void SetSpeed(float speed)

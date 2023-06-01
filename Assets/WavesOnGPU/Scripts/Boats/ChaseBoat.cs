@@ -41,10 +41,9 @@ public class ChaseBoat : BasePatrolBoat
             MoveWithoutDestroy(waitMin, waitMax);
         }
 
-        if (other.gameObject.tag.Equals("Locations") && IsCorrectLocation(other.transform.position))  
+        if (other.gameObject.Equals(targetObject))  
         {
-            Destroy(other.gameObject);
-            BeginMove(waitMin, waitMax);
+            MoveWithoutDestroy(waitMin,waitMax);
         }
 
     }
