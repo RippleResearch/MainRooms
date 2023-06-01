@@ -7,7 +7,7 @@ using UnityEngine.WSA;
 
 public class ChaseBoat : BasePatrolBoat
 {
-    public Transform target; //serves as temp destination of the ship we are chasing
+    public Transform mainShip; //serves as temp destination of the ship we are chasing
 
     private bool chase = false;
 
@@ -25,27 +25,21 @@ public class ChaseBoat : BasePatrolBoat
      * will also be triggered if the rigid body is not kinematic.
      */
     public override void OnTriggerEnter(Collider other)
-    { 
+    {
         if (!chase)
         {
-            if (random.Next(0, 50) == 1)
+            if (random.Next(0, 4) == 1)
             {
                 InvokeRepeating("chaseBoat", 1f, .1f);
                 chase = true;
             }
         }
-        else if (chase && other.gameObject.Equals(target.gameObject))
+        else
         {
-            CancelInvoke();
-            chase = false;
-            MoveWithoutDestroy(waitMin, waitMax);
+
         }
 
-        if (other.gameObject.Equals(targetObject))  
-        {
-            MoveWithoutDestroy(waitMin,waitMax);
-        }
-
+        base.OnTriggerEnter(other);
     }
 
     /// <summary>
@@ -54,7 +48,7 @@ public class ChaseBoat : BasePatrolBoat
     /// </summary>
     public void ChaseTarget()
     {
-        navAgent.SetDestination(target.position);
+        navAgent.SetDestination(mainShip.position);
     }
 
    

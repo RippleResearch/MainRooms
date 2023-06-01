@@ -21,6 +21,8 @@ public abstract class AIBoat : MonoBehaviour
         navAgent = GetComponent<NavMeshAgent>();
         navPath = new NavMeshPath();
         waterBounds = GameObject.Find("WaterSurface").GetComponent<Renderer>().bounds;
+        InitalizeAtPoint(new Vector3(0,0,0)); //Automatically sets target object
+
 
         Debug.Assert(navAgent != null); // make sure all boats have nav mesh       
         Debug.Assert(waterBounds != null);
@@ -89,6 +91,7 @@ public abstract class AIBoat : MonoBehaviour
     protected Vector3 PickRandomPoint()
     {
         Vector3 rp;
+        bool tooClose;
         do
         {
             rp = new Vector3(
@@ -96,8 +99,11 @@ public abstract class AIBoat : MonoBehaviour
             transform.position.y,
             UnityEngine.Random.Range(waterBounds.min.z, waterBounds.max.z)
             );
-            navAgent.CalculatePath(rp, navPath);
-        } while (navPath.status != NavMeshPathStatus.PathComplete);
+
+            navAgent.CalculatePath(rp, navPath);        
+            tooClose = Vector3.Distance(targetObject.transform.position, transform.position) < 1;
+            if (tooClose) Debug.Log("ToCLOSE!");
+        } while (!tooClose && navPath.status != NavMeshPathStatus.PathComplete);
         return rp;
     }
     /// <summary>

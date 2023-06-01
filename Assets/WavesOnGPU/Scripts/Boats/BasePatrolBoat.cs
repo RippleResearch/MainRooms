@@ -9,7 +9,7 @@ public class BasePatrolBoat : AIBoat
     {
         waitMin = 3; waitMax = 3;
         SetSpeed(10); SetTurnSpeed(130);
-        BeginMove(waitMin, waitMax);
+        MoveWithoutDestroy(waitMin, waitMax);
     }
 
     /// <summary>
