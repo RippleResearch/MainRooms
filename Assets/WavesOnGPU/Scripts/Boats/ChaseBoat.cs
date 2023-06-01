@@ -2,18 +2,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
+using UnityEngine.WSA;
 
-public class ChaseBoat : PatrolBoat
+public class ChaseBoat : BasePatrolBoat
 {
     public Transform target; //serves as temp destination of the ship we are chasing
 
     private bool chase = false;
 
+
     public override void Start()
     {
-        waitMin = 0; waitMax = 10;
-        setSpeed(4); setTurnSpeed(120);
-        beginMove(waitMin, waitMax);
+        base.Start();
+        SetSpeed(2); SetTurnSpeed(120);
     }
     /*
      * When using OnTrigger Enter make sure the
@@ -22,7 +24,7 @@ public class ChaseBoat : PatrolBoat
      * If both onTriggers are on no event will be triggered. No event
      * will also be triggered if the rigid body is not kinematic.
      */
-    public void OnTriggerEnter(Collider other)
+    public override void OnTriggerEnter(Collider other)
     { 
         if (!chase)
         {
@@ -36,23 +38,24 @@ public class ChaseBoat : PatrolBoat
         {
             CancelInvoke();
             chase = false;
-            beginMove(waitMin,waitMax);
+            MoveWithoutDestroy(waitMin, waitMax);
         }
 
-        if (other.gameObject.tag.Equals("Locations") && isCorrectLocation(other.transform.position))  
+        if (other.gameObject.tag.Equals("Locations") && IsCorrectLocation(other.transform.position))  
         {
             Destroy(other.gameObject);
-            beginMove(waitMin, waitMax);
+            BeginMove(waitMin, waitMax);
         }
-            
+
     }
-    /*
-     * Called through an invoke repeating so it will constantly 
-     * update its destination with the playable boats position
-     */
-    public void chaseBoat()
+
+    /// <summary>
+    /// Called through an invoke repeating so it will constantly 
+    ///update its destination with the playable boats position
+    /// </summary>
+    public void ChaseTarget()
     {
-        myAgent.SetDestination(target.position);
+        navAgent.SetDestination(target.position);
     }
 
    
