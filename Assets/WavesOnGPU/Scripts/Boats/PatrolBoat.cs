@@ -4,14 +4,15 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public abstract class PatrolBoat : MonoBehaviour
-{
+{ 
+    //For random wait limits
+    protected int waitMin, waitMax;
 
-    public float speed; //Change so these effect navmesh
-    public float turnSpeed;
-
+    //Trims the nav mesh by half so all avaliable locations should be reachable
     [Range(0.0f, 1f)]
     public float trim = .5f;
 
+    //Prefab of the new location they will move towards
     public GameObject LocationPrefab;
 
     protected NavMeshAgent myAgent;
@@ -22,7 +23,6 @@ public abstract class PatrolBoat : MonoBehaviour
     private Bounds waterBounds;
 
     
-
     public void Awake()
     {
         random = new System.Random();
@@ -32,10 +32,6 @@ public abstract class PatrolBoat : MonoBehaviour
         Debug.Assert(myAgent != null); // make sure all boats have nav mesh       
         Debug.Assert(waterBounds != null);
         Debug.Assert(LocationPrefab != null);
-
-
-        //Start movement and update currentDestination
-        beginMove(0, 10);
     }
 
     /*
@@ -46,39 +42,56 @@ public abstract class PatrolBoat : MonoBehaviour
     public IEnumerator move(Vector3 destination, float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        Debug.Log("Destination Set");
         myAgent.SetDestination((currentDestination = destination));
     }
 
 
     public void beginMove(int minWait, int maxWait)
     {
-        Debug.Log("Starting");
-        Vector3 newLocation = (currentDestination = pickRandomPoint());
+        Vector3 newLocation = pickRandomPoint();
         initalizeAtPoint(newLocation);
         StartCoroutine(move(newLocation, random.Next(minWait, maxWait)));
     }
 
     protected void initalizeAtPoint(Vector3 point)
     {
-        Debug.Log("Making new orb");
         Instantiate(LocationPrefab, new Vector3(point.x, 0, point.z), LocationPrefab.transform.rotation);
     }
 
+    /*
+     * Helper method so we don't destory another boats
+     * destination object
+     */
     public bool isCorrectLocation(Vector3 location)
     {
         return (location.x == currentDestination.x && location.z == currentDestination.z);
     }
 
-    /*
-     * Change so it cant repeat just in case
-     */
     protected Vector3 pickRandomPoint()
     {
-        return new Vector3(
-            UnityEngine.Random.Range(waterBounds.min.x * trim, waterBounds.max.x * trim), 
-            transform.position.y, 
+        Vector3 rp;
+        do
+        {
+            rp = new Vector3(
+            UnityEngine.Random.Range(waterBounds.min.x * trim, waterBounds.max.x * trim),
+            transform.position.y,
             UnityEngine.Random.Range(waterBounds.min.z * trim, waterBounds.max.z * trim)
             );
+        } while (rp == currentDestination);
+
+        return rp;
     }
+
+    public void setTurnSpeed(float turnSpeed)
+    {
+        myAgent.angularSpeed = turnSpeed;
+    }
+
+    public void setSpeed(float speed)
+    {
+        myAgent.speed = speed;
+    }
+
+    //Every boat needs to pick there own starting path
+    public abstract void Start();
 }

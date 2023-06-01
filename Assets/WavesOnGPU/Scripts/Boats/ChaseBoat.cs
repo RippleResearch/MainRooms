@@ -8,6 +8,13 @@ public class ChaseBoat : PatrolBoat
     public Transform target; //serves as temp destination of the ship we are chasing
 
     private bool chase = false;
+
+    public override void Start()
+    {
+        waitMin = 0; waitMax = 10;
+        setSpeed(4); setTurnSpeed(120);
+        beginMove(waitMin, waitMax);
+    }
     /*
      * When using OnTrigger Enter make sure the
      * at least one object has a rigid body and the isKinematic setting
@@ -16,8 +23,7 @@ public class ChaseBoat : PatrolBoat
      * will also be triggered if the rigid body is not kinematic.
      */
     public void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("hit object");
+    { 
         Debug.Log(isCorrectLocation(other.transform.position));
         if (!chase)
         {
@@ -29,23 +35,26 @@ public class ChaseBoat : PatrolBoat
         }
         else if (chase && other.gameObject.Equals(target.gameObject))
         {
-            Debug.Log("hitting ship");
             CancelInvoke();
             chase = false;
-            beginMove(0, 10);
+            beginMove(waitMin,waitMax);
         }
 
         if (other.gameObject.tag.Equals("Locations") && isCorrectLocation(other.transform.position))  
         {
-            Debug.Log("Destroying target and moving");
             Destroy(other.gameObject);
-            beginMove(0,10);
+            beginMove(waitMin, waitMax);
         }
             
     }
-
+    /*
+     * Called through an invoke repeating so it will constantly 
+     * update its destination with the playable boats position
+     */
     public void chaseBoat()
     {
         myAgent.SetDestination(target.position);
     }
+
+   
 }
