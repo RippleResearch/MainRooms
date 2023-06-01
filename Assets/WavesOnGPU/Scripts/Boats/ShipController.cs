@@ -6,32 +6,24 @@ using UnityEngine.AI;
 
 public class ShipController : MonoBehaviour
 {
-
-    [SerializeField] public float turnSpeed;
-    [SerializeField] public float speed;
     [SerializeField] private LayerMask whatToClickOn;
-
-
     private NavMeshAgent myAgent;
     private CameraSwitchController cameraSwitchController;
+    private WaveController waveController;
     
+    //Figure out why you need camera controller on both watersurface and ship to work
 
-    private float horizontalInput;
     // Start is called before the first frame update
     void Start()
     { 
         myAgent = GetComponent<NavMeshAgent>();
+        cameraSwitchController = GetComponent<CameraSwitchController>();
+        waveController = GetComponentInParent<WaveController>();
 
-        cameraSwitchController = GetComponentInParent<CameraSwitchController>();
+        Debug.Assert(myAgent != null);
         Debug.Assert(cameraSwitchController != null);
-
-        //myAgent.updateRotation = false;
-        //myAgent.updateUpAxis = false;
-
-        turnSpeed = 120f;
-        speed = 10f;
-        
-       
+        Debug.Assert(waveController != null);
+      
     }
 
     // Update is called once per frame
@@ -57,7 +49,8 @@ public class ShipController : MonoBehaviour
             if (Physics.Raycast(ray, out var hitInfo, 100, whatToClickOn)) //If the ray hits a given layer (added in the editor)
             {
                 myAgent.SetDestination(hitInfo.point); //Then ai will move to that location
-           }        
+                waveController.effect = new Vector3(hitInfo.textureCoord.x * waveController.resolution.x, hitInfo.textureCoord.y * waveController.resolution.y, waveController.effect.z);
+            }        
         }
 
 
@@ -68,6 +61,7 @@ public class ShipController : MonoBehaviour
             if (Physics.Raycast(touchRay, out var hitInfo, 100, whatToClickOn))
             {
                 myAgent.SetDestination(hitInfo.point); //Then ai will move to that location
+                waveController.effect = new Vector3(hitInfo.textureCoord.x * waveController.resolution.x, hitInfo.textureCoord.y * waveController.resolution.y, waveController.effect.z);
             }
         }
     }   

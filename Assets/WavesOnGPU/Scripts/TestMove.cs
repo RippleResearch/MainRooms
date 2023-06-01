@@ -14,7 +14,7 @@ public class TestMove : MonoBehaviour
     void Start()
     {
         waveController = GetComponent<WaveController>();
-        cameraSwitchController = GetComponentInParent<CameraSwitchController>();       
+        cameraSwitchController = GetComponent<CameraSwitchController>();       
         Debug.Assert(cameraSwitchController != null);
        
     }

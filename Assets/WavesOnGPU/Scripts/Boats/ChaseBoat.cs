@@ -24,7 +24,6 @@ public class ChaseBoat : PatrolBoat
      */
     public void OnTriggerEnter(Collider other)
     { 
-        Debug.Log(isCorrectLocation(other.transform.position));
         if (!chase)
         {
             if (random.Next(0, 50) == 1)

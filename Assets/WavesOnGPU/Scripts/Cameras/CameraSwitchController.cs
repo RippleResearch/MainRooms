@@ -59,7 +59,6 @@ public class CameraSwitchController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         //Check Touch Controls
         switch (Input.touchCount)
         {
@@ -112,11 +111,7 @@ public class CameraSwitchController : MonoBehaviour
         //Calculate difference
         float diff = currentMag - prevMag;
 
-        if(currentCamera == null)
-        {
-            Debug.Log("Same Null Error!!");
-            currentCamera = getEnabledCam();
-        }
+        Debug.Assert(currentCamera != null);
         //adjust camera FOV
         currentCamera.fieldOfView = keepInRange(currentCamera.fieldOfView - diff * touchZoomSpeed, (int) camera_to_vector2[curCam].x, (int)camera_to_vector2[curCam].y);
     }
