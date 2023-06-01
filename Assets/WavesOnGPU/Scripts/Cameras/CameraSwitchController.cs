@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 
@@ -22,7 +21,7 @@ public class CameraSwitchController : MonoBehaviour
     Dictionary<Camera, Vector2> camera_to_vector2 = new Dictionary<Camera, Vector2>();
 
     //Ref need according to unity docs for smooth damp
-    private Vector3 velocity = Vector3.zero; 
+    private Vector3 velocity = Vector3.zero;
 
     // Start is called before the first frame update
     void Awake()
@@ -67,9 +66,13 @@ public class CameraSwitchController : MonoBehaviour
                 break;
             //Case 3 is in MainCameraScript for now
             case 4:
-                if (mainCam.enabled) { StartCoroutine(switchCamerasTouch("RearCamera")); }
-                else StartCoroutine(switchCamerasTouch("MainCamera"));
-                break;
+                if (mainCam.enabled)
+                    StartCoroutine(switchCamerasTouch("RearCamera"));
+                else if (rearCam.enabled)
+                    StartCoroutine(switchCamerasTouch("MainMirrorCamera"));
+                else
+                    StartCoroutine(switchCamerasTouch("MainCamera"));
+            break;
         }
 
 
