@@ -68,7 +68,7 @@ public class MainCameraScript : MonoBehaviour
             {
                 Debug.Log("Resetting Camera");
                 dynamicOffset = defaultOffset;
-                cameraSwitchController.resetCamera("MainCamera", defaultOffset, defaultRotation, 27.9f); 
+                cameraSwitchController.ResetFOV("MainCamera", 27.9f); 
             }
 
             //Change camera zoom (Assuming you are using main camera)

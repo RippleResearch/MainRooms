@@ -48,7 +48,7 @@ public class MirrorCameraScript : MonoBehaviour
             {
                 Debug.Log("Resetting Camera");
                 dynamicOffset = defaultOffset;
-                cameraSwitchController.resetCamera("MainMirrorCamera", defaultOffset, defaultRotation, defaultFOV);
+                cameraSwitchController.ResetFOV("MainMirrorCamera",  defaultFOV);
             }
 
             //Change camera zoom (Assuming you are using main camera)
