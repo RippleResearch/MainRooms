@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
-    guid: e2380117d06a4444491a81b807433e52
+    path: Assets/Scenes/WaveScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
     path: Assets/Scenes/Impossible Cube.unity
     guid: 2a33fe5b9c0cbb541a868ef86b9855a2
