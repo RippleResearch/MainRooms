@@ -9,7 +9,8 @@ public class LevelLoader : MonoBehaviour
 {
     public GameObject triggerObject;    // object that is not the trigger (island, door, the thing that is being collided with)
     public TMP_Text txt;                // the text box associated with the island
-    
+    public Camera cam;
+
     void Start()
     {
         Debug.Assert(triggerObject != null);
@@ -28,14 +29,16 @@ public class LevelLoader : MonoBehaviour
         {
             
             RaycastHit hit;
-            Ray ray = new Ray(transform.position, transform.forward);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log("1");
-                if (hit.collider.isTrigger)
+                ray.origin = cam.transform.position;
+                /*Debug.Log("Hit Point: " + hit.point);
+                Debug.DrawRay(ray.origin, hit.point, Color.red);*/
+                if (hit.collider.isTrigger && hit.collider.gameObject.Equals(triggerObject))
                 {
-                    Debug.Log("2");
-                    //Do the thing
+                    string level = txt.text;
+                    SceneManager.LoadScene(level);
                 }
             }
         }

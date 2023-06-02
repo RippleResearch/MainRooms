@@ -100,7 +100,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Wave Scene
+  m_text: WaveScene
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -273,6 +273,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   triggerObject: {fileID: 3598442638529856643}
   txt: {fileID: 2181010610162727558}
+  cam: {fileID: 0}
 --- !u!64 &5668223560327279896
 MeshCollider:
   m_ObjectHideFlags: 0
