@@ -5,14 +5,15 @@ using UnityEngine;
 public class ChaseBoat : BasePatrolBoat
 {
     public Transform mainShip; //serves as temp destination of the ship we are chasing
-
     private bool chase = false;
 
 
     public override void Start()
     {
         base.Start();
-        SetSpeed(2); SetTurnSpeed(120);
+        SetSpeed(10); SetTurnSpeed(120);
+
+        Debug.Assert(mainShip != null);
     }
     /*
      * When using OnTrigger Enter make sure the
@@ -23,20 +24,28 @@ public class ChaseBoat : BasePatrolBoat
      */
     public override void OnTriggerEnter(Collider other)
     {
-        if (!chase)
+        if (!chase && random.Next(0, 10) == 1)
         {
-            if (random.Next(0, 4) == 1)
-            {
-                InvokeRepeating("chaseBoat", 1f, .1f);
-                chase = true;
-            }
+                InvokeRepeating("ChaseTarget", 0, .1f);
+                chase = true; 
         }
-        else
+        else if(chase && other.gameObject.Equals(mainShip.gameObject))
         {
-
+                CancelInvoke();
+                //Try to leave immediatly
+                PickRandomPoint(); // Updates NavPath
+                navAgent.SetPath(navPath);
+                chase = false;
         }
-
         base.OnTriggerEnter(other);
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.Equals(mainShip.gameObject))
+        {
+            MoveWithoutDestroy(waitMin, waitMax);
+        }
     }
 
     /// <summary>
