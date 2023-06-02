@@ -21,7 +21,7 @@ public abstract class AIBoat : MonoBehaviour
         navAgent = GetComponent<NavMeshAgent>();
         navPath = new NavMeshPath();
         waterBounds = GameObject.Find("WaterSurface").GetComponent<Renderer>().bounds;
-        InitalizeAtPoint(new Vector3(0,0,0)); //Automatically sets target object
+        //InitalizeAtPoint(PickRandomPoint()); //Automatically sets target object
 
 
         Debug.Assert(navAgent != null); // make sure all boats have nav mesh       
@@ -39,6 +39,7 @@ public abstract class AIBoat : MonoBehaviour
     /// <param name="maxWait"></param>
     public void MoveWithoutDestroy(int minWait, int maxWait)
     {
+        Debug.Assert(targetObject != null);
         Vector3 newLocation = PickRandomPoint();
         targetObject.transform.position = newLocation;
         StartCoroutine(Move(newLocation, random.Next(minWait, maxWait)));
@@ -90,6 +91,7 @@ public abstract class AIBoat : MonoBehaviour
     /// <returns></returns>
     protected Vector3 PickRandomPoint()
     {
+        Debug.Assert(targetObject != null);
         Vector3 rp;
         bool tooClose;
         do
@@ -112,6 +114,7 @@ public abstract class AIBoat : MonoBehaviour
     /// <param name="turnSpeed"></param>
     public void SetTurnSpeed(float turnSpeed)
     {
+        Debug.Assert(navAgent != null);
         navAgent.angularSpeed = turnSpeed;
     }
 
@@ -121,6 +124,7 @@ public abstract class AIBoat : MonoBehaviour
     /// <param name="speed"></param>
     public void SetSpeed(float speed)
     {
+        Debug.Assert(navAgent != null);
         navAgent.speed = speed;
     }
 }
