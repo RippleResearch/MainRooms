@@ -1137,6 +1137,29 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
+--- !u!1 &1531803616 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5022803569808155480, guid: 2fd722b6d3b206f4aa1354bc237fa128, type: 3}
+  m_PrefabInstance: {fileID: 39556694352909637}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1531803617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531803616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18d0bc6e616e3364086ede421306769c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audios: []
+  buttons: []
+  button: {fileID: 0}
+  m_Raycaster: {fileID: 0}
+  m_EventSystem: {fileID: 0}
+  canvasRect: {fileID: 0}
 --- !u!1 &1661586312
 GameObject:
   m_ObjectHideFlags: 0
