@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.IO;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -39,35 +40,19 @@ public abstract class AIBoat : MonoBehaviour
     /// <param name="minWait"></param>
     /// <param name="maxWait"></param>
     public void MoveWithoutDestroy(int minWait, int maxWait)
-    {
-        Debug.Assert(targetObject != null);
+    { 
         Vector3 newLocation = PickRandomPoint();
         targetObject.transform.position = newLocation;
-        StartCoroutine(Move(newLocation, random.Next(minWait, maxWait)));
-    }
-
-    /// <summary>
-    /// Picks a new location using PickRandomPoint()
-    /// then initalizes the newLocationPrefab at that spot
-    /// and begins the corutoine to move to the location
-    /// </summary>
-    /// <param name="minWait"></param>
-    /// <param name="maxWait"></param>
-    public void BeginMove(int minWait, int maxWait)
-    {
-        Vector3 newLocation = PickRandomPoint();
-        InitalizeAtPoint(newLocation);
-        StartCoroutine(Move(newLocation, random.Next(minWait, maxWait)));
+        StartCoroutine(Move(random.Next(minWait, maxWait)));
     }
 
     /// <summary>
     /// General move funtion that sets destiantion
     ///and waits a certain amount of time before moving to it.
     /// </summary>
-    /// <param name="destination"></param>
     /// <param name="waitTime"></param>
     /// <returns></returns>    
-    public IEnumerator Move(Vector3 destination, float waitTime)
+    public IEnumerator Move(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         Debug.Assert(navPath.status == NavMeshPathStatus.PathComplete);
@@ -102,13 +87,17 @@ public abstract class AIBoat : MonoBehaviour
             transform.position.y,
             UnityEngine.Random.Range(waterBounds.min.z, waterBounds.max.z)
             );
-
-            navAgent.CalculatePath(rp, navPath);        
-            tooClose = Vector3.Distance(targetObject.transform.position, transform.position) < 1;
-            if (tooClose) Debug.Log("ToCLOSE!");
-        } while (!tooClose && navPath.status != NavMeshPathStatus.PathComplete);
+            tooClose = Vector3.Distance(rp, transform.position) < LocationPrefab.GetComponent<SphereCollider>().radius;
+        } while (tooClose || !IsPathValid(rp));
         return rp;
     }
+
+    protected bool IsPathValid(Vector3 location)
+    {
+        navAgent.CalculatePath(location, navPath);
+        return (navPath.status == NavMeshPathStatus.PathComplete);
+    }
+
     /// <summary>
     /// Set NavMeshAgent AngularSpeed
     /// </summary>
