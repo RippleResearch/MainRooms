@@ -51,7 +51,7 @@ public class RearCameraScript : MonoBehaviour
             //Reset Camera on doubleTouch
            if (touchController.listenDoubleTouch()) 
             { 
-                cameraSwitchController.resetCamera("RearCamera", defaultOffset, defaultRotation, defaultFOV); 
+                cameraSwitchController.ResetFOV("RearCamera", defaultFOV); 
             }
         }
     }

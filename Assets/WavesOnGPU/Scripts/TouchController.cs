@@ -21,7 +21,6 @@ public class TouchController : MonoBehaviour
                 if (diff <= dtt & diff > .02f)
                 {
                     lastTapTime = 0;
-                    Debug.Log("Double tap Detected");
                     return true;
                 }
                 else { lastTapTime = Time.time; }

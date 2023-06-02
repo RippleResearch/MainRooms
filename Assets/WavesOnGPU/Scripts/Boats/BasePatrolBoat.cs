@@ -20,7 +20,7 @@ public class BasePatrolBoat : AIBoat
     public virtual void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.Equals(targetObject))
-        {
+        { 
             MoveWithoutDestroy(waitMin, waitMax);
         }
     }

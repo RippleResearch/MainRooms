@@ -142,6 +142,12 @@ public class CameraSwitchController : MonoBehaviour
         string_to_camera[camName].fieldOfView = defaultFOV;
     }
 
+    public void ResetFOV(string camName, float defaultFOV)
+    {
+        Debug.Assert(string_to_camera[camName] != null);
+        string_to_camera[camName].fieldOfView = defaultFOV;
+    }
+
    
     public void switchCamerasKeyboard(string camName)
     {
@@ -172,7 +178,7 @@ public class CameraSwitchController : MonoBehaviour
            if(entry.Key != camName) string_to_camera[entry.Key].enabled = false;
         }
 
-        string_to_camera[camName].enabled = true;
+        (curCam = string_to_camera[camName]).enabled = true;
     }
 
     //Follow a given target and change camera positon smoothly over a given period of time
