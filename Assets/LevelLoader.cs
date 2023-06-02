@@ -13,9 +13,9 @@ public class LevelLoader : MonoBehaviour
 
     void Start()
     {
-        Debug.Assert(triggerObject != null);
+        /*Debug.Assert(triggerObject != null);
         Debug.Assert(txt != null);
-        Debug.Assert(cam != null);
+        Debug.Assert(cam != null);*/
     }
 
     
@@ -27,16 +27,14 @@ public class LevelLoader : MonoBehaviour
     private void checkHit()
     {
         // GetMouseButtonDown == (Input.touch.phase == begin)
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0) && SceneManager.GetActiveScene().name.Equals("Impossible Cube"))
         {
-            
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             // Check to make sure raycasting is only in the right scenes
-            Debug.Log(SceneManager.GetActiveScene().name);
-            if (Physics.Raycast(ray, out hit) && SceneManager.GetActiveScene().name.Equals("Impossible Cube"))
+/*            Debug.Log(SceneManager.GetActiveScene().name);*/
+            if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log("1");
                 ray.origin = cam.transform.position;
                 // Check if the thing the ray is hitting is a trigger, and equals 
                 if (hit.collider.isTrigger && hit.collider.gameObject.Equals(triggerObject))
@@ -53,7 +51,9 @@ public class LevelLoader : MonoBehaviour
     {
         // objects in the collision needs to be a trigger
         // the other object cannot be a trigger, and needs a rigid body that is kinematic (disabled gravity as well)
-        string level = txt.text;
+        Debug.Log(other.gameObject.name);
+        triggerObject = other.gameObject;
+        string level = other.GetComponentInChildren<TMP_Text>().text;
         Debug.Log(level);
         if (other.gameObject.Equals(triggerObject))
         {
