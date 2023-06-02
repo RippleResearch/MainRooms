@@ -1,6 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,7 +14,7 @@ public class ShipController : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    { 
+    {
         myAgent = GetComponent<NavMeshAgent>();
         cameraSwitchController = GetComponent<CameraSwitchController>();
         waveController = GetComponentInParent<WaveController>();
@@ -29,12 +28,11 @@ public class ShipController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        checkMove();
-       
+        CheckMove();
     }
 
     //Camera input and move function found in the Main Camera Script (CameraFollow)
-    void checkMove()
+    void CheckMove()
     {
         //Check if they are trying to rotate camera using right click
         if(Input.GetMouseButton(1)) { return; }
@@ -45,7 +43,6 @@ public class ShipController : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             Ray ray = cameraSwitchController.getEnabledCam().ScreenPointToRay(Input.mousePosition); //Get a ray from mouse position
-
             if (Physics.Raycast(ray, out var hitInfo, 100, whatToClickOn)) //If the ray hits a given layer (added in the editor)
             {
                 myAgent.SetDestination(hitInfo.point); //Then ai will move to that location

@@ -109,6 +109,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7659612346682448402, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
+    - {fileID: 8133229093226734506, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
 --- !u!1 &9012798919210445296 stripped
 GameObject:
@@ -157,7 +158,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbad2b36ed5953d48b2744966cc05e5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trim: 0.5
+  waitMin: 0
+  waitMax: 0
   LocationPrefab: {fileID: 7514757060449681718, guid: 41ba63e3bfc0ff547af0874b62bd0492, type: 3}
-  currentDestination: {x: 0, y: 0, z: 0}
-  targetObject: {fileID: 0}

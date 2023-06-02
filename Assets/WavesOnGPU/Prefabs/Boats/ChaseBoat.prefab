@@ -105,6 +105,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7659612346682448402, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
+    - {fileID: 8133229093226734506, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
 --- !u!1 &7020118072811046904 stripped
 GameObject:
@@ -153,8 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5faea140dfbbfb04cab774235cb26e72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 4
-  turnSpeed: 120
-  locations: []
-  currentDestination: {x: 0, y: 0, z: 0}
-  target: {fileID: 0}
+  waitMin: 0
+  waitMax: 0
+  LocationPrefab: {fileID: 0}
+  mainShip: {fileID: 0}

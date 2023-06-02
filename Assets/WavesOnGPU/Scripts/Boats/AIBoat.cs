@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.IO;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -21,10 +22,13 @@ public abstract class AIBoat : MonoBehaviour
         navAgent = GetComponent<NavMeshAgent>();
         navPath = new NavMeshPath();
         waterBounds = GameObject.Find("WaterSurface").GetComponent<Renderer>().bounds;
+        InitalizeAtPoint(new Vector3(0,0,0)); //Automatically sets target object
+
 
         Debug.Assert(navAgent != null); // make sure all boats have nav mesh       
         Debug.Assert(waterBounds != null);
         Debug.Assert(LocationPrefab != null);
+        Debug.Assert(targetObject != null);
     }
 
     /// <summary>
@@ -36,34 +40,19 @@ public abstract class AIBoat : MonoBehaviour
     /// <param name="minWait"></param>
     /// <param name="maxWait"></param>
     public void MoveWithoutDestroy(int minWait, int maxWait)
-    {
+    { 
         Vector3 newLocation = PickRandomPoint();
         targetObject.transform.position = newLocation;
-        StartCoroutine(Move(newLocation, random.Next(minWait, maxWait)));
-    }
-
-    /// <summary>
-    /// Picks a new location using PickRandomPoint()
-    /// then initalizes the newLocationPrefab at that spot
-    /// and begins the corutoine to move to the location
-    /// </summary>
-    /// <param name="minWait"></param>
-    /// <param name="maxWait"></param>
-    public void BeginMove(int minWait, int maxWait)
-    {
-        Vector3 newLocation = PickRandomPoint();
-        InitalizeAtPoint(newLocation);
-        StartCoroutine(Move(newLocation, random.Next(minWait, maxWait)));
+        StartCoroutine(Move(random.Next(minWait, maxWait)));
     }
 
     /// <summary>
     /// General move funtion that sets destiantion
     ///and waits a certain amount of time before moving to it.
     /// </summary>
-    /// <param name="destination"></param>
     /// <param name="waitTime"></param>
     /// <returns></returns>    
-    public IEnumerator Move(Vector3 destination, float waitTime)
+    public IEnumerator Move(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         Debug.Assert(navPath.status == NavMeshPathStatus.PathComplete);
@@ -88,7 +77,9 @@ public abstract class AIBoat : MonoBehaviour
     /// <returns></returns>
     protected Vector3 PickRandomPoint()
     {
+        Debug.Assert(targetObject != null);
         Vector3 rp;
+        bool tooClose;
         do
         {
             rp = new Vector3(
@@ -96,16 +87,24 @@ public abstract class AIBoat : MonoBehaviour
             transform.position.y,
             UnityEngine.Random.Range(waterBounds.min.z, waterBounds.max.z)
             );
-            navAgent.CalculatePath(rp, navPath);
-        } while (navPath.status != NavMeshPathStatus.PathComplete);
+            tooClose = Vector3.Distance(rp, transform.position) < LocationPrefab.GetComponent<SphereCollider>().radius;
+        } while (tooClose || !IsPathValid(rp));
         return rp;
     }
+
+    protected bool IsPathValid(Vector3 location)
+    {
+        navAgent.CalculatePath(location, navPath);
+        return (navPath.status == NavMeshPathStatus.PathComplete);
+    }
+
     /// <summary>
     /// Set NavMeshAgent AngularSpeed
     /// </summary>
     /// <param name="turnSpeed"></param>
     public void SetTurnSpeed(float turnSpeed)
     {
+        Debug.Assert(navAgent != null);
         navAgent.angularSpeed = turnSpeed;
     }
 
@@ -115,6 +114,7 @@ public abstract class AIBoat : MonoBehaviour
     /// <param name="speed"></param>
     public void SetSpeed(float speed)
     {
+        Debug.Assert(navAgent != null);
         navAgent.speed = speed;
     }
 }
