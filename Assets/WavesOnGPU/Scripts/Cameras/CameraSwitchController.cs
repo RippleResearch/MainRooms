@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 
@@ -22,7 +21,7 @@ public class CameraSwitchController : MonoBehaviour
     Dictionary<Camera, Vector2> camera_to_vector2 = new Dictionary<Camera, Vector2>();
 
     //Ref need according to unity docs for smooth damp
-    private Vector3 velocity = Vector3.zero; 
+    private Vector3 velocity = Vector3.zero;
 
     // Start is called before the first frame update
     void Awake()
@@ -59,7 +58,6 @@ public class CameraSwitchController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         //Check Touch Controls
         switch (Input.touchCount)
         {
@@ -68,9 +66,13 @@ public class CameraSwitchController : MonoBehaviour
                 break;
             //Case 3 is in MainCameraScript for now
             case 4:
-                if (mainCam.enabled) { StartCoroutine(switchCamerasTouch("RearCamera")); }
-                else StartCoroutine(switchCamerasTouch("MainCamera"));
-                break;
+                if (mainCam.enabled)
+                    StartCoroutine(switchCamerasTouch("RearCamera"));
+                else if (rearCam.enabled)
+                    StartCoroutine(switchCamerasTouch("MainMirrorCamera"));
+                else
+                    StartCoroutine(switchCamerasTouch("MainCamera"));
+            break;
         }
 
 
@@ -112,11 +114,7 @@ public class CameraSwitchController : MonoBehaviour
         //Calculate difference
         float diff = currentMag - prevMag;
 
-        if(currentCamera == null)
-        {
-            Debug.Log("Same Null Error!!");
-            currentCamera = getEnabledCam();
-        }
+        Debug.Assert(currentCamera != null);
         //adjust camera FOV
         currentCamera.fieldOfView = keepInRange(currentCamera.fieldOfView - diff * touchZoomSpeed, (int) camera_to_vector2[curCam].x, (int)camera_to_vector2[curCam].y);
     }

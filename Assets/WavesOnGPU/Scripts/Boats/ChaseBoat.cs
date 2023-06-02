@@ -2,10 +2,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
+using UnityEngine.WSA;
 
-public class ChaseBoat : PatrolBoat
+public class ChaseBoat : BasePatrolBoat
 {
     public Transform target; //serves as temp destination of the ship we are chasing
+
+    private bool chase = false;
+
+
+    public override void Start()
+    {
+        base.Start();
+        SetSpeed(2); SetTurnSpeed(120);
+    }
     /*
      * When using OnTrigger Enter make sure the
      * at least one object has a rigid body and the isKinematic setting
@@ -13,23 +24,38 @@ public class ChaseBoat : PatrolBoat
      * If both onTriggers are on no event will be triggered. No event
      * will also be triggered if the rigid body is not kinematic.
      */
-    public void OnTriggerEnter(Collider other)
-    {
-        if (random.Next(0, 50) == 1)
+    public override void OnTriggerEnter(Collider other)
+    { 
+        if (!chase)
         {
-            InvokeRepeating("chaseBoat", 1f, .1f);
+            if (random.Next(0, 50) == 1)
+            {
+                InvokeRepeating("chaseBoat", 1f, .1f);
+                chase = true;
+            }
         }
-        if (other.gameObject.Equals(target.gameObject))
+        else if (chase && other.gameObject.Equals(target.gameObject))
         {
-            Debug.Log("hitting ship");
             CancelInvoke();
+            chase = false;
+            MoveWithoutDestroy(waitMin, waitMax);
         }
 
+        if (other.gameObject.Equals(targetObject))  
+        {
+            MoveWithoutDestroy(waitMin,waitMax);
+        }
 
-        StartCoroutine(move(pickRandomLocation(), random.Next(1,10)));
     }
-    public void chaseBoat()
+
+    /// <summary>
+    /// Called through an invoke repeating so it will constantly 
+    ///update its destination with the playable boats position
+    /// </summary>
+    public void ChaseTarget()
     {
-        myAgent.SetDestination(target.position);
+        navAgent.SetDestination(target.position);
     }
+
+   
 }

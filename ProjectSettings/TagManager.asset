@@ -8,6 +8,7 @@ TagManager:
   - MainMirrorCamera
   - RearCam
   - Locations
+  - Temp
   layers:
   - Default
   - TransparentFX
