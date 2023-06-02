@@ -36,6 +36,7 @@ public class BasePatrolBoat : AIBoat
     /// <param name="other"></param>
     public virtual void OnTriggerStay(Collider other)
     {
+        Debug.Log("IN");
         if(other.gameObject.Equals(targetObject))
         {
             float timeStayInTrigger = Time.time - timeInTrigger;

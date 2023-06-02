@@ -21,12 +21,13 @@ public abstract class AIBoat : MonoBehaviour
         navAgent = GetComponent<NavMeshAgent>();
         navPath = new NavMeshPath();
         waterBounds = GameObject.Find("WaterSurface").GetComponent<Renderer>().bounds;
-        //InitalizeAtPoint(PickRandomPoint()); //Automatically sets target object
+        InitalizeAtPoint(new Vector3(0,0,0)); //Automatically sets target object
 
 
         Debug.Assert(navAgent != null); // make sure all boats have nav mesh       
         Debug.Assert(waterBounds != null);
         Debug.Assert(LocationPrefab != null);
+        Debug.Assert(targetObject != null);
     }
 
     /// <summary>
