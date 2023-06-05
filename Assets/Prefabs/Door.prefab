@@ -183,9 +183,9 @@ GameObject:
   - component: {fileID: 5279927833139412619}
   - component: {fileID: 6959400211790336085}
   - component: {fileID: 1814163405849439302}
-  - component: {fileID: 2786896018519788698}
   - component: {fileID: 5668223560327279896}
   - component: {fileID: 1726184984948929911}
+  - component: {fileID: 2884814929124516252}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -259,21 +259,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2786896018519788698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3598442638529856643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6010b63d0842b64eaf44e0e962d9cb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  triggerObject: {fileID: 3598442638529856643}
-  txt: {fileID: 2181010610162727558}
-  cam: {fileID: 0}
 --- !u!64 &5668223560327279896
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -304,3 +289,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &2884814929124516252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3598442638529856643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1232be54c5820ad4fbe93fc6526b9dfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  triggerObject: {fileID: 0}
+  txt: {fileID: 0}
+  cam: {fileID: 0}
