@@ -51,11 +51,12 @@ public class LevelLoader : MonoBehaviour
     {
         // objects in the collision needs to be a trigger
         // the other object cannot be a trigger, and needs a rigid body that is kinematic (disabled gravity as well)
-        
-        /* triggerObject = other.gameObject;*/
+
+        triggerObject = other.gameObject;
         string level = null;
         try
         {
+            Debug.Log("Name: " + other.gameObject.name);
             if (other.gameObject.name.ToLower().Contains("island"))
             {
                 /*Debug.Log("Name: " + other.gameObject.name);
