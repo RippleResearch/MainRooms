@@ -12,14 +12,14 @@ public class ImpossibleCubeLevelLoader : LevelLoader
     // Start is called before the first frame update
     void Start()
     {
-        cam = Camera.main;
-        triggerObject = this.gameObject;
+        /*cam = Camera.main;*/
+        /*triggerObject = this.gameObject;*/
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        CheckHit();
     }
 
     public override void CheckHit()
