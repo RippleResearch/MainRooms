@@ -25,6 +25,7 @@ public class DayCycleScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        RenderSettings.skybox.SetFloat("_Rotation", Time.time * rotationSpeed);
         currentTime += 1 * Time.deltaTime;
         translateTime = (currentTime / (midday * 2));
 
