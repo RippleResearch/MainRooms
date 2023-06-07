@@ -7,11 +7,13 @@ public class DayCycleScript : MonoBehaviour
 {
     public float currentTime;
     public float dayLengthMinutes;
+    public Material mat;
     private float rotationSpeed;
     //private TMP_Text timeText;
     private string AMPM = "AM";
     private float midday;
     private float translateTime;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -64,7 +66,7 @@ public class DayCycleScript : MonoBehaviour
         }
 
 
-        string displayTime = displayHours + ":" + displayMinutes + AMPM;
+        string displayTime = displayHours + ":" + displayMinutes + " " + AMPM;
         //timeText.text = displayTime;
 
         this.transform.Rotate(new Vector3(1, 0, 0) * rotationSpeed * Time.deltaTime);
