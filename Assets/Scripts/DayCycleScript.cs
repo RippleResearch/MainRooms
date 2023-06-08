@@ -11,8 +11,8 @@ public class DayCycleScript : MonoBehaviour
     public Material mat2;
     private float rotationSpeed;
     //private TMP_Text timeText;
-    [SerializeField] private string AMPM = "AM";
-    [SerializeField] private float midday;
+    private string AMPM = "AM";
+    private float midday;
     private float translateTime;
     
     // Start is called before the first frame update
@@ -27,7 +27,7 @@ public class DayCycleScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        RenderSettings.skybox.SetFloat("_Rotation", Time.time * rotationSpeed /8);
+        RenderSettings.skybox.SetFloat("_Rotation", Time.time * rotationSpeed /6);
         currentTime += 1 * Time.deltaTime;
         translateTime = (currentTime / (midday * 2));
 
@@ -69,9 +69,14 @@ public class DayCycleScript : MonoBehaviour
             displayMinutes = "0"+minutes.ToString();
         }
 
-        float fadeRate = 0.05f;
 
-        if ((currentTime%(midday*2) >= midday*1.14f) && (currentTime%(midday*2) <= ((midday*2)*0.91f)))
+        // 
+        float sunset = 1.09f;
+        float sunrise1 = 0.92f;
+        float sunrise2 = 0.96f;
+        float fadeRate = ((midday * 2 * sunrise2) - (midday * 2 * sunrise1)) / 36;
+
+        if ((currentTime%(midday*2) >= midday*sunset) && (currentTime%(midday*2) <= ((midday*2)*sunrise1)))
         {
             RenderSettings.skybox = mat1;
             if(RenderSettings.skybox.GetFloat("_Blend") > 0)
@@ -83,7 +88,7 @@ public class DayCycleScript : MonoBehaviour
                 RenderSettings.skybox.SetFloat("_Blend", 0);
             }
         }
-        else if (currentTime % (midday * 2) > ((midday * 2) * 0.91f) && currentTime % (midday * 2) <= ((midday * 2) * 0.94f))
+        else if (currentTime % (midday * 2) > ((midday * 2) * sunrise1) && currentTime % (midday * 2) <= ((midday * 2) * sunrise2))
         {
             if(RenderSettings.skybox.GetFloat("_Blend") < 1)
             {
@@ -96,8 +101,8 @@ public class DayCycleScript : MonoBehaviour
         }
         else
         {
+            mat1.SetFloat("_Blend", 1);
             RenderSettings.skybox = mat2;
-            
         }
 
         string displayTime = displayHours + ":" + displayMinutes;
