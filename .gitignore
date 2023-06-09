@@ -63,6 +63,7 @@ sysinfo.txt
 *.aab
 *.unitypackage
 *.app
+*.cubemap	# Addded this when found that cubemaps were often too large to push for github
 
 # Crashlytics generated file
 crashlytics-build.properties
