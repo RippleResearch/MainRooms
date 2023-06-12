@@ -73,8 +73,8 @@ public class DayCycleScript : MonoBehaviour
         // 
         float sunset = 1.09f;
         float sunrise1 = 0.92f;
-        float sunrise2 = 0.96f;
-        float fadeRate = ((midday * 2 * sunrise2) - (midday * 2 * sunrise1)) / 36;
+        float sunrise2 = 0.99f;
+        float fadeRate = ((midday * 2 * sunrise2) - (midday * 2 * sunrise1)) / 50;
 
         if ((currentTime%(midday*2) >= midday*sunset) && (currentTime%(midday*2) <= ((midday*2)*sunrise1)))
         {
