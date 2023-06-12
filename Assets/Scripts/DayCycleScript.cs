@@ -11,7 +11,7 @@ public class DayCycleScript : MonoBehaviour
     public Material mat2;
     private float rotationSpeed;
     //private TMP_Text timeText;
-    private string AMPM = "AM";
+    /*private string AMPM = "AM";*/
     private float midday;
     private float translateTime;
     

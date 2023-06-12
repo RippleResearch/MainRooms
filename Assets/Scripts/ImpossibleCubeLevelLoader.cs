@@ -35,7 +35,7 @@ public class ImpossibleCubeLevelLoader : LevelLoader
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             // Check to make sure raycasting is only in the right scenes
-            Debug.Log(SceneManager.GetActiveScene().name);
+            /*Debug.Log(SceneManager.GetActiveScene().name);*/
             if (Physics.Raycast(ray, out hit))
             {
                 ray.origin = cam.transform.position;
