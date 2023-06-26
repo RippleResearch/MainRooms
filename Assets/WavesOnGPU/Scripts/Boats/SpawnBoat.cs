@@ -1,55 +1,78 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
-using System.IO;
+using System.Drawing;
 using UnityEngine;
 
 public class SpawnBoat : ChaseBoat
 {
     public GameObject BoatToSpawn;
-    public float spawnRadius = 10;
+    
+    public float spawnRadius = 3;
     public float shrinkInc = 1;
-    public int testSlices = 10;
-    public List<Vector3> points;
+    public int NumberOfBoats = 10;
 
+    public float timeSinceSpawned;
+    private float ttl = 5;
+    private float timeout = 1;
+    public float theta;
+    public List<Vector3> points;
+    
+    
 
     /// <summary>
     /// When Boat is clicked on spawn the BoatToSpawn
     /// Accordingly. Set its location and speed.
     /// </summary>
     public void SpawnBoats() {
-        Debug.Log("Spawning Boats");
-        GeneratePoints(transform.position, testSlices);
+        if(Time.time - timeSinceSpawned > timeout) {
+            NumberOfBoats = Random.Range(1,10);
+            theta = 360 / NumberOfBoats;
 
-        for(int i = 0; i < points.Count; i++) {
-            Debug.DrawLine(this.transform.position, points[i], Color.red, 3);
+            GeneratePoints(transform.position, NumberOfBoats);
+            for (int i = 0; i < points.Count; i++) {
+                //Debug.DrawLine(this.transform.position, points[i], UnityEngine.Color.red, 3);
+                //Instantiate Boat at point on circal
+                GameObject go = Instantiate(BoatToSpawn, points[i], Quaternion.identity);
+                go.transform.SetParent(GameObject.FindWithTag("SpawnBoat").transform);
+                go.name = "Special Chase Boat " + i;
+
+                //Set Ship Values
+                ChaseBoat boatScript = go.GetComponent<ChaseBoat>();
+                boatScript.mainShip = GameObject.Find("Ship").transform;;
+                boatScript.startLocation = GetValidLocation(transform.position, 20, i);
+                
+                //Destroy after certain amount of time
+                StartCoroutine(boatScript.DestroyAfterTime(ttl));
+                timeSinceSpawned = Time.time;
+            }
         }
     }
 
     public List<Vector3> GeneratePoints(Vector3 origin, int slices) {
         points = new List<Vector3>();
         float theta = 360 / slices;
-        Vector3 point;
-        
         for (int i = 0; i < slices; i++) {
-            float tempRadius = spawnRadius;
-            int counter = 0;
-            do {
-                point = PointOnCircle(origin, tempRadius, theta * i);
-                tempRadius -= shrinkInc;
-                
-                if(counter >= 1) {
-                    Debug.Log("Shrinking start radius");
-                }
-                
-                counter++;
-                if(counter >= 100) {
-                    Debug.Log("Stuck in loop");
-                    Debug.Break();
-                }
-            }
-            while (!IsPathValid(point));
-            points.Add(point);
+            points.Add(GetValidLocation(origin, spawnRadius, i));
         }
         return points;
+    }
+
+    public Vector3 GetValidLocation(Vector3 origin, float radius, int index) {
+        float tempRadius = radius;
+        int counter = 0;
+        Vector3 point;
+        do {
+            point = PointOnCircle(origin, tempRadius, theta * index);
+            tempRadius -= shrinkInc;
+            counter++;
+
+            if (counter >= 100) {
+                Debug.Log("Stuck in loop");
+                Debug.Break();
+            }
+        }
+        while (!IsPathValid(point));
+        return point;
     }
 
    public Vector3 PointOnCircle(Vector3 origin, float radius, float theta) {
@@ -74,9 +97,4 @@ public class SpawnBoat : ChaseBoat
         }
         return new Vector3(origin.x + xOffset, origin.y, origin.z + zOffset);
     }
-
-
-
-
-    
 }

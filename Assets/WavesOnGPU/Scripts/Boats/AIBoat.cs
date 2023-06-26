@@ -8,7 +8,7 @@ public abstract class AIBoat : MonoBehaviour
     public int waitMin, waitMax;
     public GameObject LocationPrefab;
 
-    protected NavMeshAgent navAgent;
+    [HideInInspector] public NavMeshAgent navAgent;
     protected NavMeshPath navPath;
     protected System.Random random;
     protected GameObject targetObject;
@@ -77,6 +77,7 @@ public abstract class AIBoat : MonoBehaviour
     /// <returns></returns>
     protected Vector3 PickRandomPoint()
     {
+        Debug.Log("Random point picked by: " + transform.gameObject.name );
         Debug.Assert(targetObject != null);
         Vector3 rp;
         bool tooClose;
@@ -98,6 +99,17 @@ public abstract class AIBoat : MonoBehaviour
         return (navPath.status == NavMeshPathStatus.PathComplete);
     }
 
+    public void MoveTargetObject(Vector3 location) {
+        navAgent.CalculatePath(location, navPath);
+        Debug.Assert(navPath.status == NavMeshPathStatus.PathComplete);
+        navAgent.SetPath(navPath);
+    }
+    public IEnumerator DestroyAfterTime(float time) {
+        yield return new WaitForSeconds(time);
+        Destroy(this.gameObject);
+        Destroy(targetObject);
+    }
+
     /// <summary>
     /// Set NavMeshAgent AngularSpeed
     /// </summary>
@@ -117,4 +129,5 @@ public abstract class AIBoat : MonoBehaviour
         Debug.Assert(navAgent != null);
         navAgent.speed = speed;
     }
+
 }
