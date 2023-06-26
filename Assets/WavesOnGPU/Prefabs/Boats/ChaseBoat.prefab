@@ -155,6 +155,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waitMin: 0
-  waitMax: 0
-  LocationPrefab: {fileID: 0}
+  waitMax: 10
+  LocationPrefab: {fileID: 7514757060449681718, guid: 41ba63e3bfc0ff547af0874b62bd0492, type: 3}
   mainShip: {fileID: 0}

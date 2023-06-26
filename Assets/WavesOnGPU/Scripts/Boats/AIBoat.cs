@@ -65,6 +65,7 @@ public abstract class AIBoat : MonoBehaviour
     /// <param name="point"></param>
     protected void InitalizeAtPoint(Vector3 point)
     {
+        Debug.Assert(LocationPrefab != null);
         targetObject = Instantiate(LocationPrefab, new Vector3(point.x, 0, point.z), LocationPrefab.transform.rotation);
         targetObject.transform.SetParent(GameObject.FindGameObjectWithTag("Temp").transform);
     }

@@ -153,9 +153,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5faea140dfbbfb04cab774235cb26e72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 4
-  turnSpeed: 120
-  trim: 0.5
+  waitMin: 0
+  waitMax: 0
   LocationPrefab: {fileID: 7514757060449681718, guid: 41ba63e3bfc0ff547af0874b62bd0492, type: 3}
-  currentDestination: {x: 0, y: 0, z: 0}
-  target: {fileID: 0}
+  mainShip: {fileID: 0}
+--- !u!1 &1316189912276726691 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7659612345720917828, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
+  m_PrefabInstance: {fileID: 8649272042951064807}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5495438845829159413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316189912276726691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ac8d0aadb31293468eef3e59e459cc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waitMin: 0
+  waitMax: 0
+  LocationPrefab: {fileID: 0}
+  mainShip: {fileID: 0}
+  BoatToSpawn: {fileID: 0}
+  spawnRadius: 10
+  shrinkInc: 1
+  testSlices: 10
+  points: []

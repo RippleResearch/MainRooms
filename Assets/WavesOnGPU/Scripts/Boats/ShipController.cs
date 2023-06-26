@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class ShipController : MonoBehaviour
 {
-    [SerializeField] private LayerMask whatToClickOn;
+    [SerializeField] private LayerMask water;
     private NavMeshAgent myAgent;
     private CameraSwitchController cameraSwitchController;
     private WaveController waveController;
@@ -43,10 +43,16 @@ public class ShipController : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             Ray ray = cameraSwitchController.getEnabledCam().ScreenPointToRay(Input.mousePosition); //Get a ray from mouse position
-            if (Physics.Raycast(ray, out var hitInfo, 100, whatToClickOn)) //If the ray hits a given layer (added in the editor)
+            if (Physics.Raycast(ray, out var hitInfo, 100)) //If the ray hits a given layer (added in the editor)
             {
-                myAgent.SetDestination(hitInfo.point); //Then ai will move to that location
-                waveController.effect = new Vector3(hitInfo.textureCoord.x * waveController.resolution.x, hitInfo.textureCoord.y * waveController.resolution.y, waveController.effect.z);
+                if(hitInfo.transform.gameObject.layer == water) {
+                    myAgent.SetDestination(hitInfo.point); //Then ai will move to that location
+                    waveController.effect = new Vector3(hitInfo.textureCoord.x * waveController.resolution.x, hitInfo.textureCoord.y * waveController.resolution.y, waveController.effect.z);
+                }
+                else if(hitInfo.transform.gameObject.CompareTag("SpawnBoat")) { //if spawn boat clicked spawn boats
+                    Debug.Log("Hit spawnBoat");
+                    hitInfo.transform.gameObject.GetComponent<SpawnBoat>().SpawnBoats();
+                }
             }        
         }
 
@@ -55,7 +61,7 @@ public class ShipController : MonoBehaviour
         if (Input.touchCount == 1)
         {
             var touchRay = cameraSwitchController.getEnabledCam().ScreenPointToRay(new Vector3(Input.touches[0].position.x, Input.touches[0].position.y, cameraSwitchController.getEnabledCam().nearClipPlane));
-            if (Physics.Raycast(touchRay, out var hitInfo, 100, whatToClickOn))
+            if (Physics.Raycast(touchRay, out var hitInfo, 100, water))
             {
                 myAgent.SetDestination(hitInfo.point); //Then ai will move to that location
                 waveController.effect = new Vector3(hitInfo.textureCoord.x * waveController.resolution.x, hitInfo.textureCoord.y * waveController.resolution.y, waveController.effect.z);

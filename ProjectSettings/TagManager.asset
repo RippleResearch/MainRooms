@@ -9,6 +9,7 @@ TagManager:
   - RearCam
   - Locations
   - Temp
+  - SpawnBoat
   layers:
   - Default
   - TransparentFX
