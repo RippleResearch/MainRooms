@@ -45,12 +45,11 @@ public class ShipController : MonoBehaviour
             Ray ray = cameraSwitchController.getEnabledCam().ScreenPointToRay(Input.mousePosition); //Get a ray from mouse position
             if (Physics.Raycast(ray, out var hitInfo, 100)) //If the ray hits a given layer (added in the editor)
             {
-                if(hitInfo.transform.gameObject.layer == water) {
+                if(hitInfo.transform.gameObject.CompareTag("Water")) {
                     myAgent.SetDestination(hitInfo.point); //Then ai will move to that location
                     waveController.effect = new Vector3(hitInfo.textureCoord.x * waveController.resolution.x, hitInfo.textureCoord.y * waveController.resolution.y, waveController.effect.z);
                 }
                 else if(hitInfo.transform.gameObject.CompareTag("SpawnBoat")) { //if spawn boat clicked spawn boats
-                    Debug.Log("Hit spawnBoat");
                     hitInfo.transform.gameObject.GetComponent<SpawnBoat>().SpawnBoats();
                 }
             }        

@@ -10,21 +10,17 @@ public class SpawnBoat : ChaseBoat
     public int testSlices = 10;
     public List<Vector3> points;
 
-    public override void Start() {
-        base.Start();
-        SetSpeed(10); SetTurnSpeed(120);
 
-        Debug.Assert(mainShip != null);
-    }
     /// <summary>
     /// When Boat is clicked on spawn the BoatToSpawn
     /// Accordingly. Set its location and speed.
     /// </summary>
     public void SpawnBoats() {
+        Debug.Log("Spawning Boats");
         GeneratePoints(transform.position, testSlices);
 
         for(int i = 0; i < points.Count; i++) {
-            Debug.DrawLine(this.transform.position, points[i], Color.red, 3, false);
+            Debug.DrawLine(this.transform.position, points[i], Color.red, 3);
         }
     }
 
@@ -37,8 +33,13 @@ public class SpawnBoat : ChaseBoat
             float tempRadius = spawnRadius;
             int counter = 0;
             do {
-                point = PointOnCircle(this.transform.position, shrinkInc, theta * i);
+                point = PointOnCircle(origin, tempRadius, theta * i);
                 tempRadius -= shrinkInc;
+                
+                if(counter >= 1) {
+                    Debug.Log("Shrinking start radius");
+                }
+                
                 counter++;
                 if(counter >= 100) {
                     Debug.Log("Stuck in loop");
@@ -53,21 +54,23 @@ public class SpawnBoat : ChaseBoat
 
    public Vector3 PointOnCircle(Vector3 origin, float radius, float theta) {
         float xOffset, zOffset;
-        if(theta <= 90) { //Quad 1
+        theta *= (Mathf.PI/180); // Convert from degress to radians
+
+        if(theta <= 90) { //Quad 1;
             xOffset = (float)Mathf.Cos(theta) * radius;         //+x
             zOffset = (float)Mathf.Sin(theta) * radius;         //+z
         }
         else if(theta <= 180) {//Quad 2
-            xOffset = -((float)Mathf.Cos(theta - 90) * radius); //-x
-            zOffset = (float)Mathf.Sin(theta - 90) * radius;    //+z
+            xOffset = -((float)Mathf.Cos(180 - theta) * radius); //-x
+            zOffset = (float)Mathf.Sin(180 - theta) * radius;    //+z
         }
         else if(theta <= 270) { // Quad 3
-            xOffset = -((float)Mathf.Cos(theta - 180) * radius); //-x
-            zOffset = -((float)Mathf.Sin(theta - 180) * radius); //-z
+            xOffset = -((float)Mathf.Cos(270 - theta) * radius); //-x
+            zOffset = -((float)Mathf.Sin(270 - theta) * radius); //-z 
         }
         else { //Quad 4
-            xOffset = (float)Mathf.Cos(theta - 270) * radius;   //+x 
-            zOffset = -((float)Mathf.Sin(theta - 270) * radius);//-z
+            xOffset = (float)Mathf.Cos(360 - theta) * radius;   //+x 
+            zOffset = -((float)Mathf.Sin(360 - theta) * radius);//-z
         }
         return new Vector3(origin.x + xOffset, origin.y, origin.z + zOffset);
     }

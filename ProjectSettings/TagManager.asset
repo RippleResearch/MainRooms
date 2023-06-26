@@ -10,6 +10,7 @@ TagManager:
   - Locations
   - Temp
   - SpawnBoat
+  - Water
   layers:
   - Default
   - TransparentFX
