@@ -277,9 +277,14 @@ MonoBehaviour:
   waitMin: 0
   waitMax: 1
   LocationPrefab: {fileID: 7514757060449681718, guid: 41ba63e3bfc0ff547af0874b62bd0492, type: 3}
+  navAgent: {fileID: 0}
   mainShip: {fileID: 0}
+  spawnedBoat: 0
   BoatToSpawn: {fileID: 7020118072811046904, guid: 89518f2d141d4ad4793865e1b3c178bb, type: 3}
   spawnRadius: 10
+  multiplier: 4
   shrinkInc: 1
-  testSlices: 10
-  points: []
+  NumberOfBoats: 0
+  maxNumberOfBoats: 10
+  timeSinceSpawned: 0
+  timeToLive: 5

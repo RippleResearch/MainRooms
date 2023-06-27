@@ -8,7 +8,7 @@ public class BasePatrolBoat : AIBoat
     {
         waitMin = 3; waitMax = 3;
         SetSpeed(10); SetTurnSpeed(130);
-        MoveWithoutDestroy(waitMin, waitMax);
+        SetRandomDestination(waitMin, waitMax);
     }
 
     /// <summary>
@@ -21,7 +21,7 @@ public class BasePatrolBoat : AIBoat
     {
         if (other.gameObject.Equals(targetObject))
         { 
-            MoveWithoutDestroy(waitMin, waitMax);
+            SetRandomDestination(waitMin, waitMax);
         }
     }
 }

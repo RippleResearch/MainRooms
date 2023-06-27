@@ -6,22 +6,15 @@ public class ChaseBoat : BasePatrolBoat
 {
     public Transform mainShip; //serves as temp destination of the ship we are chasing
     private bool chase = false;
-    [HideInInspector]public Vector3 startLocation = Vector3.zero;
+    public bool spawnedBoat = false;
 
 
     public override void Start()
     {
-        //base.Start();
-        SetSpeed(10); SetTurnSpeed(120);
-        if(startLocation != Vector3.zero) {
-            Debug.Log("Error is here");
-            MoveWithoutDestroy(waitMin, waitMax);
+        if (!spawnedBoat) {
+            SetSpeed(10); SetTurnSpeed(120);
+            SetRandomDestination(waitMin, waitMax);
         }
-        else {
-            Debug.Log("Moved obj");
-            MoveTargetObject(startLocation);
-        }
-
         Debug.Assert(mainShip != null);
     }
     /*
@@ -53,7 +46,7 @@ public class ChaseBoat : BasePatrolBoat
     {
         if (other.gameObject.Equals(mainShip.gameObject))
         {
-            MoveWithoutDestroy(waitMin, waitMax);
+            SetRandomDestination(waitMin, waitMax);
         }
     }
 

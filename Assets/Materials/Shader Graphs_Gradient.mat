@@ -42,7 +42,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0.23085871, g: 0, b: 1, a: 1}
     - _RippleCenter: {r: 0, g: 0, b: 0, a: 0}
-    - _RippleColor: {r: 1, g: 0.41153604, b: 0, a: 1}
+    - _RippleColor: {r: 0.23085868, g: 0, b: 1, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &858179582738688217
 MonoBehaviour:
