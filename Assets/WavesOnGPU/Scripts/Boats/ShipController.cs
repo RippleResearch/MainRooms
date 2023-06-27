@@ -54,17 +54,20 @@ public class ShipController : MonoBehaviour
                 }
             }        
         }
-
-
         //Same thing with touch (only 1 so we can use multi touch for other controls)
         if (Input.touchCount == 1)
         {
             var touchRay = cameraSwitchController.getEnabledCam().ScreenPointToRay(new Vector3(Input.touches[0].position.x, Input.touches[0].position.y, cameraSwitchController.getEnabledCam().nearClipPlane));
-            if (Physics.Raycast(touchRay, out var hitInfo, 100, water))
-            {
-                myAgent.SetDestination(hitInfo.point); //Then ai will move to that location
-                waveController.effect = new Vector3(hitInfo.textureCoord.x * waveController.resolution.x, hitInfo.textureCoord.y * waveController.resolution.y, waveController.effect.z);
+            if (Physics.Raycast(touchRay, out var hitInfo, 100)) //If the ray hits a given layer (added in the editor)
+           {
+                if (hitInfo.transform.gameObject.CompareTag("Water")) {
+                    myAgent.SetDestination(hitInfo.point); //Then ai will move to that location
+                    waveController.effect = new Vector3(hitInfo.textureCoord.x * waveController.resolution.x, hitInfo.textureCoord.y * waveController.resolution.y, waveController.effect.z);
+                }
+                else if (hitInfo.transform.gameObject.CompareTag("SpawnBoat")) { //if spawn boat clicked spawn boats
+                    hitInfo.transform.gameObject.GetComponent<SpawnBoat>().SpawnBoats();
+                }
             }
-        }
-    }   
+        }   
+    }
 }
