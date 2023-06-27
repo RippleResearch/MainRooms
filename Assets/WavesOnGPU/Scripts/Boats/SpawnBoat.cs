@@ -14,10 +14,9 @@ public class SpawnBoat : ChaseBoat
     public int NumberOfBoats;
     public int maxNumberOfBoats = 10;
     public float timeSinceSpawned;
-    
-    
     public float timeToLive = 5;
-    private float timeout = 1;
+    public float timeout = 1;
+    
     private float theta;
     private List<Vector3> points;
     
