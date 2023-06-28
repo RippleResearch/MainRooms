@@ -11,7 +11,7 @@ public class MazeController : MonoBehaviour {
 
     public GameObject FlowBlock;
     public List<Tuple<int, int>> beats;
-    public List<Color> colors;
+    public List<Tuple<Color, float>> color_and_inc;
     public int height, width;
     [Range(1f, 11f)]
     public int sizeMultiplier;
@@ -33,6 +33,7 @@ public class MazeController : MonoBehaviour {
     public float lavaIncrement = 1 / 4.0f;
     [Range(1 / 64.0f, 1f)]
     public float grassIncrement = 1 / 4.0f;
+
 
     private int maxTime = 30;
     public float timeSinceReset;
@@ -58,12 +59,17 @@ public class MazeController : MonoBehaviour {
         beats = new List<Tuple<int, int>> {
             new Tuple<int, int>(0, 1), // Water, Lava, Grass
             new Tuple<int, int>(1, 2), // 0      1      2
-            new Tuple<int, int>(2, 0)
+            new Tuple<int, int>(2, 3),
+            new Tuple<int, int>(3, 0)
         };
 
-        colors = new List<Color> { //Colors in same order as tuples
-            Color.blue, Color.red, Color.green 
+        color_and_inc = new List<Tuple<Color, float>> {
+            new Tuple<Color, float>(Color.blue, waterIncrement),
+            new Tuple<Color, float>(Color.red, lavaIncrement),
+            new Tuple<Color, float>(Color.green, grassIncrement),
+            new Tuple<Color, float>(Color.magenta, grassIncrement)
         };
+
 
         rand = new System.Random();
         AllGameObjects = new List<GameObject>();
@@ -173,7 +179,7 @@ public class MazeController : MonoBehaviour {
                 int z = UnityEngine.Random.Range(0, width);
                 if (board[x, z] == PATH) {
                     GameObject startObj = Instantiate(FlowBlock, new Vector3(x, 0, z), Quaternion.identity);
-                    startObj.GetComponent<Renderer>().material.color = colors[i];
+                    startObj.GetComponent<Renderer>().material.color = color_and_inc[i].Item1;
 
                     AllGameObjects.Add(startObj);
 
@@ -183,7 +189,7 @@ public class MazeController : MonoBehaviour {
                     if (cells[x, z].Block1 != null && cells[x, z].Block1.gameObject != null) {
                         Destroy(cells[x, z].Block1.gameObject);
                     }
-                    cells[x, z].Block1 = new Block(startObj, i, Vector3.zero, startObj.transform.position, increment: waterIncrement); //Add ID to block
+                    cells[x, z].Block1 = new Block(startObj, i, Vector3.zero, startObj.transform.position, increment: color_and_inc[i].Item2); //Add ID to block
                     cells[x, z].isActive = true;
                     placed = true;
                 }
@@ -343,9 +349,9 @@ public class MazeController : MonoBehaviour {
     private void CheckForWinners() {
         int alive = 0;
         for (int i = 0; i < beats.Count; i++) {
-            if (GameObject.Find("Parent: " + i).transform.childCount > 0) 
+            if (GameObject.Find("Parent: " + i).transform.childCount > 0)
                 alive++;
-            if (alive >= 2) 
+            if (alive >= 2)
                 break;
         }
         if (alive == 1) {
@@ -416,16 +422,16 @@ public class MazeController : MonoBehaviour {
         }
 
         GameObject newObject = Instantiate(FlowBlock, Vector3.one, Quaternion.identity);
-        newObject.GetComponent<Renderer>().material.color = colors[currBlock.ID];
+        newObject.GetComponent<Renderer>().material.color = color_and_inc[currBlock.ID].Item1;
         Block newBlock = new Block(newObject, currBlock.ID, p.dir, p.dest, increment: currBlock.increment, sizePercent: currBlock.increment);
 
         //Make new obj
         newObject.transform.position = p.dest + p.dir * (newBlock.increment / 2 - 0.5f);
         newObject.transform.localScale = Vector3.one - (1 - newBlock.increment) * VecAbs(p.dir);
-  
+
         newObject.name = currBlock.ID + " " + p.dest.x + "," + p.dest.z;
         newObject.transform.parent = GameObject.Find("Parent: " + currBlock.ID).transform;
- 
+
         //If cell is not active set it to active
         cells[(int)p.dest.x, (int)p.dest.z].isActive = true;
 
