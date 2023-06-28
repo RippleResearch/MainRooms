@@ -11,6 +11,13 @@ TagManager:
   - Temp
   - SpawnBoat
   - Water
+  - Grass
+  - Path
+  - Lava
+  - Dirt
+  - Floor
+  - Maze
+  - 2
   layers:
   - Default
   - TransparentFX

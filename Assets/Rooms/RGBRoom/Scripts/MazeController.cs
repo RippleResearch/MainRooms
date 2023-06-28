@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class MazeController : MonoBehaviour {
@@ -52,12 +53,6 @@ public class MazeController : MonoBehaviour {
         }
     }
 
-    /// <summary>
-    /// Checks if a beats b
-    /// </summary>
-    public bool Beats(int a, int b) {
-        return beats.Contains(new Tuple<int, int>(a, b));
-    }
     // Start is called before the first frame update
     void Start() {
         beats = new List<Tuple<int, int>> {
@@ -65,14 +60,6 @@ public class MazeController : MonoBehaviour {
             new Tuple<int, int>(1, 2), // 0      1      2
             new Tuple<int, int>(2, 0)
         };
-
-        /* Debug.Log(beats.Contains(new Tuple<int, int>(0, 1)));
-         Debug.Log(beats.Contains(new Tuple<int, int>(1, 2)));
-         Debug.Log(beats.Contains(new Tuple<int, int>(2, 0)));
-         //false
-         Debug.Log(beats.Contains(new Tuple<int, int>(0, 0)));
-         Debug.Log(beats.Contains(new Tuple<int, int>(1, 0)));
- */
 
         colors = new List<Color> { //Colors in same order as tuples
             Color.blue, Color.red, Color.green 
@@ -174,9 +161,12 @@ public class MazeController : MonoBehaviour {
     }
 
     private void PlaceStartBlocks() {
-        GameObject[] starts = { Water, Lava, Grass };
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < beats.Count; i++) {
             bool placed = false;
+            var parentObj = new GameObject();
+            parentObj.name = "Parent: " + i;
+            parentObj.transform.parent = GameObject.FindGameObjectWithTag("Maze").transform;
+
             do {
                 int x = UnityEngine.Random.Range(0, height);
                 int z = UnityEngine.Random.Range(0, width);
@@ -185,12 +175,10 @@ public class MazeController : MonoBehaviour {
                     startObj.GetComponent<Renderer>().material.color = colors[i];
 
                     AllGameObjects.Add(startObj);
-                    FlowBlock.tag = starts[i].tag; //Set tag to water lava or grass
 
-                    Debug.Log(startObj.name + " " + startObj.tag);
+                    startObj.name = i + " " + x + "," + z;
+                    startObj.transform.parent = parentObj.transform;
 
-                    startObj.name = FlowBlock.tag + " " + x + "," + z;
-                    startObj.transform.parent = GameObject.FindGameObjectWithTag(FlowBlock.tag).transform;
                     if (cells[x, z].Block1 != null && cells[x, z].Block1.gameObject != null) {
                         Destroy(cells[x, z].Block1.gameObject);
                     }
@@ -202,6 +190,18 @@ public class MazeController : MonoBehaviour {
         }
     }
 
+    /*private string CreateTag(String tag) {
+        SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+        SerializedProperty tagsProp = tagManager.FindProperty("tags");
+
+        tagsProp.InsertArrayElementAtIndex(0);
+        SerializedProperty newTag = tagsProp.GetArrayElementAtIndex(0);
+        newTag.stringValue = tag;
+        tagManager.ApplyModifiedProperties();
+
+        return tag;
+    }
+*/
     private Block PlaceNewBlock(int x, int z) {
         GameObject go;
         if (x < 0 || z < 0 || z >= width || x >= height) {
@@ -264,10 +264,6 @@ public class MazeController : MonoBehaviour {
         }
 
         return spots;
-    }
-
-    public bool IsInRange(int val, int bound) {
-        return (val < bound && val >= 0);
     }
 
     private bool Propigate(List<DestAndPos> spots, int x, int z) {
@@ -376,6 +372,23 @@ public class MazeController : MonoBehaviour {
             GrowBlock(cell.Block2);
         }
     }
+    private void ShrinkAndGrowBlock(Cell cell) {
+        //We already know we are hitting a block && We also know that cell 2 is not null
+        Debug.Assert(cell.Block1 != null && cell.Block2 != null);
+
+        if (cell.Block1.sizePercent + cell.Block2.sizePercent >= 1f) {
+            GrowBlock(cell.Block1);
+            ShrinkSecondBlock(cell);
+        }
+        else {
+            GrowBlock(cell.Block1);
+            GrowBlock(cell.Block2);
+
+            if (cell.Block1.sizePercent + cell.Block2.sizePercent >= 1f) {
+                cell.Block2.increment = cell.Block1.increment;
+            }
+        }
+    }
 
     public void GrowBlock(Block block) {
         block.gameObject.transform.position += block.increment / 2 * block.Orientation;
@@ -405,23 +418,6 @@ public class MazeController : MonoBehaviour {
             cell.Block2 = null;
         }
     }
-    private void ShrinkAndGrowBlock(Cell cell) {
-        //We already know we are hitting a block && We also know that cell 2 is not null
-        Debug.Assert(cell.Block1 != null && cell.Block2 != null);
-
-        if (cell.Block1.sizePercent + cell.Block2.sizePercent >= 1f) {
-            GrowBlock(cell.Block1);
-            ShrinkSecondBlock(cell);
-        }
-        else {
-            GrowBlock(cell.Block1);
-            GrowBlock(cell.Block2);
-
-            if (cell.Block1.sizePercent + cell.Block2.sizePercent >= 1f) {
-                cell.Block2.increment = cell.Block1.increment;
-            }
-        }
-    }
 
     private void AddBlockToCell(Block currBlock, DestAndPos p) {
         //Make sure at least one cell is empty before we place a new block inside
@@ -433,18 +429,12 @@ public class MazeController : MonoBehaviour {
         newObject.GetComponent<Renderer>().material.color = colors[currBlock.ID];
         Block newBlock = new Block(newObject, currBlock.ID, p.dir, p.dest, increment: currBlock.increment, sizePercent: currBlock.increment);
 
-        string name;
-        if (currBlock.ID == 0) name = "Water";
-        else if (currBlock.ID == 1) name = "Lava";
-        else name = "Grass";
         //Make new obj
         newObject.transform.position = p.dest + p.dir * (newBlock.increment / 2 - 0.5f);
         newObject.transform.localScale = Vector3.one - (1 - newBlock.increment) * VecAbs(p.dir);
   
         newObject.name = currBlock.ID + " " + p.dest.x + "," + p.dest.z;
-        newObject.transform.parent = GameObject.FindGameObjectWithTag(name).transform;
-
-
+ 
         //If cell is not active set it to active
         cells[(int)p.dest.x, (int)p.dest.z].isActive = true;
 
@@ -458,18 +448,18 @@ public class MazeController : MonoBehaviour {
         AllGameObjects.Add(newObject);
     }
 
+    public bool IsInRange(int val, int bound) {
+        return (val < bound && val >= 0);
+    }
+
     private Vector3 VecAbs(Vector3 v) {
         return new Vector3(Math.Abs(v.x), Math.Abs(v.y), Math.Abs(v.z));
     }
 
-    private void RemoveBlock(Vector3 p) {
-        if (cells[(int)p.x, (int)p.z].Block1 != null) {
-            Destroy(cells[(int)p.x, (int)p.z].Block1.gameObject);
-            cells[(int)p.x, (int)p.z].Block1 = null;
-        }
-        if (cells[(int)p.x, (int)p.z].Block2 != null) {
-            Destroy(cells[(int)p.x, (int)p.z].Block2.gameObject);
-            cells[(int)p.x, (int)p.z].Block2 = null;
-        }
+    /// <summary>
+    /// Checks if a beats b
+    /// </summary>
+    public bool Beats(int a, int b) {
+        return beats.Contains(new Tuple<int, int>(a, b));
     }
 }
