@@ -5,7 +5,12 @@ using UnityEngine;
 
 public class MazeController : MonoBehaviour {
 
+    
     public GameObject Dirt, PathDirt, Lava, Water, Grass;
+
+    public GameObject FlowBlock;
+    public List<Tuple<int, int>> beats;
+    public List<Color> colors;
     public int height, width;
     [Range(1f, 11f)]
     public int sizeMultiplier;
@@ -47,8 +52,32 @@ public class MazeController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Checks if a beats b
+    /// </summary>
+    public bool Beats(int a, int b) {
+        return beats.Contains(new Tuple<int, int>(a, b));
+    }
     // Start is called before the first frame update
     void Start() {
+        beats = new List<Tuple<int, int>> {
+            new Tuple<int, int>(0, 1), // Water, Lava, Grass
+            new Tuple<int, int>(1, 2), // 0      1      2
+            new Tuple<int, int>(2, 0)
+        };
+
+        Debug.Log(beats.Contains(new Tuple<int, int>(0, 1)));
+        Debug.Log(beats.Contains(new Tuple<int, int>(1, 2)));
+        Debug.Log(beats.Contains(new Tuple<int, int>(2, 0)));
+        //false
+        Debug.Log(beats.Contains(new Tuple<int, int>(0, 0)));
+        Debug.Log(beats.Contains(new Tuple<int, int>(1, 0)));
+
+
+        colors = new List<Color> { //Colors in same order as tuples
+            Color.blue, Color.green, Color.red
+        };
+
         rand = new System.Random();
         AllGameObjects = new List<GameObject>();
         sizeMultiplier = 1;
@@ -115,7 +144,6 @@ public class MazeController : MonoBehaviour {
                 }
             }
         }
-
         //System.Numerics.Vector2 end = bfs.ComputeAndGetEnd(start, board);
         ////////////PRIMS MAZE//////////////////    
 
@@ -138,20 +166,25 @@ public class MazeController : MonoBehaviour {
             }
         }
         GameObject[] starts = { Water, Lava, Grass };
-        foreach (GameObject genericObject in starts) {
+        for(int i = 0; i < 3; i++) {
             bool placed = false;
             do {
                 int x = UnityEngine.Random.Range(0, height);
                 int z = UnityEngine.Random.Range(0, width);
                 if (board[x, z] == PATH) {
-                    GameObject startObj = Instantiate(genericObject, new Vector3(x, 0, z), Quaternion.identity);
+                    GameObject startObj = Instantiate(FlowBlock, new Vector3(x, 0, z), Quaternion.identity);
+                    startObj.GetComponent<Renderer>().material.color = colors[i];
+                    
                     AllGameObjects.Add(startObj);
-                    startObj.name = genericObject.tag + " " + x + "," + z;
-                    startObj.transform.parent = GameObject.FindGameObjectWithTag(genericObject.tag).transform;
+                    FlowBlock.tag = starts[i].tag; //Set tag to water lava or grass
+
+
+                    startObj.name = FlowBlock.tag + " " + x + "," + z;
+                    startObj.transform.parent = GameObject.FindGameObjectWithTag(FlowBlock.tag).transform;
                     if (cells[x, z].Block1 != null && cells[x, z].Block1.gameObject != null) {
                         Destroy(cells[x, z].Block1.gameObject);
                     }
-                    cells[x, z].Block1 = new Block(startObj);
+                    cells[x, z].Block1 = new Block(startObj, i); //Add ID to block
                     cells[x, z].isActive = true;
                     placed = true;
                 }
@@ -160,24 +193,25 @@ public class MazeController : MonoBehaviour {
         timeSinceReset = -1;
     }
 
-
     private Block PlaceNewBlock(int x, int z) {
         GameObject go;
         if (x < 0 || z < 0 || z >= width || x >= height) {
             go = Instantiate(Dirt, new Vector3(x, 0, z), Quaternion.identity);
             go.name = "Dirt " + x + "," + z;
             go.transform.parent = GameObject.FindGameObjectWithTag("Dirt").transform;
-            return new Block(go);
-        } else {
+            return new Block(go, -1);
+        }
+        else {
             //0 = WALL, 1 = PATH, 2 = TRACED PATH FROM START TO END
             if (board[x, z] == WALL) {
                 go = Instantiate(Dirt, new Vector3(x, 0, z), Quaternion.identity);
                 go.name = "Dirt " + x + "," + z;
                 go.transform.parent = GameObject.FindGameObjectWithTag("Dirt").transform;
 
-                return new Block(go);
-            } else {
-                return null;          
+                return new Block(go, -1);
+            }
+            else {
+                return null;
             }
         }
     }
@@ -270,7 +304,7 @@ public class MazeController : MonoBehaviour {
                     //For now
                     if (cell.Block1 != null) {
                         if (Mathf.Abs(cell.Block1.sizePercent - 1f) < .001f) {
-                            if (Propigate(cell.Block1, x, z) == true) {
+                            if (Propigate(GetValidNeighbors(x, z), x, z) == true) {
                                 cell.isActive = false;
                             }
                         } else { //One block not full
@@ -308,8 +342,8 @@ public class MazeController : MonoBehaviour {
 
     public void GrowBlock(Block block) {
         block.gameObject.transform.position += block.increment / 2 * block.Orientation;
-        block.gameObject.transform.localScale += block.increment * vecAbs(block.Orientation);
-        block.sizePercent = Vector3.Dot(block.gameObject.transform.localScale, vecAbs(block.Orientation));
+        block.gameObject.transform.localScale += block.increment * VecAbs(block.Orientation);
+        block.sizePercent = Vector3.Dot(block.gameObject.transform.localScale, VecAbs(block.Orientation));
 
         if (Vector3.Distance(block.gameObject.transform.position, block.finalPos) < block.increment) {
             ////Debug.log("Stopped Growing: " + cell.Block1);
@@ -324,8 +358,8 @@ public class MazeController : MonoBehaviour {
         Block block = cell.Block2;
         //Should have other blocks inc
         block.gameObject.transform.position -= block.increment / 2 * block.Orientation;
-        block.gameObject.transform.localScale -= block.increment * vecAbs(block.Orientation);
-        block.sizePercent = Vector3.Dot(block.gameObject.transform.localScale, vecAbs(block.Orientation));
+        block.gameObject.transform.localScale -= block.increment * VecAbs(block.Orientation);
+        block.sizePercent = Vector3.Dot(block.gameObject.transform.localScale, VecAbs(block.Orientation));
 
         if (block.sizePercent < block.increment) {
             AllGameObjects.Remove(block.gameObject);
@@ -350,8 +384,34 @@ public class MazeController : MonoBehaviour {
             }
         }
     }
-
-    private bool Propigate(Block block, int x, int z) {
+    private bool Propigate(List<DestAndPos> spots, int x, int z) {
+        Cell currCell = cells[x,z];
+        int surrounded = 0;
+        foreach (DestAndPos p in spots) {
+            Cell neighborCell = cells[(int)p.dest.x, (int)p.dest.z];
+            if (neighborCell.Block1 == null) {
+                AddBlockToCell(Lava, typeof(Block), currCell.Block1.increment, currCell.Block1.gameObject.tag, p);
+                surrounded++;
+            }
+            else if (neighborCell.Block1.ID == currCell.Block1.ID) { //if its me
+                surrounded++;
+            }
+            else if (neighborCell.Block1.ID == -1) { // Dirt or Path
+                surrounded++;
+            }
+            else if (Beats(currCell.Block1.ID, neighborCell.Block1.ID)) { // if i can break
+                AddBlockToCell(currCell.Block1, typeof(Block), currCell.)
+                neighborCell.SwapBlocksAndVars();
+                surrounded++;
+            }
+            else if (neighborCell.Block1.gameObject.CompareTag("Lava") && neighborCell.Block2 == null && neighborCell.Block1.sizePercent < 1f) {
+                addGrass(p);
+                surrounded++;
+            }
+        }
+        return (surrounded == spots.Count);
+    }
+    /*private bool Propigate(Block block, int x, int z) {
         if (block.gameObject.CompareTag("Dirt") || block.gameObject.CompareTag("Path")) {
             return false;
         }
@@ -364,7 +424,7 @@ public class MazeController : MonoBehaviour {
             return PropigateGrass(spots);
         }
         return false;
-    }
+    }*/
 
     //Return true iff surrounded
     private bool PropigateGrass(List<DestAndPos> spots) {
@@ -468,6 +528,37 @@ public class MazeController : MonoBehaviour {
     private void addGrass(DestAndPos p) {
         AddBlockToCell(Grass, typeof(GrassBlock), grassIncrement, "Grass", p);
     }
+
+    private void AddBlockToCell(int ID, DestAndPos p) {
+        //Make sure at least one cell is empty before we place a new block inside
+        if (cells[(int)p.dest.x, (int)p.dest.z].Block1 != null && cells[(int)p.dest.x, (int)p.dest.z].Block2 != null) {
+            // Wait until whatever is happening in this cell to finish.
+            return;
+        }
+        GameObject newObject = Instantiate(gameObject, Vector3.one, Quaternion.identity);
+        object[] paramList = { newObject, inc, p.dir, p.dest };
+        Block b = (Block)Activator.CreateInstance(block, paramList);
+
+
+        //Make new obj
+        newObject.transform.position = p.dest + p.dir * (b.increment / 2 - 0.5f);
+        newObject.transform.localScale = Vector3.one - (1 - b.increment) * VecAbs(p.dir);
+        newObject.name = name + " " + p.dest.x + "," + p.dest.z;
+        newObject.transform.parent = GameObject.FindGameObjectWithTag(name).transform;
+
+
+        //If cell is not active set it to active
+        cells[(int)p.dest.x, (int)p.dest.z].isActive = true;
+
+        //Check which block is empty
+        if (cells[(int)p.dest.x, (int)p.dest.z].Block1 == null)
+            cells[(int)p.dest.x, (int)p.dest.z].Block1 = b;
+        else
+            cells[(int)p.dest.x, (int)p.dest.z].Block2 = b;
+
+        //Add to array for reset
+        AllGameObjects.Add(newObject);
+    }
     private void AddBlockToCell(GameObject gameObject, Type block, float inc, string name, DestAndPos p) {
         //Make sure at least one cell is empty before we place a new block inside
         if (cells[(int)p.dest.x, (int)p.dest.z].Block1 != null && cells[(int)p.dest.x, (int)p.dest.z].Block2 != null) {
@@ -481,7 +572,7 @@ public class MazeController : MonoBehaviour {
 
         //Make new obj
         newObject.transform.position = p.dest + p.dir * (b.increment / 2 - 0.5f);
-        newObject.transform.localScale = Vector3.one - (1 - b.increment) * vecAbs(p.dir);
+        newObject.transform.localScale = Vector3.one - (1 - b.increment) * VecAbs(p.dir);
         newObject.name = name + " " + p.dest.x + "," + p.dest.z;
         newObject.transform.parent = GameObject.FindGameObjectWithTag(name).transform;
 
@@ -499,7 +590,7 @@ public class MazeController : MonoBehaviour {
         AllGameObjects.Add(newObject);
     }
 
-    private Vector3 vecAbs(Vector3 v) {
+    private Vector3 VecAbs(Vector3 v) {
         return new Vector3(Math.Abs(v.x), Math.Abs(v.y), Math.Abs(v.z));
     }
 
