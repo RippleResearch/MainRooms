@@ -166,6 +166,7 @@ public class MazeController : MonoBehaviour {
             var parentObj = new GameObject();
             parentObj.name = "Parent: " + i;
             parentObj.transform.parent = GameObject.FindGameObjectWithTag("Maze").transform;
+            AllGameObjects.Add(parentObj);
 
             do {
                 int x = UnityEngine.Random.Range(0, height);
@@ -189,19 +190,6 @@ public class MazeController : MonoBehaviour {
             } while (!placed);
         }
     }
-
-    /*private string CreateTag(String tag) {
-        SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
-        SerializedProperty tagsProp = tagManager.FindProperty("tags");
-
-        tagsProp.InsertArrayElementAtIndex(0);
-        SerializedProperty newTag = tagsProp.GetArrayElementAtIndex(0);
-        newTag.stringValue = tag;
-        tagManager.ApplyModifiedProperties();
-
-        return tag;
-    }
-*/
     private Block PlaceNewBlock(int x, int z) {
         GameObject go;
         if (x < 0 || z < 0 || z >= width || x >= height) {
@@ -296,7 +284,7 @@ public class MazeController : MonoBehaviour {
     }
 
     private void Update() {
-        
+
         if (Input.GetKeyDown(KeyCode.Escape)) {
             Application.Quit();
 
@@ -305,19 +293,7 @@ public class MazeController : MonoBehaviour {
         if (timeSinceReset > 0 && diff > maxTime) {
             StartCoroutine(RequestReset(waitTime));
         }
-        int w = GameObject.FindGameObjectWithTag(Water.tag).transform.childCount;
-        int l = GameObject.FindGameObjectWithTag(Lava.tag).transform.childCount;
-        int g = GameObject.FindGameObjectWithTag(Grass.tag).transform.childCount;
-        if (w == 0) {
-            if (l == 0 || g == 0) {
-                StartCoroutine(RequestReset(waitTime));
-            }
-        }
-        else {
-            if (l == 0 && g == 0) {
-                StartCoroutine(RequestReset(waitTime));
-            }
-        }
+        CheckForWinners();
         //ProcessHit();
         bool filled = true;
         //StringBuilder sb = new StringBuilder();
@@ -333,8 +309,8 @@ public class MazeController : MonoBehaviour {
                     //For now
                     if (cell.Block1 != null) {
                         if (Mathf.Abs(cell.Block1.sizePercent - 1f) < .001f) {
-                            if (Propigate(GetValidNeighbors(x, z), x, z) == true) {
-                                cell.isActive = false;
+                            if (cell.Block1.ID != -1) {
+                                cell.isActive = Propigate(GetValidNeighbors(x, z), x, z);
                             }
                         }
                         else { //One block not full
@@ -361,6 +337,19 @@ public class MazeController : MonoBehaviour {
         }
         else {
             //Debug.Log(sb);
+        }
+    }
+
+    private void CheckForWinners() {
+        int alive = 0;
+        for (int i = 0; i < beats.Count; i++) {
+            if (GameObject.Find("Parent: " + i).transform.childCount > 0) 
+                alive++;
+            if (alive >= 2) 
+                break;
+        }
+        if (alive == 1) {
+            StartCoroutine(RequestReset(waitTime));
         }
     }
 
@@ -425,6 +414,7 @@ public class MazeController : MonoBehaviour {
             // Wait until whatever is happening in this cell to finish.
             return;
         }
+
         GameObject newObject = Instantiate(FlowBlock, Vector3.one, Quaternion.identity);
         newObject.GetComponent<Renderer>().material.color = colors[currBlock.ID];
         Block newBlock = new Block(newObject, currBlock.ID, p.dir, p.dest, increment: currBlock.increment, sizePercent: currBlock.increment);
@@ -434,6 +424,7 @@ public class MazeController : MonoBehaviour {
         newObject.transform.localScale = Vector3.one - (1 - newBlock.increment) * VecAbs(p.dir);
   
         newObject.name = currBlock.ID + " " + p.dest.x + "," + p.dest.z;
+        newObject.transform.parent = GameObject.Find("Parent: " + currBlock.ID).transform;
  
         //If cell is not active set it to active
         cells[(int)p.dest.x, (int)p.dest.z].isActive = true;
