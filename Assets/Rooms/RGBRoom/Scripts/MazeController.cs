@@ -33,6 +33,9 @@ public class MazeController : MonoBehaviour {
     public float lavaIncrement = 1 / 4.0f;
     [Range(1 / 64.0f, 1f)]
     public float grassIncrement = 1 / 4.0f;
+    [Range(1 / 64.0f, 1f)]
+    public float baseIncrement = 1 / 4.0f;
+
 
     [Range(1, 20)]
     public int maxTime = 15;
@@ -54,23 +57,71 @@ public class MazeController : MonoBehaviour {
         }
     }
 
-    // Start is called before the first frame update
-    void Start() {
-        //Colors that would pause eachother
-        //((1)red, (3)cyan), ((0)blue, (2)green)
-        beats = new List<Tuple<int, int>> {
-            new Tuple<int, int>(0, 1), // Water, Lava, Grass
-            new Tuple<int, int>(1, 2), // 0      1      2
-            new Tuple<int, int>(2, 3),
-            new Tuple<int, int>(3, 0)
+    ///////////////////////////////////////TEMP COLOR PALLETTES//////////////
+
+    List<Color> colors1, beachColors, palettable;
+    List<List<Color>> AllColors;
+
+    public void GenerateColors() {
+        colors1 = new List<Color> {
+            HexToRGB("EDD4B2"),
+            HexToRGB("d0a98f"),
+            HexToRGB("4d243d"),
+            HexToRGB("cac2b5"),
+            HexToRGB("ecdcc9")
         };
 
+        beachColors = new List<Color> {
+            HexToRGB("ED6A5A"),
+            HexToRGB("F4F1BB"),
+            HexToRGB("9BC1BC"),
+            HexToRGB("E6EBE0"),
+            HexToRGB("36C9C6")
+        };
+
+        palettable = new List<Color> {
+            HexToRGB("C4D6B0"),
+            HexToRGB("477998"),
+            HexToRGB("291F1E"),
+            HexToRGB("F64740"),
+            HexToRGB("A3333D")
+        };
+
+        AllColors = new List<List<Color>> {
+                colors1,
+                beachColors,
+                palettable
+          };
+    }
+
+    public Color HexToRGB(string hexValue) {
+        // Remove any leading "#" if present
+        if (hexValue.StartsWith("#"))
+            hexValue = hexValue.Substring(1);
+
+        // Convert the hexadecimal value to integer
+        int hex = Convert.ToInt32(hexValue, 16);
+
+        // Extract the RGB components
+        int red = (hex >> 16) & 0xFF;
+        int green = (hex >> 8) & 0xFF;
+        int blue = hex & 0xFF;
+
+        return new Color(red/255f, green/255f, blue / 255f); // Unity needs number to be between 0 and 1
+    }
+
+    // Start is called before the first frame update
+    void Start() {   
+        GenerateColors();
+        
+        /*
         color_and_inc = new List<Tuple<Color, float>> {
-            new Tuple<Color, float>(Color.blue, waterIncrement),
+            new Tuple<Color, float>(new Color(77, 36, 61), waterIncrement),
             new Tuple<Color, float>(Color.red, lavaIncrement),
             new Tuple<Color, float>(Color.green, grassIncrement),
-            new Tuple<Color, float>(Color.cyan, grassIncrement)
-        };
+            new Tuple<Color, float>(Color.cyan, grassIncrement),
+            new Tuple<Color, float>(Color.gray, grassIncrement),
+        };*/
 
 
         rand = new System.Random();
@@ -82,8 +133,32 @@ public class MazeController : MonoBehaviour {
     }
 
     private void InitializeMaze() {
+        beats = new List<Tuple<int, int>>();
+        color_and_inc = new List<Tuple<Color, float>>();
+        int numOfColors = UnityEngine.Random.Range(3, 15);
+        HashSet<Color> used = new HashSet<Color>();
+
+        for (int i = 0; i < numOfColors; i++) {
+            if (i + 1 < colors1.Count) {
+                beats.Add(new Tuple<int, int>(i, i + 1));
+            }
+            else {
+                beats.Add(new Tuple<int, int>(i, 0));
+            }
+            Color color;
+            do {
+                List<Color> palate = AllColors[UnityEngine.Random.Range(0, AllColors.Count)];
+                color = palate[UnityEngine.Random.Range(0, palate.Count)];
+            } while (used.Contains(color));
+            used.Add(color);
+
+            color_and_inc.Add(new Tuple<Color, float>(color, baseIncrement));
+        }
+
+
+
         AllGameObjects.Clear();
-        sizeMultiplier = rand.Next(1, 8);
+        sizeMultiplier = rand.Next(4, 8);
 
         if (sizeMultiplier != 1) {
             height = 9;
