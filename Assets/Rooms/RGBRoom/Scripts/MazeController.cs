@@ -34,8 +34,8 @@ public class MazeController : MonoBehaviour {
     [Range(1 / 64.0f, 1f)]
     public float grassIncrement = 1 / 4.0f;
 
-
-    private int maxTime = 30;
+    [Range(1, 20)]
+    public int maxTime = 15;
     public float timeSinceReset;
 
     [SerializeField] List<GameObject> AllGameObjects;
@@ -56,6 +56,8 @@ public class MazeController : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
+        //Colors that would pause eachother
+        //((1)red, (3)cyan), ((0)blue, (2)green)
         beats = new List<Tuple<int, int>> {
             new Tuple<int, int>(0, 1), // Water, Lava, Grass
             new Tuple<int, int>(1, 2), // 0      1      2
@@ -67,7 +69,7 @@ public class MazeController : MonoBehaviour {
             new Tuple<Color, float>(Color.blue, waterIncrement),
             new Tuple<Color, float>(Color.red, lavaIncrement),
             new Tuple<Color, float>(Color.green, grassIncrement),
-            new Tuple<Color, float>(Color.magenta, grassIncrement)
+            new Tuple<Color, float>(Color.cyan, grassIncrement)
         };
 
 
@@ -265,26 +267,31 @@ public class MazeController : MonoBehaviour {
         int surrounded = 0;
         foreach (DestAndPos p in spots) {
             Cell neighborCell = cells[(int)p.dest.x, (int)p.dest.z];
-            if (neighborCell.Block1 == null) {
+
+            if (neighborCell.Block1 == null) { //1. empty
                 AddBlockToCell(currCell.Block1, p);
                 surrounded++;
             }
-            else if (neighborCell.Block1.ID == currCell.Block1.ID) { //if its me
+            else if (neighborCell.Block1.ID == currCell.Block1.ID) { //2. Its me
                 surrounded++;
             }
-            else if (neighborCell.Block1.ID == -1) { // Dirt or Path
+            else if (neighborCell.Block1.ID == -1) { // 3. its wall
                 surrounded++;
             }
-            else if (Beats(currCell.Block1.ID, neighborCell.Block1.ID)) { // if i can break
+            else if (Beats(currCell.Block1.ID, neighborCell.Block1.ID)) { //5. if i can break (We already know block 2 is null)
                 AddBlockToCell(currCell.Block1, p);
                 neighborCell.SwapBlocksAndVars();
                 surrounded++;
             }
             //if it beats me but not full
-            else if (Beats(neighborCell.Block1.ID, currCell.Block1.ID) && neighborCell.Block2 == null && neighborCell.Block1.sizePercent < 1f) {
-                AddBlockToCell(currCell.Block1, p);
-                surrounded++;
-            }
+            else if (neighborCell.Block2 == null && Beats(neighborCell.Block1.ID, currCell.Block1.ID)) { //4. Block that beats me
+                if (neighborCell.Block1.sizePercent < 1f) { //4.5 block that beats me that is not full
+                    AddBlockToCell(currCell.Block1, p);
+                }
+                else {//Block that beast me that is full
+                    neighborCell.isActive = true;
+                }
+            } //6. Block I don't know (Do nothing)
         }
         return (surrounded == spots.Count);
     }
