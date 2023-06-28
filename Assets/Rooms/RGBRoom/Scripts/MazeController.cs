@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MazeController : MonoBehaviour {
 
-    
+
     public GameObject Dirt, PathDirt, Lava, Water, Grass;
 
     public GameObject FlowBlock;
@@ -66,16 +66,16 @@ public class MazeController : MonoBehaviour {
             new Tuple<int, int>(2, 0)
         };
 
-        Debug.Log(beats.Contains(new Tuple<int, int>(0, 1)));
-        Debug.Log(beats.Contains(new Tuple<int, int>(1, 2)));
-        Debug.Log(beats.Contains(new Tuple<int, int>(2, 0)));
-        //false
-        Debug.Log(beats.Contains(new Tuple<int, int>(0, 0)));
-        Debug.Log(beats.Contains(new Tuple<int, int>(1, 0)));
-
+        /* Debug.Log(beats.Contains(new Tuple<int, int>(0, 1)));
+         Debug.Log(beats.Contains(new Tuple<int, int>(1, 2)));
+         Debug.Log(beats.Contains(new Tuple<int, int>(2, 0)));
+         //false
+         Debug.Log(beats.Contains(new Tuple<int, int>(0, 0)));
+         Debug.Log(beats.Contains(new Tuple<int, int>(1, 0)));
+ */
 
         colors = new List<Color> { //Colors in same order as tuples
-            Color.blue, Color.green, Color.red
+            Color.blue, Color.red, Color.green 
         };
 
         rand = new System.Random();
@@ -95,7 +95,7 @@ public class MazeController : MonoBehaviour {
             width = 16;
         }
 
-        if(sizeMultiplier>2) {
+        if (sizeMultiplier > 2) {
             waterIncrement = 1;
             lavaIncrement = 1;
             grassIncrement = 1;
@@ -129,21 +129,7 @@ public class MazeController : MonoBehaviour {
         board = new int[height, width];
         board = prims.maze;
 
-        int removals = (int)(width * height * .05);
-        while (removals > 0) {
-            int x = UnityEngine.Random.Range(0, height);
-            int z = UnityEngine.Random.Range(0, width);
-            if (board[x, z] == WALL) {
-                List<DestAndPos> spots = GetValidNeighbors(x, z);
-                foreach (DestAndPos dAndp in spots) {
-                    if (board[(int)dAndp.dest.x, (int)dAndp.dest.z] != WALL) {
-                        board[x, z] = PATH;
-                        removals--;
-                        break;
-                    }
-                }
-            }
-        }
+        RemovePercentWalls(.05f);
         //System.Numerics.Vector2 end = bfs.ComputeAndGetEnd(start, board);
         ////////////PRIMS MAZE//////////////////    
 
@@ -165,8 +151,31 @@ public class MazeController : MonoBehaviour {
                     AllGameObjects.Add(block.gameObject);
             }
         }
+        PlaceStartBlocks();
+        timeSinceReset = -1;
+    }
+
+    private void RemovePercentWalls(float remove) {
+        int removals = (int)(width * height * remove);
+        while (removals > 0) {
+            int x = UnityEngine.Random.Range(0, height);
+            int z = UnityEngine.Random.Range(0, width);
+            if (board[x, z] == WALL) {
+                List<DestAndPos> spots = GetValidNeighbors(x, z);
+                foreach (DestAndPos dAndp in spots) {
+                    if (board[(int)dAndp.dest.x, (int)dAndp.dest.z] != WALL) {
+                        board[x, z] = PATH;
+                        removals--;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void PlaceStartBlocks() {
         GameObject[] starts = { Water, Lava, Grass };
-        for(int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             bool placed = false;
             do {
                 int x = UnityEngine.Random.Range(0, height);
@@ -174,23 +183,23 @@ public class MazeController : MonoBehaviour {
                 if (board[x, z] == PATH) {
                     GameObject startObj = Instantiate(FlowBlock, new Vector3(x, 0, z), Quaternion.identity);
                     startObj.GetComponent<Renderer>().material.color = colors[i];
-                    
+
                     AllGameObjects.Add(startObj);
                     FlowBlock.tag = starts[i].tag; //Set tag to water lava or grass
 
+                    Debug.Log(startObj.name + " " + startObj.tag);
 
                     startObj.name = FlowBlock.tag + " " + x + "," + z;
                     startObj.transform.parent = GameObject.FindGameObjectWithTag(FlowBlock.tag).transform;
                     if (cells[x, z].Block1 != null && cells[x, z].Block1.gameObject != null) {
                         Destroy(cells[x, z].Block1.gameObject);
                     }
-                    cells[x, z].Block1 = new Block(startObj, i); //Add ID to block
+                    cells[x, z].Block1 = new Block(startObj, i, Vector3.zero, startObj.transform.position, increment: waterIncrement); //Add ID to block
                     cells[x, z].isActive = true;
                     placed = true;
                 }
             } while (!placed);
         }
-        timeSinceReset = -1;
     }
 
     private Block PlaceNewBlock(int x, int z) {
@@ -257,18 +266,41 @@ public class MazeController : MonoBehaviour {
         return spots;
     }
 
-    /// <summary>
-    /// Helper function to determine if something is within the bounds of the array.
-    /// It checks if val is < bound and if val >= 0 and returns true or false accordingly.
-    /// </summary>
-    /// <param name="val">position to test </param>
-    /// <param name="bound"></param>
-    /// <returns></returns>
     public bool IsInRange(int val, int bound) {
         return (val < bound && val >= 0);
     }
 
+    private bool Propigate(List<DestAndPos> spots, int x, int z) {
+        Cell currCell = cells[x, z];
+        int surrounded = 0;
+        foreach (DestAndPos p in spots) {
+            Cell neighborCell = cells[(int)p.dest.x, (int)p.dest.z];
+            if (neighborCell.Block1 == null) {
+                AddBlockToCell(currCell.Block1, p);
+                surrounded++;
+            }
+            else if (neighborCell.Block1.ID == currCell.Block1.ID) { //if its me
+                surrounded++;
+            }
+            else if (neighborCell.Block1.ID == -1) { // Dirt or Path
+                surrounded++;
+            }
+            else if (Beats(currCell.Block1.ID, neighborCell.Block1.ID)) { // if i can break
+                AddBlockToCell(currCell.Block1, p);
+                neighborCell.SwapBlocksAndVars();
+                surrounded++;
+            }
+            //if it beats me but not full
+            else if (Beats(neighborCell.Block1.ID, currCell.Block1.ID) && neighborCell.Block2 == null && neighborCell.Block1.sizePercent < 1f) {
+                AddBlockToCell(currCell.Block1, p);
+                surrounded++;
+            }
+        }
+        return (surrounded == spots.Count);
+    }
+
     private void Update() {
+        
         if (Input.GetKeyDown(KeyCode.Escape)) {
             Application.Quit();
 
@@ -284,7 +316,8 @@ public class MazeController : MonoBehaviour {
             if (l == 0 || g == 0) {
                 StartCoroutine(RequestReset(waitTime));
             }
-        } else {
+        }
+        else {
             if (l == 0 && g == 0) {
                 StartCoroutine(RequestReset(waitTime));
             }
@@ -307,14 +340,17 @@ public class MazeController : MonoBehaviour {
                             if (Propigate(GetValidNeighbors(x, z), x, z) == true) {
                                 cell.isActive = false;
                             }
-                        } else { //One block not full
+                        }
+                        else { //One block not full
                             Grow(cell);
                         }
-                    } else {
+                    }
+                    else {
                         //sb.Append(x + "," + z + " " + cell);
                         filled = false;
                     }
-                } else {
+                }
+                else {
                     if (cell.Block1 != null) {
                         ShrinkAndGrowBlock(cell);
                     }
@@ -326,7 +362,8 @@ public class MazeController : MonoBehaviour {
             if (timeSinceReset < 0) {
                 timeSinceReset = Time.time;
             }
-        } else {
+        }
+        else {
             //Debug.Log(sb);
         }
     }
@@ -375,7 +412,8 @@ public class MazeController : MonoBehaviour {
         if (cell.Block1.sizePercent + cell.Block2.sizePercent >= 1f) {
             GrowBlock(cell.Block1);
             ShrinkSecondBlock(cell);
-        } else {
+        }
+        else {
             GrowBlock(cell.Block1);
             GrowBlock(cell.Block2);
 
@@ -384,166 +422,26 @@ public class MazeController : MonoBehaviour {
             }
         }
     }
-    private bool Propigate(List<DestAndPos> spots, int x, int z) {
-        Cell currCell = cells[x,z];
-        int surrounded = 0;
-        foreach (DestAndPos p in spots) {
-            Cell neighborCell = cells[(int)p.dest.x, (int)p.dest.z];
-            if (neighborCell.Block1 == null) {
-                AddBlockToCell(Lava, typeof(Block), currCell.Block1.increment, currCell.Block1.gameObject.tag, p);
-                surrounded++;
-            }
-            else if (neighborCell.Block1.ID == currCell.Block1.ID) { //if its me
-                surrounded++;
-            }
-            else if (neighborCell.Block1.ID == -1) { // Dirt or Path
-                surrounded++;
-            }
-            else if (Beats(currCell.Block1.ID, neighborCell.Block1.ID)) { // if i can break
-                AddBlockToCell(currCell.Block1, typeof(Block), currCell.)
-                neighborCell.SwapBlocksAndVars();
-                surrounded++;
-            }
-            else if (neighborCell.Block1.gameObject.CompareTag("Lava") && neighborCell.Block2 == null && neighborCell.Block1.sizePercent < 1f) {
-                addGrass(p);
-                surrounded++;
-            }
-        }
-        return (surrounded == spots.Count);
-    }
-    /*private bool Propigate(Block block, int x, int z) {
-        if (block.gameObject.CompareTag("Dirt") || block.gameObject.CompareTag("Path")) {
-            return false;
-        }
-        List<DestAndPos> spots = GetValidNeighbors(x, z);
-        if (block.gameObject.CompareTag("Water")) {
-            return PropigateWater(spots);
-        } else if (block.gameObject.CompareTag("Lava")) {
-            return PropigateLava(spots);
-        } else if (block.gameObject.CompareTag("Grass")) {
-            return PropigateGrass(spots);
-        }
-        return false;
-    }*/
 
-    //Return true iff surrounded
-    private bool PropigateGrass(List<DestAndPos> spots) {
-        int surrounded = 0;
-        foreach (DestAndPos p in spots) {
-            Cell cell = cells[(int)p.dest.x, (int)p.dest.z];
-            if (cell.Block1 == null) {
-                addGrass(p);
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Grass")) {
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Dirt")) {
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Path")) {
-                if (rand.Next(5) == 1) {
-                    addGrass(p);
-                    cell.SwapBlocksAndVars();
-                    ShrinkSecondBlock(cell);
-                    surrounded++;
-                }
-            } else if (cell.Block1.gameObject.CompareTag("Water")) {
-                addGrass(p);
-                cell.SwapBlocksAndVars();
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Lava") && cell.Block2 == null && cell.Block1.sizePercent < 1f) {
-                addGrass(p);
-                surrounded++;
-            }
-        }
-        return (surrounded == spots.Count);
-    }
-
-    //Return true iff surrounded
-    private bool PropigateLava(List<DestAndPos> spots) {
-        int surrounded = 0;
-        foreach (DestAndPos p in spots) {
-            Cell cell = cells[(int)p.dest.x, (int)p.dest.z];
-            if (cell.Block1 == null) {
-                addLava(p);
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Lava")) {
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Dirt")) {
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Path")) {
-                if (rand.Next(5) == 1) {
-                    addLava(p);
-                    cell.SwapBlocksAndVars();
-                    ShrinkSecondBlock(cell);
-                    surrounded++;
-                }
-            } else if (cell.Block1.gameObject.CompareTag("Grass")) {
-                addLava(p);
-                cell.SwapBlocksAndVars();
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Water") && cell.Block2 == null && cell.Block1.sizePercent < 1f) {
-                addLava(p);
-                surrounded++;
-            }
-        }
-        return (surrounded == spots.Count);
-    }
-
-    //Return true iff surrounded
-    private bool PropigateWater(List<DestAndPos> spots) {
-        int surrounded = 0;
-        foreach (DestAndPos p in spots) {
-            Cell cell = cells[(int)p.dest.x, (int)p.dest.z];
-            if (cell.Block1 == null) {
-                addWater(p);
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Water")) {
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Dirt")) {
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Path")) {
-                if (rand.Next(5) == 1) {
-                    addWater(p);
-                    cell.SwapBlocksAndVars();
-                    ShrinkSecondBlock(cell);
-                    surrounded++;
-                }
-            } else if (cell.Block1.gameObject.CompareTag("Lava")) {
-                addWater(p);
-                cell.SwapBlocksAndVars();
-                surrounded++;
-            } else if (cell.Block1.gameObject.CompareTag("Grass") && cell.Block2 == null && cell.Block1.sizePercent < 1f) {
-                addWater(p);
-                surrounded++;
-            }
-        }
-        return (surrounded == spots.Count);
-    }
-
-    private void addLava(DestAndPos p) {
-        AddBlockToCell(Lava, typeof(LavaBlock), lavaIncrement, "Lava", p);
-    }
-    private void addWater(DestAndPos p) {
-        AddBlockToCell(Water, typeof(WaterBlock), waterIncrement, "Water", p);
-    }
-    private void addGrass(DestAndPos p) {
-        AddBlockToCell(Grass, typeof(GrassBlock), grassIncrement, "Grass", p);
-    }
-
-    private void AddBlockToCell(int ID, DestAndPos p) {
+    private void AddBlockToCell(Block currBlock, DestAndPos p) {
         //Make sure at least one cell is empty before we place a new block inside
         if (cells[(int)p.dest.x, (int)p.dest.z].Block1 != null && cells[(int)p.dest.x, (int)p.dest.z].Block2 != null) {
             // Wait until whatever is happening in this cell to finish.
             return;
         }
-        GameObject newObject = Instantiate(gameObject, Vector3.one, Quaternion.identity);
-        object[] paramList = { newObject, inc, p.dir, p.dest };
-        Block b = (Block)Activator.CreateInstance(block, paramList);
+        GameObject newObject = Instantiate(FlowBlock, Vector3.one, Quaternion.identity);
+        newObject.GetComponent<Renderer>().material.color = colors[currBlock.ID];
+        Block newBlock = new Block(newObject, currBlock.ID, p.dir, p.dest, increment: currBlock.increment, sizePercent: currBlock.increment);
 
-
+        string name;
+        if (currBlock.ID == 0) name = "Water";
+        else if (currBlock.ID == 1) name = "Lava";
+        else name = "Grass";
         //Make new obj
-        newObject.transform.position = p.dest + p.dir * (b.increment / 2 - 0.5f);
-        newObject.transform.localScale = Vector3.one - (1 - b.increment) * VecAbs(p.dir);
-        newObject.name = name + " " + p.dest.x + "," + p.dest.z;
+        newObject.transform.position = p.dest + p.dir * (newBlock.increment / 2 - 0.5f);
+        newObject.transform.localScale = Vector3.one - (1 - newBlock.increment) * VecAbs(p.dir);
+  
+        newObject.name = currBlock.ID + " " + p.dest.x + "," + p.dest.z;
         newObject.transform.parent = GameObject.FindGameObjectWithTag(name).transform;
 
 
@@ -552,39 +450,9 @@ public class MazeController : MonoBehaviour {
 
         //Check which block is empty
         if (cells[(int)p.dest.x, (int)p.dest.z].Block1 == null)
-            cells[(int)p.dest.x, (int)p.dest.z].Block1 = b;
+            cells[(int)p.dest.x, (int)p.dest.z].Block1 = newBlock;
         else
-            cells[(int)p.dest.x, (int)p.dest.z].Block2 = b;
-
-        //Add to array for reset
-        AllGameObjects.Add(newObject);
-    }
-    private void AddBlockToCell(GameObject gameObject, Type block, float inc, string name, DestAndPos p) {
-        //Make sure at least one cell is empty before we place a new block inside
-        if (cells[(int)p.dest.x, (int)p.dest.z].Block1 != null && cells[(int)p.dest.x, (int)p.dest.z].Block2 != null) {
-            // Wait until whatever is happening in this cell to finish.
-            return;
-        }
-        GameObject newObject = Instantiate(gameObject, Vector3.one, Quaternion.identity);
-        object[] paramList = { newObject, inc, p.dir, p.dest };
-        Block b = (Block)Activator.CreateInstance(block, paramList);
-
-
-        //Make new obj
-        newObject.transform.position = p.dest + p.dir * (b.increment / 2 - 0.5f);
-        newObject.transform.localScale = Vector3.one - (1 - b.increment) * VecAbs(p.dir);
-        newObject.name = name + " " + p.dest.x + "," + p.dest.z;
-        newObject.transform.parent = GameObject.FindGameObjectWithTag(name).transform;
-
-
-        //If cell is not active set it to active
-        cells[(int)p.dest.x, (int)p.dest.z].isActive = true;
-
-        //Check which block is empty
-        if (cells[(int)p.dest.x, (int)p.dest.z].Block1 == null)
-            cells[(int)p.dest.x, (int)p.dest.z].Block1 = b;
-        else
-            cells[(int)p.dest.x, (int)p.dest.z].Block2 = b;
+            cells[(int)p.dest.x, (int)p.dest.z].Block2 = newBlock;
 
         //Add to array for reset
         AllGameObjects.Add(newObject);

@@ -3,7 +3,7 @@ using System.Text;
 using UnityEngine;
 
 public class Block
-{ 
+{
     public GameObject gameObject;
     public float sizePercent;
     public float increment;
@@ -11,18 +11,55 @@ public class Block
     public Vector3 Orientation;
     public int ID;
 
-    public Block() {
+    /*public Block() {
         SetVals(null, 1f, 0f, Vector3.zero, Vector3.zero);
     }
     public Block(GameObject gameObject) {
         SetVals(gameObject, 1f, 0f, Vector3.zero, gameObject.transform.position);
     }
-
+*/
+    /// <summary>
+    /// Default constructor
+    /// </summary>
+    /// <param name="gameObject"></param>
+    /// <param name="ID"></param>
     public Block(GameObject gameObject, int ID) {
-        SetVals(gameObject, 1f, ID, 0f,Vector3.zero, gameObject.transform.position);
+        SetVals(gameObject, ID, Vector3.zero, gameObject.transform.position);
     }
 
-    public Block(GameObject gameObject, float sizePercent, float increment, Vector3 Orientation, Vector3 finalPos) {
+    /// <summary>
+    /// Full constructor
+    /// </summary>
+    /// <param name="gameObject"></param>
+    /// <param name="ID"></param>
+    /// <param name="Orientation"></param>
+    /// <param name="finalPos"></param>
+    /// <param name="sizePercent"></param>
+    /// <param name="increment"></param>
+    public Block(GameObject gameObject, int ID, Vector3 Orientation, Vector3 finalPos, float sizePercent = 1f, float increment = 0f) {
+        SetVals(gameObject, ID, Orientation, finalPos, sizePercent, increment);
+    }
+
+    /// <summary>
+    /// Full set vals with optional parameters in size and increment with defaults 1 and 0 respectivley
+    /// </summary>
+    /// <param name="gameObject"></param>
+    /// <param name="ID"></param>
+    /// <param name="Orientation"></param>
+    /// <param name="finalPos"></param>
+    /// <param name="sizePercent"></param>
+    /// <param name="increment"></param>
+    public void SetVals(GameObject gameObject, int ID, Vector3 Orientation, Vector3 finalPos, float sizePercent = 1f, float increment = 0f) {
+        this.gameObject = gameObject;
+        this.ID = ID;
+        
+        this.sizePercent = sizePercent;
+        this.increment = increment;
+        this.Orientation = Orientation;
+        this.finalPos = finalPos;
+    }
+
+   /* public Block(GameObject gameObject, float sizePercent, float increment, Vector3 Orientation, Vector3 finalPos) {
         Contract.Requires(sizePercent >= 0.0f && sizePercent <= 1.0f);
 
         SetVals(gameObject, sizePercent, increment, Orientation, finalPos);
@@ -52,7 +89,7 @@ public class Block
 
         this.Orientation = Orientation;
         this.finalPos = finalPos;
-    }
+    }*/
 
     public override string ToString() {
         StringBuilder sb = new();

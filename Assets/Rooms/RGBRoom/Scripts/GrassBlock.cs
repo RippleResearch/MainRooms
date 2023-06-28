@@ -4,7 +4,9 @@ public class GrassBlock : Block
 {
     public const float grassInc = 1.0f / 4.0f;
 
-    public GrassBlock() {
+    public GrassBlock(GameObject gameObject, int ID) : base(gameObject, ID) {
+    }
+    /*public GrassBlock() {
         SetVals(null, 1f, grassInc, Vector3.zero, Vector3.zero);
     }
     public GrassBlock(GameObject gameObject) {
@@ -21,6 +23,6 @@ public class GrassBlock : Block
 
     public override string ToString() {
         return "G " + base.ToString(); 
-    }
+    }*/
 }
 

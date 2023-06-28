@@ -4,7 +4,10 @@ public class WaterBlock : Block
 {
     public const float waterInc = 1.0f / 4.0f;
 
-    public WaterBlock() {
+    public WaterBlock(GameObject gameObject, int ID) : base(gameObject, ID) {
+    }
+
+    /*public WaterBlock() {
         SetVals(null, 1f, waterInc, Vector3.zero, Vector3.zero);
     }
     public WaterBlock(GameObject gameObject) {
@@ -21,6 +24,6 @@ public class WaterBlock : Block
 
     public override string ToString() {
         return "W " + base.ToString(); 
-    }
+    }*/
 }
 
