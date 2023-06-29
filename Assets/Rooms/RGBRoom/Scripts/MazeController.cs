@@ -2,8 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using Color = UnityEngine.Color;
+using Random = UnityEngine.Random;
 
 public class MazeController : MonoBehaviour {
 
@@ -14,15 +17,10 @@ public class MazeController : MonoBehaviour {
     public int height, width;
     [Range(0f, 4f)]
     public float waitTime = .5f;
-
-    [Range(1 / 64.0f, 1f)]
-    public float waterIncrement = 1 / 4.0f;
-    [Range(1 / 64.0f, 1f)]
-    public float lavaIncrement = 1 / 4.0f;
-    [Range(1 / 64.0f, 1f)]
-    public float grassIncrement = 1 / 4.0f;
     [Range(1 / 64.0f, 1f)]
     public float baseIncrement = 1 / 4.0f;
+    [Range(0f, 1f)]
+    public float wallsRemoved;
     [Range(1, 20)]
     public int maxTime = 15;
     public float timeSinceReset;
@@ -88,7 +86,7 @@ public class MazeController : MonoBehaviour {
         board = new int[height, width];
         board = prims.maze;
 
-        RemovePercentWalls(.05f);
+        RemovePercentWalls(wallsRemoved);
         ////////////PRIMS MAZE//////////////////    
 
         //Array of Cells
@@ -102,13 +100,16 @@ public class MazeController : MonoBehaviour {
                 if (x >= 0 && z >= 0 && z < width && x < height) {
                     cells[x, z] = new Cell(block);
                     if (block != null)
-                        if (block.gameObject.CompareTag("Dirt") || block.gameObject.CompareTag("Path"))
+                        if (block.gameObject.CompareTag("Dirt") || block.gameObject.CompareTag("Path")) {
                             cells[x, z].isActive = false;
+                        }
+
                 }
                 if (block != null)
                     AllGameObjects.Add(block.gameObject);
             }
         }
+
         PlaceStartBlocks();
         timeSinceReset = -1;
     }
@@ -127,7 +128,6 @@ public class MazeController : MonoBehaviour {
                 go = Instantiate(Dirt, new Vector3(x, 0, z), Quaternion.identity);
                 go.name = "Dirt " + x + "," + z;
                 go.transform.parent = GameObject.FindGameObjectWithTag("Dirt").transform;
-
                 return new Block(go, -1);
             }
             else {
@@ -185,10 +185,10 @@ public class MazeController : MonoBehaviour {
                 //If one full block
                 Cell cell = cells[x, z];
                 if (!cell.isActive)
-                    continue; 
+                    continue;
 
                 if (cell.Block2 == null) {
-                    if (cell.Block1 != null) { 
+                    if (cell.Block1 != null) {
                         if (Mathf.Abs(cell.Block1.sizePercent - 1f) < .001f) {
                             if (cell.Block1.ID != -1) { // Not Dirt
                                 cell.isActive = Propigate(GetValidNeighbors(x, z), x, z);
@@ -427,17 +427,17 @@ public class MazeController : MonoBehaviour {
     }
 
     private void RemovePercentWalls(float remove) {
-        int removals = (int)(width * height * remove);
-        while (removals > 0) {
-            int x = UnityEngine.Random.Range(0, height);
-            int z = UnityEngine.Random.Range(0, width);
-            if (board[x, z] == WALL) {
-                List<DestAndPos> spots = GetValidNeighbors(x, z);
-                foreach (DestAndPos dAndp in spots) {
-                    if (board[(int)dAndp.dest.x, (int)dAndp.dest.z] != WALL) {
-                        board[x, z] = PATH;
-                        removals--;
-                        break;
+        for(int x = 0; x < currentHeight; x++) {
+            for (int z = 0; z < currentWidth; z++) {
+                if (board[x, z] == WALL) {
+                    List<DestAndPos> spots = GetValidNeighbors(x, z);
+                    foreach (DestAndPos spot in spots) {
+                        if (board[(int)spot.dest.x, (int)spot.dest.z] != WALL) {
+                            if (UnityEngine.Random.Range(0, 1f) <= remove) {
+                                board[x, z] = PATH;
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -475,9 +475,7 @@ public class MazeController : MonoBehaviour {
         }
 
         if (sizeMultiplier > 2) {
-            waterIncrement = 1;
-            lavaIncrement = 1;
-            grassIncrement = 1;
+            baseIncrement = 1;
         }
 
         height *= sizeMultiplier;

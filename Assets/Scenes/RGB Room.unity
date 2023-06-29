@@ -169,20 +169,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Dirt: {fileID: 2529648898970941967, guid: ae3dadccf5f3fb34ab16509c3162aec6, type: 3}
-  PathDirt: {fileID: 2529648898970941967, guid: 2903ca37c218aeb41af8158febff3f5d, type: 3}
-  Lava: {fileID: 5806700233801451475, guid: ac022b34157333542961ae6e24d4ae2b, type: 3}
-  Water: {fileID: 5806700233801451475, guid: b11769e7524e3674391eb63fef98506c, type: 3}
-  Grass: {fileID: 5806700233801451475, guid: a7288c61857c41b4c88080bd6002e5c6, type: 3}
   FlowBlock: {fileID: 5806700233801451475, guid: cb6f740d4cc77d641b84ce61ba3344a2, type: 3}
+  sizeMultiplier: 1
   height: 70
   width: 16
-  sizeMultiplier: 1
   waitTime: 1
-  waterIncrement: 0.25
-  lavaIncrement: 0.25
-  grassIncrement: 0.25
+  baseIncrement: 0.25
+  wallsRemoved: 0.1
+  maxTime: 15
   timeSinceReset: 0
-  AllGameObjects: []
+  usedColors: []
 --- !u!1001 &530872619
 PrefabInstance:
   m_ObjectHideFlags: 0
