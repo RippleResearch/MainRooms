@@ -1,9 +1,7 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Drawing;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
@@ -44,7 +42,7 @@ public class MazeController : MonoBehaviour {
     System.Random rand;
     int[,] board;
     Cell[,] cells;
-
+    bool moving = true;
     public class DestAndPos {
         public Vector3 dest;
         public Vector3 dir;
@@ -69,35 +67,13 @@ public class MazeController : MonoBehaviour {
     private void InitializeMaze() {
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
-        //(beats, color_and_inc) = CircleOrder(colorController.RandomNumberOfColors());
+        //(beats, color_and_inc) = CirclePairings(usedColors = colorController.RandomNumberOfColors());
         (beats, color_and_inc) = SpockPairings(usedColors = colorController.RandomOddNumberOfColors());
 
         AllGameObjects.Clear();
         sizeMultiplier = rand.Next(4, 8);
 
-        if (sizeMultiplier != 1) {
-            height = 9;
-            width = 16;
-        }
-
-        if (sizeMultiplier > 2) {
-            waterIncrement = 1;
-            lavaIncrement = 1;
-            grassIncrement = 1;
-        }
-
-        height *= sizeMultiplier;
-        width *= sizeMultiplier;
-        if (height % 2 == 0) {
-            height--;
-        }
-        if (width % 2 == 0) {
-            width--;
-        }
-
-        //Used so if height gets changed while running it wont break
-        currentHeight = height;
-        currentWidth = width;
+        (currentHeight, currentWidth) = SetSizes();
 
         Vector3 center = new Vector3(height / 2, height, width / 2);
         Camera.main.transform.position = center;
@@ -109,13 +85,10 @@ public class MazeController : MonoBehaviour {
         System.Numerics.Vector2 start = new System.Numerics.Vector2(0, spot);
         ////////////PRIMS MAZE//////////////////
         PrimsMaze prims = new PrimsMaze(width, height, start, false);
-
-        //bfs = new BFS();
         board = new int[height, width];
         board = prims.maze;
 
         RemovePercentWalls(.05f);
-        //System.Numerics.Vector2 end = bfs.ComputeAndGetEnd(start, board);
         ////////////PRIMS MAZE//////////////////    
 
         //Array of Cells
@@ -198,56 +171,51 @@ public class MazeController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
             Application.Quit();
-
         }
+
+
         float diff = Time.time - timeSinceReset;
-        if (timeSinceReset > 0 && diff > maxTime) {
+        if (!moving || (timeSinceReset > 0 && diff > maxTime)) {
             StartCoroutine(RequestReset(waitTime));
         }
         CheckForWinners();
-        //ProcessHit();
         bool filled = true;
-        //StringBuilder sb = new StringBuilder();
         for (int x = 0; x < currentHeight; x++) {
             for (int z = 0; z < currentWidth; z++) {
                 //If one full block
                 Cell cell = cells[x, z];
                 if (!cell.isActive)
-                    continue;
+                    continue; 
 
-                //Debug.log(cell);
                 if (cell.Block2 == null) {
-                    //For now
-                    if (cell.Block1 != null) {
+                    if (cell.Block1 != null) { 
                         if (Mathf.Abs(cell.Block1.sizePercent - 1f) < .001f) {
-                            if (cell.Block1.ID != -1) {
+                            if (cell.Block1.ID != -1) { // Not Dirt
                                 cell.isActive = Propigate(GetValidNeighbors(x, z), x, z);
+                                //moving = true;
                             }
                         }
                         else { //One block not full
                             Grow(cell);
+                            moving = true;
                         }
                     }
                     else {
-                        //sb.Append(x + "," + z + " " + cell);
                         filled = false;
                     }
                 }
                 else {
                     if (cell.Block1 != null) {
                         ShrinkAndGrowBlock(cell);
+                        moving = true;
                     }
                 }
             }
         }
         if (filled) {
-            //Debug.Log("Filled!");
             if (timeSinceReset < 0) {
                 timeSinceReset = Time.time;
             }
-        }
-        else {
-            //Debug.Log(sb);
         }
     }
 
@@ -412,6 +380,18 @@ public class MazeController : MonoBehaviour {
             block.gameObject.transform.localScale = Vector3.one;
         }
     }
+    /// <summary>
+    /// Grow every block in a given cell
+    /// </summary>
+    /// <param name="cell"></param>
+    public void Grow(Cell cell) {
+        if (cell.Block1 != null) {
+            GrowBlock(cell.Block1);
+        }
+        if (cell.Block2 != null) {
+            GrowBlock(cell.Block2);
+        }
+    }
 
     /// <summary>
     /// Gets passed a set of cordinates corresponding to a cell
@@ -488,13 +468,27 @@ public class MazeController : MonoBehaviour {
         StopAllCoroutines();
     }
 
-    public void Grow(Cell cell) {
-        if (cell.Block1 != null) {
-            GrowBlock(cell.Block1);
+    private (int height, int width) SetSizes() {
+        if (sizeMultiplier != 1) {
+            height = 9;
+            width = 16;
         }
-        if (cell.Block2 != null) {
-            GrowBlock(cell.Block2);
+
+        if (sizeMultiplier > 2) {
+            waterIncrement = 1;
+            lavaIncrement = 1;
+            grassIncrement = 1;
         }
+
+        height *= sizeMultiplier;
+        width *= sizeMultiplier;
+        if (height % 2 == 0) {
+            height--;
+        }
+        if (width % 2 == 0) {
+            width--;
+        }
+        return (height, width);
     }
     private Vector3 VecAbs(Vector3 v) {
         return new Vector3(Math.Abs(v.x), Math.Abs(v.y), Math.Abs(v.z));
