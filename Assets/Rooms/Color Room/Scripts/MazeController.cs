@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
@@ -31,6 +32,8 @@ public class MazeController : MonoBehaviour {
     List<GameObject> AllGameObjects;
     List<Tuple<int, int>> beats;
     List<Tuple<Color, float>> color_and_inc;
+    List<int> rows;
+    List<int> cols;
     ColorController colorController;
     private int currentHeight, currentWidth;
 
@@ -66,7 +69,7 @@ public class MazeController : MonoBehaviour {
         color_and_inc = new List<Tuple<Color, float>>();
         //(beats, color_and_inc) = CirclePairings(usedColors = colorController.RandomNumberOfColors());
         //(beats, color_and_inc) = SpockPairings(usedColors = colorController.RandomOddNumberOfColors());
-        usedColors = colorController.HexListToColor(ColorPalettes.RandomOddPalette(colorBlind: true).Value);
+        usedColors = colorController.HexListToColor(ColorPalettes.RandomOddPalette().Value);
         (beats, color_and_inc) = SpockPairings(usedColors);
 
         AllGameObjects.Clear();
@@ -97,31 +100,33 @@ public class MazeController : MonoBehaviour {
         for (int x = -1; x <= height; ++x) {
             for (int z = -1; z <= width; ++z) {
                 //Place Block
-                Block block = PlaceWallBlock(x, z);
+                Cell cell = PlaceBlock(x, z);
                 if (x >= 0 && z >= 0 && z < width && x < height) {
-                    cells[x, z] = new Cell(block);
-                    if (block != null)
-                        if (block.gameObject.CompareTag("Dirt") || block.gameObject.CompareTag("Path")) {
+                    cells[x, z] = cell;
+                    if (cell.Block1 != null)
+                        if (cell.Block1.gameObject.CompareTag("Dirt")) {
                             cells[x, z].isActive = false;
                         }
 
                 }
-                if (block != null)
-                    AllGameObjects.Add(block.gameObject);
+                if (cell.Block1 != null)
+                    AllGameObjects.Add(cell.Block1.gameObject);
             }
         }
 
         PlaceStartBlocks();
         timeSinceReset = -1;
+        rows = Enumerable.Range(0, height).ToList();
+        cols = Enumerable.Range(0, width).ToList();
     }
 
-    private Block PlaceWallBlock(int x, int z) {
+    private Cell PlaceBlock(int x, int z) {
         GameObject go;
         if (x < 0 || z < 0 || z >= width || x >= height) {
             go = Instantiate(Dirt, new Vector3(x, 0, z), Quaternion.identity);
             go.name = "Dirt " + x + "," + z;
             go.transform.parent = GameObject.FindGameObjectWithTag("Dirt").transform;
-            return new Block(go, -1);
+            return new Cell(new Block(go, -1));
         }
         else {
             //0 = WALL, 1 = PATH, 2 = TRACED PATH FROM START TO END
@@ -129,10 +134,20 @@ public class MazeController : MonoBehaviour {
                 go = Instantiate(Dirt, new Vector3(x, 0, z), Quaternion.identity);
                 go.name = "Dirt " + x + "," + z;
                 go.transform.parent = GameObject.FindGameObjectWithTag("Dirt").transform;
-                return new Block(go, -1);
+                return new Cell(new Block(go, -1));
             }
             else {
-                return null;
+                GameObject ob1 = Instantiate(FlowBlock, new Vector3(x, 0, z), Quaternion.identity);
+                ob1.name = "empty " + x + "," + z;
+                ob1.transform.parent = GameObject.FindGameObjectWithTag("Maze").transform;
+                GameObject ob2 = Instantiate(FlowBlock, new Vector3(x, 0, z), Quaternion.identity);
+                ob2.name = "empty " + x + "," + z;
+                ob2.transform.parent = GameObject.FindGameObjectWithTag("Maze").transform;
+                // make blocks not shown.
+                Cell cell = new Cell(new Block(ob1,-1));
+                cell.Block2 = new Block(ob2, -1);
+                cell.Block1.sizePercent = 0;
+                return cell;
             }
         }
     }
@@ -149,7 +164,7 @@ public class MazeController : MonoBehaviour {
                 int x = UnityEngine.Random.Range(0, height);
                 int z = UnityEngine.Random.Range(0, width);
                 if (board[x, z] == PATH) {
-                    GameObject startObj = Instantiate(FlowBlock, new Vector3(x, 0, z), Quaternion.identity);
+                   //GameObject startObj = Instantiate(FlowBlock, new Vector3(x, 0, z), Quaternion.identity);
                     startObj.GetComponent<Renderer>().material.color = color_and_inc[i].Item1;
 
                     AllGameObjects.Add(startObj);
@@ -181,15 +196,19 @@ public class MazeController : MonoBehaviour {
         }
         CheckForWinners();
         bool filled = true;
-        for (int x = 0; x < currentHeight; x++) {
-            for (int z = 0; z < currentWidth; z++) {
+        rows = rows.OrderBy(_ => rand.Next()).ToList();
+        cols = cols.OrderBy(_ => rand.Next()).ToList();
+        foreach(int x in  rows) { 
+            foreach(int z in  cols) { 
+        //for (int x = 0; x < currentHeight; x++) {
+           // for (int z = 0; z < currentWidth; z++) {
                 //If one full block
                 Cell cell = cells[x, z];
                 if (!cell.isActive)
                     continue;
 
-                if (cell.Block2 == null) {
-                    if (cell.Block1 != null) {
+                if (cell.Block2.gameObject.name.StartsWith("empty")) {
+                    if (!cell.Block1.gameObject.name.StartsWith("empty")) {
                         if (Mathf.Abs(cell.Block1.sizePercent - 1f) < .001f) {
                             if (cell.Block1.ID != -1) { // Not Dirt
                                 cell.isActive = Propigate(GetValidNeighbors(x, z), x, z);
@@ -310,7 +329,7 @@ public class MazeController : MonoBehaviour {
             return;
         }
 
-        GameObject newObject = Instantiate(FlowBlock, Vector3.one, Quaternion.identity);
+        //GameObject newObject = Instantiate(FlowBlock, Vector3.one, Quaternion.identity);
         newObject.GetComponent<Renderer>().material.color = usedColors[currBlock.ID]; //so we can change color while runnning
         Block newBlock = new Block(newObject, currBlock.ID, p.dir, p.dest, increment: baseIncrement, sizePercent: currBlock.increment);
 
@@ -362,7 +381,7 @@ public class MazeController : MonoBehaviour {
 
         if (block.sizePercent < block.increment) {
             AllGameObjects.Remove(block.gameObject);
-            Destroy(block.gameObject);
+            Destroy(block.gameObject); change this
             //DestroyImmediate(block.gameObject,true);
             cell.Block2 = null;
         }

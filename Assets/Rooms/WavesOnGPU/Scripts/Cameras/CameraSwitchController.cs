@@ -65,7 +65,7 @@ public class CameraSwitchController : MonoBehaviour
                 touchZoom(curCam);
                 break;
             //Case 3 is in MainCameraScript for now
-            case 4:
+            case 3:
                 if (mainCam.enabled)
                     StartCoroutine(switchCamerasTouch("RearCamera"));
                 else if (rearCam.enabled)

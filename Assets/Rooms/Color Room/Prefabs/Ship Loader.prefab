@@ -374,15 +374,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2408956483179156790, guid: ae4941454bd6dd94ebdc2f9768cc0db9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.1
+      value: 0.075
       objectReference: {fileID: 0}
     - target: {fileID: 2408956483179156790, guid: ae4941454bd6dd94ebdc2f9768cc0db9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.1
+      value: 0.075
       objectReference: {fileID: 0}
     - target: {fileID: 2408956483179156790, guid: ae4941454bd6dd94ebdc2f9768cc0db9, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.1
+      value: 0.075
       objectReference: {fileID: 0}
     - target: {fileID: 2408956483179156790, guid: ae4941454bd6dd94ebdc2f9768cc0db9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -438,7 +438,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2408956483179156796, guid: ae4941454bd6dd94ebdc2f9768cc0db9, type: 3}
       propertyPath: m_Name
-      value: Ship
+      value: Ship Loader
       objectReference: {fileID: 0}
     - target: {fileID: 2408956483875585127, guid: ae4941454bd6dd94ebdc2f9768cc0db9, type: 3}
       propertyPath: m_Enabled

@@ -584,61 +584,34 @@ public class ColorPalettes {
         return p;
     }
 
-    public static KeyValuePair<string, List<string>> RandomPalette(int colors = 0, int minColors = 0, bool colorBlind = false) {
-        KeyValuePair<string, List<string>> palette = new KeyValuePair<string, List<string>>();
+    // Get a palette with colors colors. Use a color blind friendly palette if asked.
+    public static KeyValuePair<string, List<string>> RandomPalette(int colors = 0, bool colorBlind = false) {
         List<KeyValuePair<string, List<string>>> currColorsList;
-        if (colorBlind)
-            currColorsList = cbColorListAll;
-        else
-            currColorsList = colorListAll;
+        if (colorBlind) {
+            if (colors < MIN_COLORS || colors > MAX_COLORS) {
+                currColorsList = cbColorListAll;
+            } else {
 
-        do {
-            palette = currColorsList[random.Next(currColorsList.Count)];
-        } while (palette.Value.Count < MIN_COLORS || palette.Value.Count > MAX_COLORS);
+                currColorsList = cbColorList[colors - 3];
+            }
+        }  else {
+            if (colors < MIN_COLORS || colors > MAX_COLORS) {
+                currColorsList = colorListAll;
+            } else {
 
-        return palette;
+                currColorsList = colorList[colors - 3];
+            }
+        }
+        return currColorsList[random.Next(currColorsList.Count)];
     }
 
-    public static KeyValuePair<string, List<string>> RandomOddPalette(int colors = 0, int minColors = 0, bool colorBlind = false) {
-        KeyValuePair<string, List<string>> palette;
-        do {
-            palette = RandomPalette(colors, minColors, colorBlind);
+    public static KeyValuePair<string, List<string>> RandomOddPalette(bool colorBlind = false) {
+        int num = random.Next(MIN_COLORS, MAX_COLORS+1);
+        while(num%2==0) {
+            num = random.Next(MIN_COLORS, MAX_COLORS + 1);
         }
-        while (palette.Value.Count % 2 == 0);
-
-        return palette;
+        return RandomPalette(num,colorBlind);
     }
-    //Should be string list pair so we can have name when we get a random palette
-    /*public static KeyValuePair<string, List<string>> RandomPalette(int colors = 0, int minColors = 0, bool colorBlind = false) {
-        List<(string, List<string>)> palette;
-        if (minColors == 0) {
-            if (colorBlind) {
-                do {
-                    palette = cbColorListAll[random.Next(cbColorListAll.Count)];
-                } while (palette.Item2.Count < minColors);
-            }
-            else {
-                do {
-                    palette = colorListAll[random.Next(colorListAll.Count)];
-                } while (palette.Item2.Count < minColors);
-            }
-        }
-        else {
-            if (colorBlind) {
-                if (colors < MIN_COLORS || colors > MAX_COLORS)
-                    palette = cb_color_list_all[random.Next(cb_color_list_all.Count)];
-                else
-                    palette = cb_color_list[colors][random.Next(cb_color_list[colors].Count)];
-            }
-            else {
-                if (colors < MIN_COLORS || colors > MAX_COLORS)
-                    palette = colorListAll[random.Next(colorListAll.Count)];
-                else
-                    palette = color_list[colors][random.Next(color_list[colors].Count)];
-            }
-        }
-        return palette.Item2;
-    }*/
 
     public static List<string> GetPalette(string name) {
         return colorMapAll[name];
