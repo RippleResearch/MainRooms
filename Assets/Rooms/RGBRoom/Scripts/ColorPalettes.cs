@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using Unity;
 using UnityEngine;
 using Random = System.Random;
+using System.Drawing.Imaging;
 
 public class ColorPalettes {
     private static readonly Random random = new Random();
@@ -27,15 +28,10 @@ public class ColorPalettes {
     //-----------------------------------Correct ^^^
 
     static ColorPalettes() {
-        cbColorMap.Add(null);
-        cbColorMap.Add(null);
-        cbColorMap.Add(null);
-        Debug.Log(cbColorMap.Count);
-
         cbColorMap.Add(new Dictionary<string, List<string>> {
     {"Viridis (3)" , new List<string>{"fde725","21918c","440154"}}
     });
-        cbColorMap[4] = new Dictionary<string, List<string>> {
+        cbColorMap.Add(new Dictionary<string, List<string>> {
     // From https://davidmathlogic.com/colorblind/#%23D81B60-%231E88E5-%23FFC107-%23004D40
     {"Nichols (4)" , new List<string>{"d81b60","1e88e5","ffc107","004d40"}},
     // From https://waldyrious.net/viridis-palette-generator/
@@ -43,8 +39,8 @@ public class ColorPalettes {
     {"Inferno (4)", new List<string>{"fcffa4","ed6925","781c6d","000004"}},
     {"Magma (4)", new List<string>{"fcfdbf","f1605d","721f81","000004"}},
     {"Plasma (4)", new List<string>{"f0f921","ed7953","9c179e","0d0887"}}
-};
-        cbColorMap[5] = new Dictionary<string, List<string>> {
+});
+        cbColorMap.Add(new Dictionary<string, List<string>> {
     // From https://davidmathlogic.com/colorblind/#%23D81B60-%231E88E5-%23FFC107-%23004D40
     {"IBM (5)" , new List<string>{"648FFF","785EF0","DC267F","FE6100","FFB000"}},
     // From https://personal.sron.nl/~pault/#sec:qualitative
@@ -54,8 +50,8 @@ public class ColorPalettes {
     {"Inferno (5)", new List<string>{"fcffa4","f98e09","bc3754","57106e","000004"}},
     {"Magma (5)", new List<string>{"fcfdbf","fc8961","b73779","51127c","000004"}},
     {"Plasma (5)", new List<string>{"f0f921","f89540","cc4778","7e03a8","0d0887"}}
-};
-        cbColorMap[6] = new Dictionary<string, List<string>> {
+});
+        cbColorMap.Add(new Dictionary<string, List<string>> {
     // From https://personal.sron.nl/~pault/#sec:qualitative
     {"Tol Pale (6)" , new List<string>{"bbccee","cceeff","ccddaa","eeeebb","ffcccc","dddddd"}},
     // From https://personal.sron.nl/~pault/#sec:qualitative
@@ -65,8 +61,8 @@ public class ColorPalettes {
     {"Inferno (6)", new List<string>{"fcffa4","fca50a","dd513a","932667","420a68","000004"}},
     {"Magma (6)", new List<string>{"fcfdbf","fe9f6d","de4968","8c2981","3b0f70","000004"}},
     {"Plasma (6)", new List<string>{"f0f921","fca636","e16462","b12a90","6a00a8","0d0887"}}
-};
-        cbColorMap[7] = new Dictionary<string, List<string>> {
+});
+        cbColorMap.Add(new Dictionary<string, List<string>> {
     // From https://personal.sron.nl/~pault/#sec:qualitative
     {"Tol Bright (7)" , new List<string>{"4477aa","66ccee","228833","ccbb44","ee6677","aa3377","bbbbbb"}},
     // From https://personal.sron.nl/~pault/#sec:qualitative
@@ -76,8 +72,8 @@ public class ColorPalettes {
     {"Inferno (7)", new List<string>{"fcffa4","fbb61a","ed6925","bc3754","781c6d","320a5e","000004"}},
     {"Magma (7)", new List<string>{"fcfdbf","feb078","f1605d","b73779","721f81","2c115f","000004"}},
     {"Plasma (7)", new List<string>{"f0f921","fdb42f","ed7953","cc4778","9c179e","5c01a6","0d0887"}}
-};
-        cbColorMap[8] = new Dictionary<string, List<string>> {
+});
+        cbColorMap.Add(new Dictionary<string, List<string>> {
     // from https://davidmathlogic.com/colorblind/#%23D81B60-%231E88E5-%23FFC107-%23004D40
     // and also https://mikemol.github.io/technique/colorblind/2018/02/11/color-safe-palette.html
     {"Wong Ito (8)" , new List<string>{"000000","E69F00","56B4E9","009E73","F0E442","0072B2","D55E00","CC79A7"}},
@@ -90,8 +86,8 @@ public class ColorPalettes {
     {"Inferno (8)", new List<string>{"fcffa4", "fac228", "f57d15", "d44842", "9f2a63", "65156e", "280b53", "000004"}},
     {"Magma (8)", new List<string>{"fcfdbf","febb81", "f8765c", "d3436e", "982d80", "5f187f", "221150", "000004"}},
     {"Plasma (8)", new List<string>{"f0f921", "febd2a", "f48849", "db5c68", "b83289", "8b0aa5", "5302a3", "0d0887"}}
-};
-        cbColorMap[9] = new Dictionary<string, List<string>> {
+});
+        cbColorMap.Add(new Dictionary<string, List<string>> {
     // From https://personal.sron.nl/~pault/#sec:qualitative
     {"Tol Muted (9)" , new List<string>{"332288","88ccee","44aa99","117733","999933","ddcc77","cc6677","882255","aa4499"}},
     // From https://personal.sron.nl/~pault/#sec:qualitative
@@ -101,29 +97,28 @@ public class ColorPalettes {
     {"Inferno (9)", new List<string>{"fcffa4", "f9cb35", "f98e09", "e45a31", "bc3754", "8a226a", "57106e", "210c4a", "000004"}},
     {"Magma (9)", new List<string>{"fcfdbf", "fec488", "fc8961", "e75263", "b73779", "832681", "51127c", "1d1147", "000004"}},
     {"Plasma (9)", new List<string>{"f0f921", "fdc527", "f89540", "e66c5c", "cc4778", "aa2395", "7e03a8", "4c02a1", "0d0887"}}
-};
-        cbColorMap[10] = new Dictionary<string, List<string>> {
+});
+        cbColorMap.Add(new Dictionary<string, List<string>> {
     // Next 3 from https://waldyrious.net/viridis-palette-generator/
     {"Viridis (10)", new List<string>{"fde725", "b5de2b", "6ece58","35b779","1f9e89","26828e","31688e","3e4989","482878","440154"}},
     {"Plasma (10)", new List<string>{"f0f921", "fdca26", "fb9f3a", "ed7953", "d8576b", "bd3786", "9c179e", "7201a8", "46039f", "0d0887"}},
     {"Magma (10)", new List<string>{"fcfdbf", "feca8d", "fd9668", "f1605d", "cd4071", "9e2f7f", "721f81", "440f76", "180f3d", "000004"}}
 
-};
-        cbColorMap[11] = new Dictionary<string, List<string>> {
+});
+        cbColorMap.Add(new Dictionary<string, List<string>> {
     // Next 3 from https://waldyrious.net/viridis-palette-generator/
     {"Inferno (11)", new List<string>{"fcffa4", "f6d746", "fca50a", "f37819", "dd513a", "bc3754", "932667", "6a176e", "420a68", "160b39", "000004"}},
     {"Plasma (11)", new List<string>{"f0f921", "fcce25", "fca636", "f2844b", "e16462", "cc4778", "b12a90", "8f0da4", "6a00a8", "41049d", "0d0887"}},
     {"Viridis (11)", new List<string>{"fde725", "bddf26", "7ad151", "44bf70", "22a884", "21918c", "2a788e", "355f8d", "414487", "482475", "440154"}}
-};
-        cbColorMap[12] = new Dictionary<string, List<string>> {
+});
+        cbColorMap.Add(new Dictionary<string, List<string>> {
      {"Viridis (12)" , new List<string>{"fde725","c2df23","86d549","52c569","2ab07f","1e9b8a","25858e","2d708e","38588c","433e85","482173","440154" }}
-};
-        cbColorMap[13] = new Dictionary<string, List<string>> {
+});
+        cbColorMap.Add(new Dictionary<string, List<string>> {
     {"Viridis (13)", new List<string>{"fde725","c8e020","90d743","5ec962","35b779","20a486","21918c","287c8e","31688e","3b528b","443983","481f70","440154" }}
-};
+});
 
-
-        colorMap[3] = new Dictionary<string, List<string>> {
+        colorMap.Add(new Dictionary<string, List<string>> {
     // Next 2 From https://digitalsynopsis.com/design/tri-color-palettes-combinations-schemes/
     {"RYG (3)" , new List<string>{"ff1700","ffa600","4d6910"}},
     {"Red To Tan (3)" , new List<string>{"b72818","bc6022","e8c599"}},
@@ -141,8 +136,8 @@ public class ColorPalettes {
     {"GFIAA Dunes (3)", new List<string>{"d5bf92","ddd5c3","8d715f"}},
     {"GFIAA Forest (3)", new List<string>{"c0cd8e","ded5c3","374c02"}},
     {"GFIAA Forest 2 (3)", new List<string>{"ddd5b9","7c782f","3a4a38"}},
-};
-        colorMap[4] = new Dictionary<string, List<string>> {
+});
+        colorMap.Add(new Dictionary<string, List<string>> {
     {"Grayscale (4)" , new List<string>{"FFFFFF", "ABABAB", "555555", "000000"}},
     {"RGBY (4)", new List<string>{"FF0000","00FF00","0000FF","FFFF00"}},
     //From https://logosbynick.com/70s-color-palettes-with-hex/
@@ -194,11 +189,11 @@ public class ColorPalettes {
     {"GFIAA Water (4)", new List<string>{"4c9cd4","9bb6ce","6f899e","ddd5b9"}},
     {"GFIAA Dunes (4)", new List<string>{"ddd5b9","bca885","967e6d","604c35"}},
     {"GFIAA (4)", new List<string>{"dadedd","3a4a39","7c782f","604c35"}},
-};
+});
 
         // ---------------------------------------------------------------------------------------
         // 5
-        colorMap[5] = new Dictionary<string, List<string>> {
+        colorMap.Add(new Dictionary<string, List<string>> {
     {"Grayscale (5)" , new List<string>{"FFFFFF", "C0C0C0", "808080", "404040", "000000"}},
     // from https://www.color-hex.com/color-palette/61294
     {"70s Retro Stripes (5)" , new List<string>{"75C8AE", "5A3D2B", "FFECB4", "E5771E", "F4A127"}},
@@ -385,11 +380,11 @@ public class ColorPalettes {
     {"Autumn Melancholy (5)" , new List<string>{ "d0c589","ca8441","e26815","404116","359e7f"}},
     // I created based on images from the RFQ
 {"GFIAA (5)", new List<string>{"dadedd","3a4a39","7c782f","6f899e","604c35"}},
-};
+});
 
         // -----------------------
         // 6
-        colorMap[6] = new Dictionary<string, List<string>> {
+        colorMap.Add(new Dictionary<string, List<string>> {
     {"Grayscale (6)" , new List<string>{"FFFFFF","CCCCCC", "999999","666666", "333333","000000"}},
     // From https://www.schemecolor.com/70s-retro.php
     {"70s Retro (6)" , new List<string>{"3F8A8C", "0C5679", "0B0835", "E5340B", "F28A0F", "FFE7BD"}},
@@ -444,10 +439,10 @@ public class ColorPalettes {
     {"Eleanor Shellstrop T-Shirt (6)", new List<string>{"d93b2e", "e8d19b", "ead967", "8dc6c1", "31b1bc","FFFFFF"}},
 // I created based on images from the RFQ
 {"GFIAA (6)", new List<string>{"dadedd","3a4a39","7c782f","6f899e","604c35","967e6d"}},
-};
+});
         // ---------------------------------------------------------------------------------------
         // 7
-        colorMap[7] = new Dictionary<string, List<string>> {
+        colorMap.Add(new Dictionary<string, List<string>> {
     {"Grayscale (7)" , new List<string>{"FFFFFF", "D5D5D5", "AAAAAA", "808080", "555555", "2A2A2A", "000000"}},
     // From ? (I don"t remember where this came from, but it isn"t structly linear so it should look a bit different.
     {"Grayscale V2 (7)" , new List<string>{"FFFFFF","D4D4D4", "B4B4B4", "909090", "636363", "494848","000000"}},
@@ -469,11 +464,11 @@ public class ColorPalettes {
     {"Hope College (7)" , new List<string>{"F46A1F","002244","91420E","F7E654","BED600","00685B","00B0CA"}},
 // I created based on images from the RFQ
 {"GFIAA (7)", new List<string>{"dadedd","3a4a39","7c782f","6f899e","604c35","967e6d","bca885"}},
-};
+});
 
         // ---------------------------------------------------------------------------------------
         // 8
-        colorMap[8] = new Dictionary<string, List<string>> {
+        colorMap.Add(new Dictionary<string, List<string>> {
     {"Grayscale (8)" , new List<string>{"FFFFFF", "dbdbdb", "b7b7b7", "929292", "6e6e6e", "494949", "252525", "000000"}},
     // From https://colorswall.com/palette/1255
     {"Glitch (8)" , new List<string>{"020202","3e3c41","fdfefe","cc0f39","0ffbf9","c2bfcc","c36b93","cdc764"}},
@@ -496,8 +491,8 @@ public class ColorPalettes {
 // I created based on images from the RFQ
 { "GFIAA (8)", new List<string> { "3a4a38", "7c782f", "6f899e", "604c35", "967e6d", "bca885", "9bb6ce", "4c9cd4" }},
     { "GFIAA 2 (8)", new List<string> { "e4e4e0", "3a4a38", "7c782f", "6f899e", "604c35", "967e6d", "bca885", "9bb6ce" }},
-};
-        colorMap[9] = new Dictionary<string, List<string>> {
+});
+        colorMap.Add(new Dictionary<string, List<string>> {
     {"Rainbow and BW (9)" , new List<string>{"ff0000", "FFA500", "ffff00","00ff00","0000ff","4B0082","EE82EE","000000","ffffff"}},
     // From
     {"Apple (9)" , new List<string>{"62bb47","fcb827","f6821f","e03a3c","963d97","009ddc","ffffff","999999","000000"}},
@@ -525,8 +520,8 @@ public class ColorPalettes {
     {"Albers Color Model (9)" , new List<string>{"E32321","FFD300","2A72AF","F17B11","874B68","95A358","BC633D","C38F35","8E7760"}},
 // I created based on images from the RFQ
 {"GFIAA (9)", new List<string>{"e4e4e0","3a4a38","7c782f","6f899e","604c35","967e6d","bca885","9bb6ce","4c9cd4"}},
-};
-        colorMap[10] = new Dictionary<string, List<string>> {
+});
+        colorMap.Add(new Dictionary<string, List<string>> {
     // From https://loading.io/color/feature/Spectral-10/
     {"Spectral (10)" , new List<string>{"9e0142", "d53e4f", "f46d43", "fdae61", "fee08b", "e6f598", "abdda4", "66c2a5", "3288bd", "5e4fa2"}},
     // Next 7 from  https://loading.io/color/feature/
@@ -538,28 +533,28 @@ public class ColorPalettes {
     {"Slack (10)" , new List<string>{"bd4030","e0b83e","7f9626","76be9f","9bcfde","599f8c","36173b","563e58","cc4876","f4f3f1"}},
     {"Emerald City (10)" , new List<string>{"985d4e","e0dcb8","aca730","4f563b","9db189","60a363","2c8c14","0a4308","607c83","466277"}},
     {"Hope College (10)" , new List<string>{"F46A1F","002244","91420E","F0AB00","F7E654","BED600","00685B","5482AB","00B0CA","BBE7E6"}}
-};
-        colorMap[11] = new Dictionary<string, List<string>> {
+});
+        colorMap.Add(new Dictionary<string, List<string>> {
     // Next 2 from https://loading.io/color/feature/
     {"Algolia (11)" , new List<string>{"050f2c", "003666", "00aeff", "3369e7", "8e43e7", "b84592", "ff4f81", "ff6c5f", "ffc168", "2dde98", "1cc7d0"}},
     {"Continental Ag (11)" , new List<string>{"ffa500","00a5dc","004eaf","2db928","057855","ff2d37","000000","737373","969696","cdcdcd","f0f0f0"}},
     {"Hope College (11)" , new List<string>{"F46A1F","002244","91420E","F0AB00","F7E654","BED600","00685B","5482AB","00B0CA","BBE7E6","4D4F53"}}
-};
-        colorMap[12] = new Dictionary<string, List<string>> {
+});
+        colorMap.Add(new Dictionary<string, List<string>> {
     {"Hope College (12)" , new List<string>{"F46A1F","002244","91420E","F0AB00","F7E654","BED600","00685B","5482AB","00B0CA","BBE7E6","000000","4D4F53"}}
-};
-        colorMap[13] = new Dictionary<string, List<string>> {
+});
+        colorMap.Add(new Dictionary<string, List<string>> {
     {"Hope College (13)" , new List<string>{"F46A1F","002244","91420E","F0AB00","F7E654","BED600","00685B","5482AB","00B0CA","BBE7E6","000000","4D4F53","FFFFFF"}}
-};
+});
 
         //Load maps
-        for (int i = MIN_COLORS; i <= MAX_COLORS; i++) {
+        for (int i = 0; i <= MAX_COLORS - MIN_COLORS; i++) {
             colorMap[i].AddRange(cbColorMap[i]); // add cb palettes of this size
             colorMapAll.AddRange(colorMap[i]); // add palettes to the overall map
-            colorList[i] = new List<KeyValuePair<string, List<string>>>(colorMap[i]);
+            colorList.Add(new List<KeyValuePair<string, List<string>>>(colorMap[i]));
             colorListAll.AddRange(colorList[i]);
             cbColorMapAll.AddRange(cbColorMap[i]);
-            cbColorList[i] = new List<KeyValuePair<string, List<string>>>(cbColorMap[i]);
+            cbColorList.Add(new List<KeyValuePair<string, List<string>>>(cbColorMap[i]));
             cbColorListAll.AddRange(cbColorList[i]);
         }
     }
@@ -604,6 +599,16 @@ public class ColorPalettes {
         do {
             palette = currColors[random.Next(currColors.Count)];
         } while (palette.Value.Count < MIN_COLORS || palette.Value.Count > MAX_COLORS);
+
+        return palette;
+    }
+
+    public static KeyValuePair<string, List<string>> RandomOddPalette(int colors = 0, int minColors = 0, bool colorBlind = false) {
+        KeyValuePair<string, List<string>> palette;
+        do {
+            palette = RandomPalette(colors, minColors, colorBlind);
+        }
+        while (palette.Value.Count % 2 == 0);
 
         return palette;
     }

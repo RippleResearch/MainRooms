@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
@@ -33,7 +32,6 @@ public class MazeController : MonoBehaviour {
     List<Tuple<int, int>> beats;
     List<Tuple<Color, float>> color_and_inc;
     ColorController colorController;
-    ColorPalettes ferzleColorPalettes;
     private int currentHeight, currentWidth;
 
     System.Random rand;
@@ -66,9 +64,8 @@ public class MazeController : MonoBehaviour {
         color_and_inc = new List<Tuple<Color, float>>();
         //(beats, color_and_inc) = CirclePairings(usedColors = colorController.RandomNumberOfColors());
         //(beats, color_and_inc) = SpockPairings(usedColors = colorController.RandomOddNumberOfColors());
-        usedColors = colorController.HexListToColor(ColorPalettes.RandomPalette().Value);
+        usedColors = colorController.HexListToColor(ColorPalettes.RandomOddPalette(colorBlind: true).Value);
         (beats, color_and_inc) = SpockPairings(usedColors);
-        Debug.Break();
 
         AllGameObjects.Clear();
         sizeMultiplier = rand.Next(4, 8);
@@ -312,7 +309,7 @@ public class MazeController : MonoBehaviour {
         }
 
         GameObject newObject = Instantiate(FlowBlock, Vector3.one, Quaternion.identity);
-        newObject.GetComponent<Renderer>().material.color = color_and_inc[currBlock.ID].Item1;
+        newObject.GetComponent<Renderer>().material.color = usedColors[currBlock.ID]; //so we can change color while runnning
         Block newBlock = new Block(newObject, currBlock.ID, p.dir, p.dest, increment: currBlock.increment, sizePercent: currBlock.increment);
 
         //Make new obj
