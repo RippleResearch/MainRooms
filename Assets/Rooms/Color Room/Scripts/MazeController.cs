@@ -11,7 +11,6 @@ public class MazeController : MonoBehaviour {
 
 
     public GameObject Dirt, FlowBlock;
-    [Range(1f, 11f)]
     public int sizeMultiplier;
     public int height, width;
     [Range(0f, 4f)]
@@ -23,25 +22,25 @@ public class MazeController : MonoBehaviour {
     [Range(1, 120)]
     public int maxTime = 15;
     public float timeSinceReset;
+    public int active;
+    public bool resetRequested;
+
     public List<Color> usedColors;
 
 
     //private BFS bfs;
     private const int WALL = 0;
     private const int PATH = 1;
-
-   public List<GameObject> AllGameObjects;
+    public List<GameObject> AllGameObjects;
     List<Tuple<int, int>> beats;
     List<Tuple<Color, float>> color_and_inc;
     List<int> rows;
     List<int> cols;
     ColorController colorController;
-    private int currentHeight, currentWidth;
 
     System.Random rand;
     int[,] board;
     Cell[,] cells;
-    bool moving = true;
     public class DestAndPos {
         public Vector3 dest;
         public Vector3 dir;
@@ -65,18 +64,20 @@ public class MazeController : MonoBehaviour {
 
     private void InitializeMaze() {
         Resources.UnloadUnusedAssets();
+        AllGameObjects.Clear();
 
+        sizeMultiplier = rand.Next(10, 30);
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
-        //(beats, color_and_inc) = CirclePairings(usedColors = colorController.RandomNumberOfColors());
-        //(beats, color_and_inc) = SpockPairings(usedColors = colorController.RandomOddNumberOfColors());
-        usedColors = colorController.HexListToColor(ColorPalettes.RandomOddPalette().Value);
-        (beats, color_and_inc) = SpockPairings(usedColors);
+        //Set Colors and pairings
+        usedColors = colorController.HexListToColor(ColorPalettes.RandomPalette().Value);
+        if (usedColors.Count % 2 == 0)
+            (beats, color_and_inc) = CirclePairings(usedColors);
+        else
+            (beats, color_and_inc) = SpockPairings(usedColors);
 
-        AllGameObjects.Clear();
-        sizeMultiplier = rand.Next(8, 8);
-
-        (currentHeight, currentWidth) = SetSizes();
+       
+        (height, width) = SetSizes();
 
         Vector3 center = new Vector3(height / 2, height, width / 2);
         Camera.main.transform.position = center;
@@ -104,21 +105,20 @@ public class MazeController : MonoBehaviour {
                 Cell cell = PlaceBlocksInCell(x, z);
                 if (x >= 0 && z >= 0 && z < width && x < height) {
                     cells[x, z] = cell;
-                    //if (!cell.Block1.gameObject.name.StartsWith("empty"))
-                        if (cell.Block1.gameObject.CompareTag("Dirt")) {
-                            cells[x, z].isActive = false;
-                        }
-
+                    if (cell.Block1.gameObject.CompareTag("Dirt")) {
+                        cells[x, z].isActive = false;
+                    }
                 }
-               /* if (cell.Block1 != null)
-                    AllGameObjects.Add(cell.Block1.gameObject);*/
             }
         }
 
         PlaceStartBlocks();
-        timeSinceReset = -1;
+        //For random processing
         rows = Enumerable.Range(0, height).ToList();
         cols = Enumerable.Range(0, width).ToList();
+        
+        timeSinceReset = -1;
+        resetRequested = false;
     }
 
     private Cell PlaceBlocksInCell(int x, int z) {
@@ -135,6 +135,7 @@ public class MazeController : MonoBehaviour {
                 go = Instantiate(Dirt, new Vector3(x, 0, z), Quaternion.identity);
                 go.name = "Dirt " + x + "," + z;
                 go.transform.parent = GameObject.FindGameObjectWithTag("Dirt").transform;
+                AllGameObjects.Add(go);
                 return new Cell(new Block(go, -2));
             }
             else {
@@ -150,7 +151,7 @@ public class MazeController : MonoBehaviour {
                 AllGameObjects.Add(ob1);
                 AllGameObjects.Add(ob2);
                 // make blocks not shown.
-                Cell cell = new Cell(new Block(ob1,-1));
+                Cell cell = new Cell(new Block(ob1, -1));
                 cell.Block2 = new Block(ob2, -1);
                 cell.Block1.sizePercent = 0;
                 return cell;
@@ -161,11 +162,6 @@ public class MazeController : MonoBehaviour {
     private void PlaceStartBlocks() {
         for (int i = 0; i < usedColors.Count; i++) {
             bool placed = false;
-            var parentObj = new GameObject();
-            parentObj.name = "Parent: " + i;
-            parentObj.transform.parent = GameObject.FindGameObjectWithTag("Maze").transform;
-            AllGameObjects.Add(parentObj);
-
             do {
                 int x = UnityEngine.Random.Range(0, height);
                 int z = UnityEngine.Random.Range(0, width);
@@ -177,7 +173,7 @@ public class MazeController : MonoBehaviour {
                     rend.material.color = color_and_inc[i].Item1;
 
                     block1.gameObject.name = i + " " + x + "," + z;
-                    block1.gameObject.transform.parent = parentObj.transform;
+                    //block1.gameObject.transform.parent = parentObj.transform;
 
                     block1.SetVals(block1.gameObject, i, Vector3.zero, block1.gameObject.transform.position, increment: color_and_inc[i].Item2);
                     block1.ID = i;
@@ -197,33 +193,33 @@ public class MazeController : MonoBehaviour {
 
 
         float diff = Time.time - timeSinceReset;
-        if (!moving || (timeSinceReset > 0 && diff > maxTime)) {
+        if (resetRequested || (timeSinceReset > 0 && diff > maxTime)) {
+            resetRequested = true;
             StartCoroutine(RequestReset(waitTime));
         }
-        //CheckForWinners();
+
         bool filled = true;
-        //rows = rows.OrderBy(_ => rand.Next()).ToList();
-        //cols = cols.OrderBy(_ => rand.Next()).ToList();
-        foreach(int x in  rows) { 
-            foreach(int z in  cols) { 
-        //for (int x = 0; x < currentHeight; x++) {
-           // for (int z = 0; z < currentWidth; z++) {
+        rows = rows.OrderBy(_ => rand.Next()).ToList();
+        cols = cols.OrderBy(_ => rand.Next()).ToList();
+        active = 0;
+        foreach (int x in rows) {
+            foreach (int z in cols) {
                 //If one full block
                 Cell cell = cells[x, z];
-                if (!cell.isActive)
+                if (!cell.isActive) {
                     continue;
-
+                }
+                active++;
                 if (cell.Block2.gameObject.name.StartsWith("empty")) {
                     if (!cell.Block1.gameObject.name.StartsWith("empty")) {
                         if (Mathf.Abs(cell.Block1.sizePercent - 1f) < .001f) {
                             if (cell.Block1.ID != -2) { // Not Dirt
-                                cell.isActive = Propigate(GetValidNeighbors(x, z), x, z);
-                                //moving = true;
+                                Propigate(GetValidNeighbors(x, z), x, z);
                             }
+                            cell.isActive = false;
                         }
                         else { //One block not full
                             Grow(cell);
-                            moving = true;
                         }
                     }
                     else {
@@ -233,7 +229,9 @@ public class MazeController : MonoBehaviour {
                 else {
                     if (!cell.Block1.gameObject.name.StartsWith("empty")) {
                         ShrinkAndGrowBlock(cell);
-                        moving = true;
+                    }
+                    else {
+                        cell.isActive = false;
                     }
                 }
             }
@@ -242,6 +240,10 @@ public class MazeController : MonoBehaviour {
             if (timeSinceReset < 0) {
                 timeSinceReset = Time.time;
             }
+        }
+
+        if(active == 0){
+            resetRequested = true;
         }
     }
 
@@ -293,46 +295,47 @@ public class MazeController : MonoBehaviour {
         return (pairs, info);
     }
 
-    private bool Propigate(List<DestAndPos> spots, int x, int z) {
+    private void Propigate(List<DestAndPos> spots, int x, int z) {
         Cell currCell = cells[x, z];
-        int surrounded = 0;
 
-        Debug.Assert(currCell.Block1.gameObject.name.StartsWith("empty"));
+        Debug.Assert(!currCell.Block1.gameObject.name.StartsWith("empty"));
         foreach (DestAndPos p in spots) {
             Cell neighborCell = cells[(int)p.dest.x, (int)p.dest.z];
 
-            if (neighborCell.Block1.gameObject.name.StartsWith("empty")) { //1. empty
+            if (neighborCell.Block1.ID == -1) { //1. empty (-1 path)
                 AddBlockToCell(currCell.Block1, p);
-                surrounded++;
             }
-            else if (neighborCell.Block1.ID == currCell.Block1.ID) { //2. Its me
-                surrounded++;
+            else if (neighborCell.Block1.ID == currCell.Block1.ID) { //2. its me
+                continue; // Stop early for effic
             }
             else if (neighborCell.Block1.ID == -2) { // 3. its wall
-                surrounded++;
-            }
+                //This needs to be here so we don't check if an ID can beat -2 in the beats tuple list
+                continue;
+            }//6. else this block is not comparable
             else if (Beats(currCell.Block1.ID, neighborCell.Block1.ID)) { //5. if i can break (We already know block 2 is null)
                 AddBlockToCell(currCell.Block1, p);
                 neighborCell.SwapBlocksAndVars();
-                surrounded++;
             }
             //if it beats me but not full
-            else if (neighborCell.Block2.gameObject.name.StartsWith("empty") && Beats(neighborCell.Block1.ID, currCell.Block1.ID)) { //4. Block that beats me
-                if (neighborCell.Block1.sizePercent < 1f) { //4.5 block that beats me that is not full
+            else if (Beats(neighborCell.Block1.ID, currCell.Block1.ID)) {
+                if (neighborCell.Block1.sizePercent < 1f && neighborCell.Block2.gameObject.name.StartsWith("empty")) {//4.5 block that beats me that is not full
                     AddBlockToCell(currCell.Block1, p);
                 }
                 else {//Block that beast me that is full
                     neighborCell.isActive = true;
                 }
-            } //6. Block I don't know (Do nothing)
+            }
+
+            //else {
+            //}
+            currCell.isActive = false;
         }
-        return (surrounded == spots.Count);
     }
 
 
     private void AddBlockToCell(Block currBlock, DestAndPos p) {
         //Make sure at least one cell is empty before we place a new block inside
-        if (!cells[(int)p.dest.x, (int)p.dest.z].Block1.gameObject.name.StartsWith("empty") 
+        if (!cells[(int)p.dest.x, (int)p.dest.z].Block1.gameObject.name.StartsWith("empty")
             && !cells[(int)p.dest.x, (int)p.dest.z].Block2.gameObject.name.StartsWith("empty")) {
             // Wait until whatever is happening in this cell to finish.
             return;
@@ -348,7 +351,7 @@ public class MazeController : MonoBehaviour {
         Renderer rend = editBlock.gameObject.GetComponent<Renderer>();
         rend.enabled = (true);
         rend.material.color = usedColors[currBlock.ID]; //so we can change color while runnning
-        editBlock.SetVals(editBlock.gameObject, currBlock.ID, p.dir, p.dest, 
+        editBlock.SetVals(editBlock.gameObject, currBlock.ID, p.dir, p.dest,
             increment: baseIncrement, sizePercent: currBlock.increment);
 
         //Make new obj
@@ -356,7 +359,7 @@ public class MazeController : MonoBehaviour {
         editBlock.gameObject.transform.localScale = Vector3.one - (1 - editBlock.increment) * VecAbs(p.dir);
 
         editBlock.gameObject.name = currBlock.ID + " " + p.dest.x + "," + p.dest.z;
-        editBlock.gameObject.transform.parent = GameObject.Find("Parent: " + currBlock.ID).transform;
+        //editBlock.gameObject.transform.parent = GameObject.Find("Parent: " + currBlock.ID).transform;
 
         //If cell is not active set it to active
         cells[(int)p.dest.x, (int)p.dest.z].isActive = true;
@@ -417,10 +420,10 @@ public class MazeController : MonoBehaviour {
     /// </summary>
     /// <param name="cell"></param>
     public void Grow(Cell cell) {
-        if (cell.Block1 != null) {
+        if (!cell.Block1.gameObject.name.StartsWith("empty")) {
             GrowBlock(cell.Block1);
         }
-        if (cell.Block2 != null) {
+        if (!cell.Block2.gameObject.name.StartsWith("empty")) {
             GrowBlock(cell.Block2);
         }
     }
@@ -436,19 +439,19 @@ public class MazeController : MonoBehaviour {
 
         List<DestAndPos> spots = new List<DestAndPos>();
         //up
-        if (IsInRange(z - 1, currentWidth)) {
+        if (IsInRange(z - 1, width)) {
             spots.Add(new DestAndPos(new Vector3(x, 0, z - 1), new Vector3(0, 0, -1)));
         }
         //right
-        if (IsInRange(x + 1, currentHeight)) {
+        if (IsInRange(x + 1, height)) {
             spots.Add(new DestAndPos(new Vector3(x + 1, 0, z), new Vector3(1, 0, 0)));
         }
         //down
-        if (IsInRange(z + 1, currentWidth)) {
+        if (IsInRange(z + 1, width)) {
             spots.Add(new DestAndPos(new Vector3(x, 0, z + 1), new Vector3(0, 0, 1)));
         }
         //left
-        if (IsInRange(x - 1, currentHeight)) {
+        if (IsInRange(x - 1, height)) {
             spots.Add(new DestAndPos(new Vector3(x - 1, 0, z), new Vector3(-1, 0, 0)));
         }
 
@@ -459,8 +462,8 @@ public class MazeController : MonoBehaviour {
     }
 
     private void RemovePercentWalls(float remove) {
-        for(int x = 0; x < currentHeight; x++) {
-            for (int z = 0; z < currentWidth; z++) {
+        for (int x = 0; x < height; x++) {
+            for (int z = 0; z < width; z++) {
                 if (board[x, z] == WALL) {
                     List<DestAndPos> spots = GetValidNeighbors(x, z);
                     foreach (DestAndPos spot in spots) {
@@ -489,15 +492,16 @@ public class MazeController : MonoBehaviour {
         }
     }
 
-    public IEnumerator RequestReset(float waititme) {
-        yield return new WaitForSeconds(waititme);
+    public IEnumerator RequestReset(float waitTime) {
+        yield return new WaitForSeconds(waitTime);
         foreach (GameObject go in AllGameObjects) {
             if (go != null) {
                 Destroy(go);
             }
         }
-        InitializeMaze();
         StopAllCoroutines();
+        InitializeMaze();
+
     }
 
     private (int height, int width) SetSizes() {

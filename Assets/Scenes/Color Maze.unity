@@ -174,11 +174,14 @@ MonoBehaviour:
   height: 70
   width: 16
   waitTime: 1
-  baseIncrement: 0.25
+  baseIncrement: 1
   wallsRemoved: 0.1
   maxTime: 15
   timeSinceReset: 0
+  active: 0
+  resetRequested: 0
   usedColors: []
+  AllGameObjects: []
 --- !u!1001 &530872619
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -816,7 +819,7 @@ Transform:
   m_GameObject: {fileID: 2054635053}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 28.3, y: 0, z: 45.8}
-  m_LocalScale: {x: 20, y: 1, z: 20}
+  m_LocalScale: {x: 100, y: 1, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
