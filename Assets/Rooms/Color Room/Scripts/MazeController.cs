@@ -66,7 +66,7 @@ public class MazeController : MonoBehaviour {
         Resources.UnloadUnusedAssets();
         AllGameObjects.Clear();
 
-        sizeMultiplier = rand.Next(10, 30);
+        sizeMultiplier = rand.Next(4, 12);
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
         //Set Colors and pairings
