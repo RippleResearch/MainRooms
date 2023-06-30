@@ -1,11 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using Unity;
-using UnityEngine;
 using Random = System.Random;
-using System.Drawing.Imaging;
 
 public class ColorPalettes {
     private static readonly Random random = new Random();
@@ -590,14 +586,14 @@ public class ColorPalettes {
 
     public static KeyValuePair<string, List<string>> RandomPalette(int colors = 0, int minColors = 0, bool colorBlind = false) {
         KeyValuePair<string, List<string>> palette = new KeyValuePair<string, List<string>>();
-        List<KeyValuePair<string, List<string>>> currColors;
+        List<KeyValuePair<string, List<string>>> currColorsList;
         if (colorBlind)
-            currColors = cbColorListAll;
+            currColorsList = cbColorListAll;
         else
-            currColors = colorListAll;
+            currColorsList = colorListAll;
 
         do {
-            palette = currColors[random.Next(currColors.Count)];
+            palette = currColorsList[random.Next(currColorsList.Count)];
         } while (palette.Value.Count < MIN_COLORS || palette.Value.Count > MAX_COLORS);
 
         return palette;

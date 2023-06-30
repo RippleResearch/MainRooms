@@ -15,10 +15,10 @@ public class MazeController : MonoBehaviour {
     [Range(0f, 4f)]
     public float waitTime = .5f;
     [Range(1 / 64.0f, 1f)]
-    public float baseIncrement = 1 / 4.0f;
+    public float baseIncrement;
     [Range(0f, 1f)]
     public float wallsRemoved;
-    [Range(1, 20)]
+    [Range(1, 120)]
     public int maxTime = 15;
     public float timeSinceReset;
     public List<Color> usedColors;
@@ -60,6 +60,8 @@ public class MazeController : MonoBehaviour {
     }
 
     private void InitializeMaze() {
+        Resources.UnloadUnusedAssets();
+
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
         //(beats, color_and_inc) = CirclePairings(usedColors = colorController.RandomNumberOfColors());
@@ -310,7 +312,7 @@ public class MazeController : MonoBehaviour {
 
         GameObject newObject = Instantiate(FlowBlock, Vector3.one, Quaternion.identity);
         newObject.GetComponent<Renderer>().material.color = usedColors[currBlock.ID]; //so we can change color while runnning
-        Block newBlock = new Block(newObject, currBlock.ID, p.dir, p.dest, increment: currBlock.increment, sizePercent: currBlock.increment);
+        Block newBlock = new Block(newObject, currBlock.ID, p.dir, p.dest, increment: baseIncrement, sizePercent: currBlock.increment);
 
         //Make new obj
         newObject.transform.position = p.dest + p.dir * (newBlock.increment / 2 - 0.5f);
@@ -471,10 +473,6 @@ public class MazeController : MonoBehaviour {
         if (sizeMultiplier != 1) {
             height = 9;
             width = 16;
-        }
-
-        if (sizeMultiplier > 2) {
-            baseIncrement = 1;
         }
 
         height *= sizeMultiplier;
