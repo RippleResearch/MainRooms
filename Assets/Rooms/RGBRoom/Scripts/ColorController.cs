@@ -62,6 +62,13 @@ public class ColorController
           };
     }
 
+    public List<Color> HexListToColor(List<string> hexValues) {
+        List<Color> result = new List<Color>();
+        foreach (string hexValue in hexValues) {
+            result.Add(HexToRGB(hexValue));
+        }
+        return result;
+    }
     public Color HexToRGB(string hexValue) {
         // Remove any leading "#" if present
         if (hexValue.StartsWith("#"))

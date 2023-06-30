@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Unity;
+using UnityEngine;
+using Random = System.Random;
 
 public class ColorPalettes {
     private static readonly Random random = new Random();
@@ -9,9 +12,9 @@ public class ColorPalettes {
     private const int MAX_COLORS = 13;
 
     //Correct line
-    private static List<Dictionary<string, List<string>>> colorMap = new List<Dictionary<string, List<string>>>();
+    public static List<Dictionary<string, List<string>>> colorMap = new List<Dictionary<string, List<string>>>();
     private static List<Dictionary<string, List<string>>> cbColorMap = new List<Dictionary<string, List<string>>>();
-   
+
 
     private static Dictionary<string, List<string>> colorMapAll = new Dictionary<string, List<string>>();
     private static Dictionary<string, List<string>> cbColorMapAll = new Dictionary<string, List<string>>();
@@ -24,9 +27,14 @@ public class ColorPalettes {
     //-----------------------------------Correct ^^^
 
     static ColorPalettes() {
-        cbColorMap[3] = new Dictionary<string, List<string>> {
+        cbColorMap.Add(null);
+        cbColorMap.Add(null);
+        cbColorMap.Add(null);
+        Debug.Log(cbColorMap.Count);
+
+        cbColorMap.Add(new Dictionary<string, List<string>> {
     {"Viridis (3)" , new List<string>{"fde725","21918c","440154"}}
-};
+    });
         cbColorMap[4] = new Dictionary<string, List<string>> {
     // From https://davidmathlogic.com/colorblind/#%23D81B60-%231E88E5-%23FFC107-%23004D40
     {"Nichols (4)" , new List<string>{"d81b60","1e88e5","ffc107","004d40"}},
@@ -588,9 +596,9 @@ public class ColorPalettes {
     public static KeyValuePair<string, List<string>> RandomPalette(int colors = 0, int minColors = 0, bool colorBlind = false) {
         KeyValuePair<string, List<string>> palette = new KeyValuePair<string, List<string>>();
         List<KeyValuePair<string, List<string>>> currColors;
-        if (colorBlind) 
+        if (colorBlind)
             currColors = cbColorListAll;
-         else 
+        else
             currColors = colorListAll;
 
         do {

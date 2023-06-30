@@ -2,11 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using Color = UnityEngine.Color;
-using Random = UnityEngine.Random;
 
 public class MazeController : MonoBehaviour {
 
@@ -35,6 +33,7 @@ public class MazeController : MonoBehaviour {
     List<Tuple<int, int>> beats;
     List<Tuple<Color, float>> color_and_inc;
     ColorController colorController;
+    ColorPalettes ferzleColorPalettes;
     private int currentHeight, currentWidth;
 
     System.Random rand;
@@ -66,7 +65,10 @@ public class MazeController : MonoBehaviour {
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
         //(beats, color_and_inc) = CirclePairings(usedColors = colorController.RandomNumberOfColors());
-        (beats, color_and_inc) = SpockPairings(usedColors = colorController.RandomOddNumberOfColors());
+        //(beats, color_and_inc) = SpockPairings(usedColors = colorController.RandomOddNumberOfColors());
+        usedColors = colorController.HexListToColor(ColorPalettes.RandomPalette().Value);
+        (beats, color_and_inc) = SpockPairings(usedColors);
+        Debug.Break();
 
         AllGameObjects.Clear();
         sizeMultiplier = rand.Next(4, 8);
