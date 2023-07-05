@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &119812434
 RectTransform:
   m_ObjectHideFlags: 0
@@ -244,6 +244,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 119812433}
   m_CullTransparentMesh: 0
+--- !u!1 &324693363 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1703303561323484, guid: d0c460c7e3992194cb7ab7bc605d6985, type: 3}
+  m_PrefabInstance: {fileID: 885552937}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &473985715
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,7 +302,7 @@ MonoBehaviour:
   waitTime: 1
   baseIncrement: 1
   wallsRemoved: 0.1
-  maxTime: 15
+  maxTime: 1
   timeSinceReset: 0
   active: 0
   resetRequested: 0
@@ -612,6 +617,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 114633066682822660, guid: d0c460c7e3992194cb7ab7bc605d6985, type: 3}
+      propertyPath: m_Color.a
+      value: 0.6313726
+      objectReference: {fileID: 0}
+    - target: {fileID: 114633066682822660, guid: d0c460c7e3992194cb7ab7bc605d6985, type: 3}
       propertyPath: m_Maskable
       value: 1
       objectReference: {fileID: 0}
@@ -641,11 +650,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224269059662225402, guid: d0c460c7e3992194cb7ab7bc605d6985, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 9.9
+      value: 7.8
       objectReference: {fileID: 0}
     - target: {fileID: 224269059662225402, guid: d0c460c7e3992194cb7ab7bc605d6985, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -5.3615
+      value: -34.8
       objectReference: {fileID: 0}
     - target: {fileID: 224739566112570662, guid: d0c460c7e3992194cb7ab7bc605d6985, type: 3}
       propertyPath: m_Pivot.x
@@ -1169,6 +1178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6f0c7e641af1cb46bc064d075b1adec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SideMenu: {fileID: 324693363}
 --- !u!4 &1952057984 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5858803228221427952, guid: dc2f88b8e41a8054c9eb86f81d1a0820, type: 3}
