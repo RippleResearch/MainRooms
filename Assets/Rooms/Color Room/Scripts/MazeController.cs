@@ -83,7 +83,7 @@ public class MazeController : MonoBehaviour {
         Vector3 center = new Vector3(height / 2, height, width / 2);
         Camera.main.transform.position = center;
         //Set UI
-        GameObject.Find("UI").GetComponent<CanvasController>().Reposition(height, width);
+        //GameObject.Find("UI").GetComponent<CanvasController>().Reposition(height, width);
 
         int spot = UnityEngine.Random.Range(0, height);
         if (spot % 2 == 1) {
