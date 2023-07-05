@@ -14,13 +14,13 @@ public class MazeController : MonoBehaviour {
     public int sizeMultiplier;
     public int height, width;
     [Range(0f, 4f)]
-    public float waitTime = .5f;
+    public float waitTime = 0;
     [Range(1 / 64.0f, 1f)]
     public float baseIncrement;
     [Range(0f, 1f)]
     public float wallsRemoved;
     [Range(1, 120)]
-    public int maxTime = 15;
+    public int ResetAfter = 15;
     public float timeSinceReset;
     public int active;
     public bool resetRequested;
@@ -36,6 +36,7 @@ public class MazeController : MonoBehaviour {
     List<Tuple<Color, float>> color_and_inc;
     List<int> rows;
     List<int> cols;
+    bool colorBlindMode = false;
     ColorController colorController;
 
     System.Random rand;
@@ -70,7 +71,7 @@ public class MazeController : MonoBehaviour {
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
         //Set Colors and pairings
-        usedColors = colorController.HexListToColor(ColorPalettes.RandomPalette().Value);
+        usedColors = colorController.HexListToColor(ColorPalettes.RandomPalette(colorBlind: colorBlindMode).Value);
         if (usedColors.Count % 2 == 0)
             (beats, color_and_inc) = CirclePairings(usedColors);
         else
@@ -197,7 +198,7 @@ public class MazeController : MonoBehaviour {
 
 
         float diff = Time.time - timeSinceReset;
-        if (resetRequested || (timeSinceReset > 0 && diff > maxTime)) {
+        if (resetRequested || (timeSinceReset > 0 && diff > ResetAfter)) {
             resetRequested = true;
             StartCoroutine(RequestReset(waitTime));
         }
@@ -534,5 +535,27 @@ public class MazeController : MonoBehaviour {
     public bool Beats(int a, int b) {
         Debug.Assert(a >= 0 && b >= 0, a + " " + b);
         return beats.Contains(new Tuple<int, int>(a, b));
+    }
+
+    //Slider Methods
+    public void ResetTimeChange(float value) {
+        ResetAfter = (int) value;
+    }
+
+    public void SpeedChange(float value) {
+        baseIncrement = value;
+    }
+
+    public void WallsRemoveChange(float value) {
+        wallsRemoved = value;
+    }
+
+    //Button Methods
+    public void SetRequestReset() {
+        resetRequested = true;
+    }
+
+    public void SetColorBindMode(bool val) {
+        colorBlindMode = val;
     }
 }
