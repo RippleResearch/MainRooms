@@ -66,7 +66,7 @@ public class MazeController : MonoBehaviour {
         Resources.UnloadUnusedAssets();
         AllGameObjects.Clear();
 
-        sizeMultiplier = rand.Next(4, 12);
+        sizeMultiplier = rand.Next(10, 10);
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
         //Set Colors and pairings
@@ -81,6 +81,7 @@ public class MazeController : MonoBehaviour {
 
         Vector3 center = new Vector3(height / 2, height, width / 2);
         Camera.main.transform.position = center;
+        
 
         int spot = UnityEngine.Random.Range(0, height);
         if (spot % 2 == 1) {
@@ -127,6 +128,7 @@ public class MazeController : MonoBehaviour {
             go = Instantiate(Dirt, new Vector3(x, 0, z), Quaternion.identity);
             go.name = "Dirt " + x + "," + z;
             go.transform.parent = GameObject.FindGameObjectWithTag("Dirt").transform;
+            AllGameObjects.Add(go);
             return new Cell(new Block(go, -2));
         }
         else {
