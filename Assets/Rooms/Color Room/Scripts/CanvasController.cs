@@ -1,17 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class CanvasController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void LateUpdate()
-    {
-        Vector3 camPos = Camera.main.transform.position;
-        transform.position = new Vector3(camPos.x, 1, camPos.z);//1 to be above blocks
+    public GameObject SideMenu;
+    public void OnEnable() {
+        SideMenu.GetComponent<RectTransform>().parent = gameObject.GetComponent<RectTransform>();
+    }
+    public void Reposition(int height, int width) {
+        transform.position = new Vector3(height/2f, 1, width/2f /*- (camPos.z * .08f)*/);//1 to be above blocks
 
         RectTransform rt = gameObject.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(camPos.z*4f + 20, camPos.x*4f + 20);
+        rt.sizeDelta = new Vector2(width * 2f, height * 2f);
+
+        updateSideBar(width);
+    }
+
+    public void updateSideBar(float width) {
+       SideMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(width / 2f, gameObject.GetComponent<RectTransform>().sizeDelta.y);
     }
 }

@@ -52,7 +52,7 @@ public class MazeController : MonoBehaviour {
     }
 
     // Start is called before the first frame update
-    void Start() {
+    void Awake() {
         rand = new System.Random();
         AllGameObjects = new List<GameObject>();
         sizeMultiplier = 1;
@@ -66,7 +66,7 @@ public class MazeController : MonoBehaviour {
         Resources.UnloadUnusedAssets();
         AllGameObjects.Clear();
 
-        sizeMultiplier = rand.Next(10, 10);
+        sizeMultiplier = rand.Next(4, 10);
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
         //Set Colors and pairings
@@ -79,9 +79,11 @@ public class MazeController : MonoBehaviour {
        
         (height, width) = SetSizes();
 
+        //Set camera
         Vector3 center = new Vector3(height / 2, height, width / 2);
         Camera.main.transform.position = center;
-        
+        //Set UI
+        GameObject.Find("UI").GetComponent<CanvasController>().Reposition(height, width);
 
         int spot = UnityEngine.Random.Range(0, height);
         if (spot % 2 == 1) {
