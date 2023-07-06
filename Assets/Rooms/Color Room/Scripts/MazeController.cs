@@ -37,6 +37,7 @@ public class MazeController : MonoBehaviour {
     List<int> rows;
     List<int> cols;
     bool colorBlindMode = false;
+    int numOfColors = 0;
     ColorController colorController;
 
     System.Random rand;
@@ -71,13 +72,17 @@ public class MazeController : MonoBehaviour {
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
         //Set Colors and pairings
-        usedColors = colorController.HexListToColor(ColorPalettes.RandomPalette(colorBlind: colorBlindMode).Value);
+        usedColors = colorController.HexListToColor(ColorPalettes.RandomPalette(colors: numOfColors, colorBlind: colorBlindMode).Value);
         if (usedColors.Count % 2 == 0)
             (beats, color_and_inc) = CirclePairings(usedColors);
         else
             (beats, color_and_inc) = SpockPairings(usedColors);
 
-       
+        /*(beats, color_and_inc) = SpockPairings(usedColors);
+        for(int i = 0; i < beats.Count; i++) {
+            Debug.Log(beats[i].Item1 + " -> " + beats[i].Item2);
+        }*/
+
         (height, width) = SetSizes();
 
         //Set camera
@@ -260,7 +265,7 @@ public class MazeController : MonoBehaviour {
     /// <param name="colors">Length must be >= 3</param>
     /// <returns></returns>
     private (List<Tuple<int, int>>, List<Tuple<Color, float>>) SpockPairings(List<Color> colors) {
-        Debug.Assert(colors.Count >= 3); Debug.Assert(colors.Count % 2 == 1);
+       Debug.Assert(colors.Count >= 3); Debug.Assert(colors.Count % 2 == 1);
 
         List<Tuple<int, int>> pairs = new List<Tuple<int, int>>();
         List<Tuple<Color, float>> info = new List<Tuple<Color, float>>();
@@ -540,6 +545,10 @@ public class MazeController : MonoBehaviour {
     //Slider Methods
     public void ResetTimeChange(float value) {
         ResetAfter = (int) value;
+    }
+
+    public void ChangeNumberOfColors(float value) {
+        numOfColors = (int) value;
     }
 
     public void SpeedChange(float value) {

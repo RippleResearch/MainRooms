@@ -1,4 +1,3 @@
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,70 +5,47 @@ public class CanvasController : MonoBehaviour
 {
     public MazeController maze;
     public GameObject SideMenu;
-    public GameObject ResetTime, Speed, WallsRemove, Reset, ColorBlind;
 
-    public Slider resetSlider, speedSlider, wallsSlider;
-    public TMPro.TextMeshProUGUI resetText, speedText, wallsText;
+    public Slider resetSlider, speedSlider, wallsSlider, colorSlider;
+    public TMPro.TextMeshProUGUI resetText, speedText, wallsText, colorText;
 
-    private bool colorMode = false;
     private void OnEnable() {
-        //Sliders
-        GameObject ResetTime = GameObject.Find("ResetTime");
-        GameObject Speed = GameObject.Find("Speed");
-        GameObject WallsRemove = GameObject.Find("WallsRemove");
-
-
-        Debug.Assert(ResetTime != null);
-        Debug.Assert(Speed != null);
-        Debug.Assert(WallsRemove != null);
-
         //Buttons
         Button Reset = GameObject.Find("RequestReset").GetComponent<Button>();
-        Button ColorBlind = GameObject.Find("ColorBlind").GetComponent<Button>().GetComponent<Button>();
         Debug.Assert(Reset != null);
-        Debug.Assert(ColorBlind != null);
-
         Reset.onClick.AddListener(ResetMaze);
-        ColorBlind.onClick.AddListener(ColorMode);
 
         //Get Sliders
-        resetSlider = ResetTime.GetComponent<Slider>();
-        speedSlider = Speed.GetComponent<Slider>();
-        wallsSlider = WallsRemove.GetComponent<Slider>();
+        resetSlider = GameObject.Find("ResetTime").GetComponent<Slider>();
+        speedSlider = GameObject.Find("Speed").GetComponent<Slider>();
+        wallsSlider = GameObject.Find("WallsRemove").GetComponent<Slider>();
+        colorSlider = GameObject.Find("Colors").GetComponent<Slider>();
 
         Debug.Assert(resetSlider != null);
         Debug.Assert(wallsSlider != null);
         Debug.Assert(speedSlider != null);
+        Debug.Assert(colorSlider != null);
 
         //Get Text
         resetText = GameObject.Find("Reset Text").GetComponent<TMPro.TextMeshProUGUI>();
         speedText = GameObject.Find("Speed Text").GetComponent<TMPro.TextMeshProUGUI>();
-        wallsText = WallsRemove.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+        wallsText = GameObject.Find("Walls Text").GetComponent<TMPro.TextMeshProUGUI>();
+        colorText = GameObject.Find("Colors Text").GetComponent<TMPro.TextMeshProUGUI>();
 
         Debug.Assert(resetText != null);
         Debug.Assert(speedText != null);
         Debug.Assert(wallsText != null);
+        Debug.Assert(colorText != null);
     }
 
     public void Update() {
-        resetText.text = "Reset Time: " + resetSlider.value + " sec";
+        resetText.text = "Reset After: " + resetSlider.value + " sec";
         speedText.text = "Speed: " + System.MathF.Round(speedSlider.value * 100f) + "%";
         wallsText.text = "Remove " + System.MathF.Round(wallsSlider.value * 100f) + "%";
+        colorText.text = "Colors: " + System.MathF.Round(colorSlider.value);
     }
 
     void ResetMaze() {
        maze.SetRequestReset();
     }
-
-    void ColorMode() {
-        if (colorMode == false) {
-            maze.SetColorBindMode(true);
-            colorMode = true;
-        }
-        else {
-            maze.SetColorBindMode(false);
-            colorMode = false;
-        }
-    }
-
 }
