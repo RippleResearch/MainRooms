@@ -67,7 +67,7 @@ public class SpawnBoat : ChaseBoat
         boat.mainShip = GameObject.Find("Ship").transform;
         boat.SetGivenDestination(5, 5, GetValidCircleLocation(origin, radius * multiplier, theta));
         boat.spawnedBoat = true;
-        boat.SetSpeed(100);
+        boat.SetSpeed(10);
         boat.waitMin = boat.waitMax = 2;
         //Destroy after certain amount of time
         StartCoroutine(boat.DestroyAfterTime(timeToLive));

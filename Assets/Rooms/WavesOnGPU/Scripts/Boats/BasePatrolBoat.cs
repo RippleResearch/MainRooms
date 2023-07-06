@@ -6,7 +6,7 @@ public class BasePatrolBoat : AIBoat
 { 
     public virtual void Start()
     {
-        waitMin = 3; waitMax = 3;
+        waitMin = 15; waitMax = 60;
         SetSpeed(10); SetTurnSpeed(130);
         SetRandomDestination(waitMin, waitMax);
     }
