@@ -6,6 +6,7 @@ public class CanvasController : MonoBehaviour
     public MazeController maze;
     public GameObject SideMenu;
 
+    public Toggle randomNum;
     public Slider resetSlider, speedSlider, wallsSlider, colorSlider;
     public TMPro.TextMeshProUGUI resetText, speedText, wallsText, colorText;
 
@@ -36,13 +37,15 @@ public class CanvasController : MonoBehaviour
         Debug.Assert(speedText != null);
         Debug.Assert(wallsText != null);
         Debug.Assert(colorText != null);
+
+        randomNum = GameObject.Find("RandomNumber").GetComponent<Toggle>();
     }
 
     public void Update() {
         resetText.text = "Reset After: " + resetSlider.value + " sec";
         speedText.text = "Speed: " + System.MathF.Round(speedSlider.value * 100f) + "%";
         wallsText.text = "Remove " + System.MathF.Round(wallsSlider.value * 100f) + "%";
-        colorText.text = "Colors: " + System.MathF.Round(colorSlider.value);
+        colorText.text = "Colors: " + (randomNum.isOn ? maze.usedColors.Count : System.MathF.Round(colorSlider.value));
     }
 
     void ResetMaze() {

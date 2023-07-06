@@ -27,6 +27,11 @@ public class MazeController : MonoBehaviour {
 
     public List<Color> usedColors;
 
+    //UI Button and Slider Fields
+    bool colorBlindMode = false;
+    int numOfColors = 3;
+    bool randomNumOfColors = false;
+
 
     //private BFS bfs;
     private const int WALL = 0;
@@ -36,8 +41,6 @@ public class MazeController : MonoBehaviour {
     List<Tuple<Color, float>> color_and_inc;
     List<int> rows;
     List<int> cols;
-    bool colorBlindMode = false;
-    int numOfColors = 0;
     ColorController colorController;
 
     System.Random rand;
@@ -71,8 +74,13 @@ public class MazeController : MonoBehaviour {
         sizeMultiplier = rand.Next(4, 10);
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
+
         //Set Colors and pairings
+        if (randomNumOfColors) 
+            numOfColors = 0;
+
         usedColors = colorController.HexListToColor(ColorPalettes.RandomPalette(colors: numOfColors, colorBlind: colorBlindMode).Value);
+
         if (usedColors.Count % 2 == 0)
             (beats, color_and_inc) = CirclePairings(usedColors);
         else
@@ -566,5 +574,9 @@ public class MazeController : MonoBehaviour {
 
     public void SetColorBindMode(bool val) {
         colorBlindMode = val;
+    }
+
+    public void SetRandomNumOfColors(bool val) {
+        randomNumOfColors = val;
     }
 }
