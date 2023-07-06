@@ -45,7 +45,7 @@ public class ShipController : MonoBehaviour
             Ray ray = cameraSwitchController.getEnabledCam().ScreenPointToRay(Input.mousePosition); //Get a ray from mouse position
             if (Physics.Raycast(ray, out var hitInfo, 100)) //If the ray hits a given layer (added in the editor)
             {
-                if(hitInfo.transform.gameObject.CompareTag("Water")) {
+                if (hitInfo.transform.gameObject.CompareTag("Water") || hitInfo.transform.gameObject.name.StartsWith("Island")) {
                     myAgent.SetDestination(hitInfo.point); //Then ai will move to that location
                     waveController.effect = new Vector3(hitInfo.textureCoord.x * waveController.resolution.x, hitInfo.textureCoord.y * waveController.resolution.y, waveController.effect.z);
                 }
@@ -58,9 +58,9 @@ public class ShipController : MonoBehaviour
         if (Input.touchCount == 1)
         {
             var touchRay = cameraSwitchController.getEnabledCam().ScreenPointToRay(new Vector3(Input.touches[0].position.x, Input.touches[0].position.y, cameraSwitchController.getEnabledCam().nearClipPlane));
-            if (Physics.Raycast(touchRay, out var hitInfo, 100)) //If the ray hits a given layer (added in the editor)
+            if (Physics.Raycast(touchRay, out var hitInfo)) //If the ray hits a given layer (added in the editor)
            {
-                if (hitInfo.transform.gameObject.CompareTag("Water")) {
+                if (hitInfo.transform.gameObject.CompareTag("Water") || hitInfo.transform.gameObject.name.StartsWith("Island")) {
                     myAgent.SetDestination(hitInfo.point); //Then ai will move to that location
                     waveController.effect = new Vector3(hitInfo.textureCoord.x * waveController.resolution.x, hitInfo.textureCoord.y * waveController.resolution.y, waveController.effect.z);
                 }
