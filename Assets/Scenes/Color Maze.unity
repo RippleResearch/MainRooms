@@ -977,7 +977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &347049281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -990,9 +990,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca93ace09f9c4bf4bb3b7cc73f8c4a20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: {fileID: 593469191}
-  ActiveCount: {fileID: 1376148071}
-  Maze: {fileID: 473985718}
 --- !u!4 &347049282
 Transform:
   m_ObjectHideFlags: 0
