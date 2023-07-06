@@ -56,6 +56,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7659612346682448412, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7659612346682448412, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7659612346682448412, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7659612346682448412, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.13
       objectReference: {fileID: 0}
@@ -157,4 +169,6 @@ MonoBehaviour:
   waitMin: 0
   waitMax: 10
   LocationPrefab: {fileID: 7514757060449681718, guid: 41ba63e3bfc0ff547af0874b62bd0492, type: 3}
+  navAgent: {fileID: 0}
   mainShip: {fileID: 0}
+  spawnedBoat: 0

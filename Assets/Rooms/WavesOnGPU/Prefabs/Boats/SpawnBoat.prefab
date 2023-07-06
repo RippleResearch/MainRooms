@@ -137,15 +137,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7659612346682448412, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.05
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7659612346682448412, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.05
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7659612346682448412, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.05
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7659612346682448412, guid: dd6bf11230b66e643949fa3cfa8d52fa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -281,10 +281,10 @@ MonoBehaviour:
   mainShip: {fileID: 0}
   spawnedBoat: 0
   BoatToSpawn: {fileID: 7020118072811046904, guid: 89518f2d141d4ad4793865e1b3c178bb, type: 3}
-  spawnRadius: 10
   multiplier: 4
   shrinkInc: 1
   NumberOfBoats: 0
   maxNumberOfBoats: 10
   timeSinceSpawned: 0
   timeToLive: 5
+  timeout: 20
