@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Color Maze.unity
     guid: 6fe8078e4aac4e049b33fe6aad6a0821
   - enabled: 1
+    path: Assets/Scenes/CoolIt.unity
+    guid: d0315c5a9d4c6234ba3807164ac57ded
+  - enabled: 1
     path: Assets/Scenes/BurgBerg.unity
     guid: 15dc6f2f93436ba41b9b8e4eb5e92147
   m_configObjects: {}
