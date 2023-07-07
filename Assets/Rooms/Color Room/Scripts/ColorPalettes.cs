@@ -116,7 +116,8 @@ public class ColorPalettes {
 
         colorMap.Add(new Dictionary<string, List<string>> {
     // Next 2 From https://digitalsynopsis.com/design/tri-color-palettes-combinations-schemes/
-    {"RYG (3)" , new List<string>{"ff1700","ffa600","4d6910"}},
+    {"RYG (3)", new List<string>{"ff1700","ffa600","4d6910"}},
+    {"RGB (3)",  new List<string>{"4285f4", "34a853", "ea4335"}},
     {"Red To Tan (3)" , new List<string>{"b72818","bc6022","e8c599"}},
     // Next several From https://digitalsynopsis.com/design/color-palettes-schemes-combos-inspiration/
     {"Fairway Green (3)" , new List<string>{"1d3c26","578f53","EADFCE"}},
