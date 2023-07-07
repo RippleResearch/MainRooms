@@ -33,7 +33,7 @@ public class MazeController : MonoBehaviour {
     [HideInInspector] public bool colorBlindMode = false;
     int numOfColors = 3;
     bool randomNumOfColors = false;
-
+    
 
     //private BFS bfs;
     private const int WALL = 0;
@@ -84,6 +84,7 @@ public class MazeController : MonoBehaviour {
 
         if(palSet) {
             usedColors = nextPal;
+            palSet = false;
         }
         else
             usedColors = colorController.HexColorAndPair(ColorPalettes.RandomPalette(colors: numOfColors, colorBlind: colorBlindMode));
@@ -554,6 +555,7 @@ public class MazeController : MonoBehaviour {
 
     public void ChangeNumberOfColors(float value) {
         numOfColors = (int) value;
+        palSet = false;
     }
 
     public void SpeedChange(float value) {
@@ -575,9 +577,11 @@ public class MazeController : MonoBehaviour {
 
     public void SetRandomNumOfColors(bool val) {
         randomNumOfColors = val;
+        palSet = false;
     }
 
-    public void SetNextPal(int val) {
-        Debug.Log(val);
+    public void SetNextPal(KeyValuePair<string, List<string>> pal) {
+        nextPal = colorController.HexColorAndPair(pal);
+        palSet = true;
     }
 }

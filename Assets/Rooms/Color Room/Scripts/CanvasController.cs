@@ -12,6 +12,7 @@ public class CanvasController : MonoBehaviour
     Slider resetSlider, speedSlider, wallsSlider, colorSlider;
     TMPro.TextMeshProUGUI resetText, speedText, wallsText, colorText;
     TMP_Dropdown colorPalletes;
+    private List<string> currentPals;
 
     private void OnEnable() {
         //Buttons
@@ -51,7 +52,7 @@ public class CanvasController : MonoBehaviour
         updatePalletes();
     }
 
-    public void Update() {
+    public void FixedUpdate() {
         resetText.text = "Reset After: " + resetSlider.value + " sec";
         speedText.text = "Speed: " + System.MathF.Round(speedSlider.value * 100f) + "%";
         wallsText.text = "Remove " + System.MathF.Round(wallsSlider.value * 100f) + "%";
@@ -76,10 +77,25 @@ public class CanvasController : MonoBehaviour
                 names.Add(name);
             }
         }
-        colorPalletes.AddOptions(names);
+        colorPalletes.AddOptions(currentPals = names); //Set field to use when it is changed
     }
 
     void ResetMaze() {
        maze.SetRequestReset();
+    }
+
+    public void GetNextPal(int val) {
+        KeyValuePair<string, List<string>> pal;
+        if (!maze.colorBlindMode) {
+            pal = new KeyValuePair<string, List<string>> (currentPals[val], ColorPalettes.GetColorMap()[maze.usedColors.Value.Count - 3][currentPals[val]]);
+        }
+        else {
+            pal = new KeyValuePair<string, List<string>>(currentPals[val], ColorPalettes.GetCBColorMap()[maze.usedColors.Value.Count - 3][currentPals[val]]);
+        }
+
+        //Random color needs to be false since pallete selected
+        if(randomNum.isOn) randomNum.isOn = false;
+
+        maze.SetNextPal(pal);
     }
 }
