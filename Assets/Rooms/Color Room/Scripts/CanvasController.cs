@@ -58,8 +58,9 @@ public class CanvasController : MonoBehaviour
         wallsText.text = "Remove " + System.MathF.Round(wallsSlider.value * 100f) + "%";
         colorText.text = "Colors: " + (randomNum.isOn ? maze.usedColors.Value.Count : System.MathF.Round(colorSlider.value));
 
-        if (maze.resetRequested) {
+        if (maze.updateColorDropDown || maze.resetRequested) {
             updatePalletes();
+            maze.updateColorDropDown = false;
         }
     }
 
@@ -81,7 +82,7 @@ public class CanvasController : MonoBehaviour
     }
 
     void ResetMaze() {
-       maze.SetRequestReset();
+       SetRequestReset();
     }
 
     public void GetNextPal(int val) {
@@ -96,6 +97,44 @@ public class CanvasController : MonoBehaviour
         //Random color needs to be false since pallete selected
         if(randomNum.isOn) randomNum.isOn = false;
 
-        maze.SetNextPal(pal);
+        SetNextPal(pal);
+    }
+
+
+    //Slider Methods
+    public void ResetTimeChange(float value) {
+        maze.ResetAfter = (int)value;
+    }
+
+    public void ChangeNumberOfColors(float value) {
+        maze.numOfColors = (int)value;
+        maze.palSet = false;
+    }
+
+    public void SpeedChange(float value) {
+        maze.baseIncrement = value;
+    }
+
+    public void WallsRemoveChange(float value) {
+        maze.wallsRemoved = value;
+    }
+
+    //Button Methods
+    public void SetRequestReset() {
+        maze.resetRequested = true;
+    }
+
+    public void SetColorBindMode(bool val) {
+        maze.colorBlindMode = val;
+    }
+
+    public void SetRandomNumOfColors(bool val) {
+        maze.randomNumOfColors = val;
+        maze.palSet = false;
+    }
+
+    public void SetNextPal(KeyValuePair<string, List<string>> pal) {
+        maze.nextPal = maze.colorController.HexColorAndPair(pal);
+        maze.palSet = true;
     }
 }

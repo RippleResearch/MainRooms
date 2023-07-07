@@ -26,13 +26,14 @@ public class MazeController : MonoBehaviour {
     public bool resetRequested;
 
     public KeyValuePair<string, List<Color>> nextPal;
-    private bool palSet = false;
+    [HideInInspector] public bool palSet = false;
     public KeyValuePair<string, List<Color>> usedColors;
 
     //UI Button and Slider Fields
     [HideInInspector] public bool colorBlindMode = false;
-    int numOfColors = 3;
-    bool randomNumOfColors = false;
+    [HideInInspector] public int numOfColors = 3;
+    [HideInInspector] public bool randomNumOfColors = false;
+    [HideInInspector] public bool updateColorDropDown = true;
     
 
     //private BFS bfs;
@@ -43,7 +44,7 @@ public class MazeController : MonoBehaviour {
     List<Tuple<Color, float>> color_and_inc;
     List<int> rows;
     List<int> cols;
-    ColorController colorController;
+    [HideInInspector] public ColorController colorController;
 
     System.Random rand;
     int[,] board;
@@ -73,6 +74,7 @@ public class MazeController : MonoBehaviour {
     private void InitializeMaze() {
         Resources.UnloadUnusedAssets();
         AllGameObjects.Clear();
+        updateColorDropDown = true;
 
         sizeMultiplier = rand.Next(4, 10);
         beats = new List<Tuple<int, int>>();
@@ -548,40 +550,4 @@ public class MazeController : MonoBehaviour {
         return beats.Contains(new Tuple<int, int>(a, b));
     }
 
-    //Slider Methods
-    public void ResetTimeChange(float value) {
-        ResetAfter = (int) value;
-    }
-
-    public void ChangeNumberOfColors(float value) {
-        numOfColors = (int) value;
-        palSet = false;
-    }
-
-    public void SpeedChange(float value) {
-        baseIncrement = value;
-    }
-
-    public void WallsRemoveChange(float value) {
-        wallsRemoved = value;
-    }
-
-    //Button Methods
-    public void SetRequestReset() {
-        resetRequested = true;
-    }
-
-    public void SetColorBindMode(bool val) {
-        colorBlindMode = val;
-    }
-
-    public void SetRandomNumOfColors(bool val) {
-        randomNumOfColors = val;
-        palSet = false;
-    }
-
-    public void SetNextPal(KeyValuePair<string, List<string>> pal) {
-        nextPal = colorController.HexColorAndPair(pal);
-        palSet = true;
-    }
 }

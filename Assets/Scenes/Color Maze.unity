@@ -215,8 +215,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 473985718}
-        m_TargetAssemblyTypeName: MazeController, Assembly-CSharp
+      - m_Target: {fileID: 1748181215}
+        m_TargetAssemblyTypeName: CanvasController, Assembly-CSharp
         m_MethodName: ChangeNumberOfColors
         m_Mode: 0
         m_Arguments:
@@ -1172,10 +1172,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 473985718}
-        m_TargetAssemblyTypeName: MazeController, Assembly-CSharp
+      - m_Target: {fileID: 1748181215}
+        m_TargetAssemblyTypeName: CanvasController, Assembly-CSharp
         m_MethodName: SetRequestReset
-        m_Mode: 6
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1314,8 +1314,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 473985718}
-        m_TargetAssemblyTypeName: MazeController, Assembly-CSharp
+      - m_Target: {fileID: 1748181215}
+        m_TargetAssemblyTypeName: CanvasController, Assembly-CSharp
         m_MethodName: ResetTimeChange
         m_Mode: 0
         m_Arguments:
@@ -1535,7 +1535,10 @@ MonoBehaviour:
   timeSinceReset: 0
   active: 0
   resetRequested: 0
+  palSet: 0
   colorBlindMode: 0
+  numOfColors: 3
+  randomNumOfColors: 0
   AllGameObjects: []
 --- !u!1 &483593819
 GameObject:
@@ -2446,8 +2449,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 473985718}
-        m_TargetAssemblyTypeName: MazeController, Assembly-CSharp
+      - m_Target: {fileID: 1748181215}
+        m_TargetAssemblyTypeName: CanvasController, Assembly-CSharp
         m_MethodName: WallsRemoveChange
         m_Mode: 0
         m_Arguments:
@@ -3735,8 +3738,8 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 473985718}
-        m_TargetAssemblyTypeName: MazeController, Assembly-CSharp
+      - m_Target: {fileID: 1748181215}
+        m_TargetAssemblyTypeName: CanvasController, Assembly-CSharp
         m_MethodName: SetColorBindMode
         m_Mode: 0
         m_Arguments:
@@ -5714,8 +5717,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 473985718}
-        m_TargetAssemblyTypeName: MazeController, Assembly-CSharp
+      - m_Target: {fileID: 1748181215}
+        m_TargetAssemblyTypeName: CanvasController, Assembly-CSharp
         m_MethodName: SpeedChange
         m_Mode: 0
         m_Arguments:
@@ -5812,8 +5815,8 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 473985718}
-        m_TargetAssemblyTypeName: MazeController, Assembly-CSharp
+      - m_Target: {fileID: 1748181215}
+        m_TargetAssemblyTypeName: CanvasController, Assembly-CSharp
         m_MethodName: SetRandomNumOfColors
         m_Mode: 0
         m_Arguments:
