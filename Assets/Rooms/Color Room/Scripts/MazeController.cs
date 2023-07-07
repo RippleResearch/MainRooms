@@ -32,7 +32,7 @@ public class MazeController : MonoBehaviour {
     //UI Button and Slider Fields
     [HideInInspector] public bool colorBlindMode = false;
     [HideInInspector] public int numOfColors = 3;
-    [HideInInspector] public bool randomNumOfColors = false;
+    [HideInInspector] public bool randomNumOfColors;
     [HideInInspector] public bool updateColorDropDown = true;
     
 
@@ -86,7 +86,6 @@ public class MazeController : MonoBehaviour {
 
         if(palSet) {
             usedColors = nextPal;
-            palSet = false;
         }
         else
             usedColors = colorController.HexColorAndPair(ColorPalettes.RandomPalette(colors: numOfColors, colorBlind: colorBlindMode));
