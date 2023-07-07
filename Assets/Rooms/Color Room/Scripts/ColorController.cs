@@ -62,6 +62,14 @@ public class ColorController
           };
     }
 
+    public KeyValuePair<string, List<Color>> HexColorAndPair(KeyValuePair<string, List<string>> colors) {
+        List<Color> col = new List<Color>();
+        foreach(string hex in colors.Value) {
+            col.Add(HexToRGB(hex));
+        }
+        return new KeyValuePair<string, List<Color>>(colors.Key, col);
+    }
+
     public List<Color> HexListToColor(List<string> hexValues) {
         List<Color> result = new List<Color>();
         foreach (string hexValue in hexValues) {
