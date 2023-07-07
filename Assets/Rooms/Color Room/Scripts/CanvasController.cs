@@ -61,8 +61,8 @@ public class CanvasController : MonoBehaviour
         Debug.Assert(colorPalletes != null);
 
         //Defaults
-        randomNum.isOn = true;
         colorSlider.value = Random.Range(3, 13);
+        randomNum.isOn = true;
         updatePalletes(updateButtons: true);
     }
 
@@ -109,7 +109,7 @@ public class CanvasController : MonoBehaviour
         }
 
         if (updateButtons || randomNum.isOn) {
-            UpdateColorButtons(maze.usedColors.Key);
+            UpdateColorButtons(names[0]);
         }
         colorPalletes.AddOptions(currentPals = names); //Set field to use when it is changed
     }
