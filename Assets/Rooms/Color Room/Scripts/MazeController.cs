@@ -34,11 +34,15 @@ public class MazeController : MonoBehaviour {
     [HideInInspector] public int numOfColors = 3;
     [HideInInspector] public bool randomNumOfColors;
     [HideInInspector] public bool updateColorDropDown = true;
+    [HideInInspector] public bool randomSize;
     
 
     //private BFS bfs;
     private const int WALL = 0;
     private const int PATH = 1;
+    private const int HEIGHT = 9;
+    private const int WIDTH = 16;
+
     public List<GameObject> AllGameObjects;
     List<Tuple<int, int>> beats;
     List<Tuple<Color, float>> color_and_inc;
@@ -64,9 +68,9 @@ public class MazeController : MonoBehaviour {
 
         rand = new System.Random();
         AllGameObjects = new List<GameObject>();
-        sizeMultiplier = 1;
         width = 16;
         height = 9;
+        sizeMultiplier = 4;
         colorController = new ColorController(); // Automatically initalizes palletes
         InitializeMaze();
     }
@@ -76,7 +80,6 @@ public class MazeController : MonoBehaviour {
         AllGameObjects.Clear();
         updateColorDropDown = true;
 
-        sizeMultiplier = rand.Next(4, 10);
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
 
@@ -522,13 +525,13 @@ public class MazeController : MonoBehaviour {
     }
 
     private (int height, int width) SetSizes() {
-        if (sizeMultiplier != 1) {
-            height = 9;
-            width = 16;
+        if (randomSize) {
+            sizeMultiplier = UnityEngine.Random.Range(4, 8);
         }
 
-        height *= sizeMultiplier;
-        width *= sizeMultiplier;
+
+        height = HEIGHT * sizeMultiplier;
+        width = WIDTH * sizeMultiplier;
         if (height % 2 == 0) {
             height--;
         }

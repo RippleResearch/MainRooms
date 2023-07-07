@@ -6,18 +6,15 @@ using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CanvasController : MonoBehaviour
-{
+public class CanvasController : MonoBehaviour {
     public MazeController maze;
     public GameObject SideMenu, dropdown;
     public List<GameObject> Buttons;
-    Toggle randomNum;
-    Slider resetSlider, speedSlider, wallsSlider, colorSlider;
-    TMPro.TextMeshProUGUI resetText, speedText, wallsText, colorText;
+    Toggle randomNum, randomSize;
+    Slider resetSlider, speedSlider, wallsSlider, colorSlider, sizeSlider;
+    TMPro.TextMeshProUGUI resetText, speedText, wallsText, colorText, sizeText;
     TMP_Dropdown colorPalletes;
     private List<string> currentPals;
-
-    private bool leaveRandOn;
 
     private void OnEnable() {
         //Buttons
@@ -30,32 +27,38 @@ public class CanvasController : MonoBehaviour
         speedSlider = GameObject.Find("Speed").GetComponent<Slider>();
         wallsSlider = GameObject.Find("WallsRemove").GetComponent<Slider>();
         colorSlider = GameObject.Find("Colors").GetComponent<Slider>();
+        sizeSlider = GameObject.Find("SizeMultiplier").GetComponent<Slider>();
 
         Debug.Assert(resetSlider != null);
         Debug.Assert(wallsSlider != null);
         Debug.Assert(speedSlider != null);
         Debug.Assert(colorSlider != null);
+        Debug.Assert(sizeSlider != null);
 
         //Get Text
         resetText = GameObject.Find("Reset Text").GetComponent<TMPro.TextMeshProUGUI>();
         speedText = GameObject.Find("Speed Text").GetComponent<TMPro.TextMeshProUGUI>();
         wallsText = GameObject.Find("Walls Text").GetComponent<TMPro.TextMeshProUGUI>();
         colorText = GameObject.Find("Colors Text").GetComponent<TMPro.TextMeshProUGUI>();
+        sizeText = GameObject.Find("Size Text").GetComponent<TMPro.TextMeshProUGUI>();
 
         Debug.Assert(resetText != null);
         Debug.Assert(speedText != null);
         Debug.Assert(wallsText != null);
         Debug.Assert(colorText != null);
+        Debug.Assert(sizeText != null);
 
         randomNum = GameObject.Find("RandomNumber").GetComponent<Toggle>();
+        randomSize = GameObject.Find("RandomSize").GetComponent<Toggle>();
 
         Debug.Assert(randomNum != null);
-        
+        Debug.Assert(randomSize != null);
+
         colorPalletes = dropdown.GetComponent<TMP_Dropdown>();
 
         //Add buts to array so we can change color
         GameObject buttonParent = GameObject.Find("ColorButtons");
-        for(int i = 0; i < buttonParent.transform.childCount; i++) {
+        for (int i = 0; i < buttonParent.transform.childCount; i++) {
             Buttons.Add(buttonParent.transform.GetChild(i).gameObject);
         }
         Debug.Assert(colorPalletes != null);
@@ -63,30 +66,32 @@ public class CanvasController : MonoBehaviour
         //Defaults
         colorSlider.value = Random.Range(3, 13);
         randomNum.isOn = true;
-        updatePalletes(updateButtons: true);
+        UpdateDropDownPals();
     }
 
     public void FixedUpdate() {
         resetText.text = "Reset After: " + resetSlider.value + " sec";
         speedText.text = "Speed: " + System.MathF.Round(speedSlider.value * 100f) + "%";
-        wallsText.text = "Remove " + System.MathF.Round(wallsSlider.value * 100f) + "%";
+        wallsText.text = "Remove: " + System.MathF.Round(wallsSlider.value * 100f) + "%";
+        sizeText.text = "Size Multiplier: " + (randomSize.isOn ? maze.sizeMultiplier :  sizeSlider.value);
 
         int colorSliderValue;
         if (randomNum.isOn || maze.palSet) {
             colorSliderValue = maze.usedColors.Value.Count;
-        } else {
-            colorSliderValue = (int) colorSlider.value;
+        }
+        else {
+            colorSliderValue = (int)colorSlider.value;
         }
         colorText.text = "Colors: " + colorSliderValue;
 
 
-        if (maze.updateColorDropDown || maze.resetRequested) {
-            updatePalletes(updateButtons: true);
+        if (!maze.palSet && (maze.updateColorDropDown || maze.resetRequested)) {
+            UpdateDropDownPals();
             maze.updateColorDropDown = false;
         }
     }
 
-    void updatePalletes(bool updateButtons = false) {
+    void UpdateDropDownPals() {
         colorPalletes.ClearOptions();
         //colorPalletes.AddOptions(new List<string>{ maze.usedColors.Key });
         List<string> names = new();
@@ -107,27 +112,24 @@ public class CanvasController : MonoBehaviour
                 names.Add(name);
             }
         }
-
-        if (updateButtons || randomNum.isOn) {
-            UpdateColorButtons(names[0]);
-        }
         colorPalletes.AddOptions(currentPals = names); //Set field to use when it is changed
+        UpdateButtonColors(names[0]);
     }
 
-    public void UpdateColorButtons(string palName) {
+    public void UpdateButtonColors(string palName) {
         List<Color> colors;
-        if(!maze.colorBlindMode) {//Assume its selected so it is at 0 index
-            colors = maze.colorController.HexListToColor(ColorPalettes.GetColorMap()[maze.usedColors.Value.Count - 3][palName]); 
+        if (!maze.colorBlindMode) {//Assume its selected so it is at 0 index
+            colors = maze.colorController.HexListToColor(ColorPalettes.GetColorMap()[maze.usedColors.Value.Count - 3][palName]);
         }
         else {//CB mode
             colors = maze.colorController.HexListToColor(ColorPalettes.GetCBColorMap()[maze.usedColors.Value.Count - 3][palName]);
         }
-        
-        for(int i = 0; i < colors.Count; i++) {
+
+        for (int i = 0; i < colors.Count; i++) {
             //Enable button
             Buttons[i].SetActive(true);
             //Set Color
-           ColorBlock cb = Buttons[i].GetComponent<Button>().colors;
+            ColorBlock cb = Buttons[i].GetComponent<Button>().colors;
             cb.normalColor = colors[i];
             cb.pressedColor = colors[i];
             cb.disabledColor = colors[i];
@@ -135,14 +137,26 @@ public class CanvasController : MonoBehaviour
 
             Buttons[i].GetComponent<Button>().colors = cb;
         }
-        for(int i = colors.Count; i < Buttons.Count; i++) {
+        for (int i = colors.Count; i < Buttons.Count; i++) {
             //disable button
             Buttons[i].SetActive(false);
         }
 
     }
 
-    public void GetNextPal(int val) {
+    public void SeletDropDownPal(int val) {
+        KeyValuePair<string, List<string>> pal = GetPalFromIndex(val);
+        //Set Button Colors and whether or not they are enabled
+        UpdateButtonColors(pal.Key);
+
+
+        //Random color needs to be false since pallete selected
+        if (randomNum.isOn) randomNum.isOn = false;
+
+        SetNextPal(pal);
+    }
+
+    private KeyValuePair<string, List<string>> GetPalFromIndex(int val) {
         KeyValuePair<string, List<string>> pal;
         if (!maze.colorBlindMode) {
             pal = new KeyValuePair<string, List<string>>(currentPals[val], ColorPalettes.GetColorMap()[maze.usedColors.Value.Count - 3][currentPals[val]]);
@@ -150,14 +164,8 @@ public class CanvasController : MonoBehaviour
         else {
             pal = new KeyValuePair<string, List<string>>(currentPals[val], ColorPalettes.GetCBColorMap()[maze.usedColors.Value.Count - 3][currentPals[val]]);
         }
-        //Set Button Colors and whether or not they are enabled
-        UpdateColorButtons(pal.Key);
 
-
-        //Random color needs to be false since pallete selected
-        if (randomNum.isOn) randomNum.isOn = false;
-
-        SetNextPal(pal);
+        return pal;
     }
 
 
@@ -170,7 +178,7 @@ public class CanvasController : MonoBehaviour
         maze.numOfColors = (int)value;
         maze.palSet = false;
         randomNum.isOn = false;
-        updatePalletes(updateButtons: true);
+        UpdateDropDownPals();
     }
 
     public void SpeedChange(float value) {
@@ -189,19 +197,32 @@ public class CanvasController : MonoBehaviour
 
     public void SetColorBindMode(bool val) {
         maze.colorBlindMode = val;
-        updatePalletes(updateButtons: true);
+        UpdateDropDownPals();
     }
 
     public void SetRandomNumOfColors(bool val) {
         maze.randomNumOfColors = val;
-        maze.palSet = false;
+        if (val == false) { //if we turn off the button keep the pal we are on
+            maze.palSet = true;
+            maze.nextPal = maze.usedColors;
+        }
+        else {
+            maze.palSet = false; //else give me random pals
+        }
     }
 
     public void SetNextPal(KeyValuePair<string, List<string>> pal) {
         maze.nextPal = maze.colorController.HexColorAndPair(pal);
         maze.palSet = true;
-        
+        UpdateButtonColors(pal.Key);
+    }
 
-        UpdateColorButtons(pal.Key);
+    public void SetSizeMultiplier(float val) {
+        maze.sizeMultiplier = (int)val;
+        randomSize.isOn = false;
+    }
+
+    public void SetRandomSize(bool val) {
+        maze.randomSize = val;
     }
 }
