@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.ShaderData;
 using Color = UnityEngine.Color;
 
 public class MazeController : MonoBehaviour {
@@ -93,10 +94,16 @@ public class MazeController : MonoBehaviour {
         else
             usedColors = colorController.HexColorAndPair(ColorPalettes.RandomPalette(colors: numOfColors, colorBlind: colorBlindMode));
 
-        if (usedColors.Value.Count % 2 == 0)
-            (beats, color_and_inc) = CirclePairings(usedColors.Value);
-        else
-            (beats, color_and_inc) = SpockPairings(usedColors.Value);
+        for (int i = 0; i < usedColors.Value.Count; i++) {
+            color_and_inc.Add(new Tuple<Color, float>(usedColors.Value[i], baseIncrement));
+        }
+
+        //if (usedColors.Value.Count % 2 == 0)
+        //    beats = CirclePairings(usedColors.Value);
+        //else
+        beats = SpockPairings(usedColors.Value);
+        Debug.Log("Pairs: " + beats.Count);
+        Debug.Log("Items: " + string.Join("; ", beats));
 
         (height, width) = SetSizes();
 
@@ -268,52 +275,77 @@ public class MazeController : MonoBehaviour {
     }
 
 
+    //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     /// <summary>
-    /// Returns pairings based on spock Rock Paper Sci.
-    /// Colors array count must be 
+    /// Returns pairings based on spock Rock Paper Sci if odd
+    /// or close to that if even.
     /// </summary>
     /// <param name="colors">Length must be >= 3</param>
     /// <returns></returns>
-    private (List<Tuple<int, int>>, List<Tuple<Color, float>>) SpockPairings(List<Color> colors) {
-       Debug.Assert(colors.Count >= 3); Debug.Assert(colors.Count % 2 == 1);
+    private List<Tuple<int,int>> SpockPairings(List<Color> colors) {
+       Debug.Assert(colors.Count >= 3); 
 
         List<Tuple<int, int>> pairs = new List<Tuple<int, int>>();
-        List<Tuple<Color, float>> info = new List<Tuple<Color, float>>();
-
-        for (int i = 0; i < colors.Count; i++) {
+        if (colors.Count % 2 == 1) {
             for (int j = 0; j < colors.Count / 2; j++) {
-                pairs.Add(new Tuple<int, int>(i, (2 * j + (i + 1)) % colors.Count));
+                for (int i = 0; i < colors.Count; i++) {
+                    pairs.Add(new Tuple<int, int>(i, (2 * j + (i + 1)) % colors.Count));
+                }
             }
-            info.Add(new Tuple<Color, float>(colors[i], baseIncrement));
         }
-        return (pairs, info);
+        else {
+            // Different for even. (This formula might also work for odd, but I didn't verify.)
+            for (int i = 0; i < colors.Count; i++) {
+                for (int j = i+1; j < colors.Count ; j++) {
+                    if ((j-i) % 2 == 1) {
+                        pairs.Add(new Tuple<int, int>(i, j));
+                    } else {
+                        pairs.Add(new Tuple<int, int>(j,i));
+                    }
+                }
+            }
+
+        }
+        return pairs;
     }
 
     /// <summary>
     /// Returns two tuples one of ints for the pairings of who beats who.
     /// In this case it is just cirlce pairings (as in 1 -> 2 -> 3 and so on)
-    /// As well as colors to float. The float is the incremenet that color will 
-    /// expand at. Currently all the floats are the baseIncrement.
     /// </summary>
     /// <param name="colors">Length must be >= 3</param>
-    private (List<Tuple<int, int>>, List<Tuple<Color, float>>) CirclePairings(List<Color> colors) {
+    private List<Tuple<int, int>> CirclePairings(List<Color> colors) {
         Contract.Requires(colors.Count >= 3);
 
         List<Tuple<int, int>> pairs = new List<Tuple<int, int>>();
-        List<Tuple<Color, float>> info = new List<Tuple<Color, float>>();
-
-        for (int i = 0; i < colors.Count; i++) {
-            if (i + 1 < colors.Count) {
-                pairs.Add(new Tuple<int, int>(i, i + 1));
-            }
-            else {
-                pairs.Add(new Tuple<int, int>(i, 0));
-            }
-            info.Add(new Tuple<Color, float>(colors[i], baseIncrement));
-        }
-
-        return (pairs, info);
+        for (int i = 0; i < colors.Count-1; i++) {
+            pairs.Add(new Tuple<int, int>(i, i + 1));
     }
+    pairs.Add(new Tuple<int, int>(colors.Count-1, 0));
+
+        return pairs;
+    }
+    private List<Tuple<int, int>> RandomPairings(List<Color> colors) {
+        Debug.Assert(colors.Count >= 3);
+        List<Tuple<int, int>> pairs = new List<Tuple<int, int>>();
+       
+            for (int i = 0; i < colors.Count; i++) {
+                for (int j = i + 1; j < colors.Count; j++) {
+                    if (rand.Next() % 2 == 0) {
+                        pairs.Add(new Tuple<int, int>(i, j));
+                    } else {
+                        pairs.Add(new Tuple<int, int>(j, i));
+                    }
+                }
+            }
+        return pairs;
+    }
+    private List<Tuple<int, int>> EmptyPairings(List<Color> colors) {
+        return new List<Tuple<int, int>>();
+    }
+    //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 
     private void Propigate(List<DestAndPos> spots, int x, int z) {
         Cell currCell = cells[x, z];
