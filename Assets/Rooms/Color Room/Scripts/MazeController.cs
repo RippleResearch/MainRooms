@@ -25,23 +25,30 @@ public class MazeController : MonoBehaviour {
     public int active;
     public bool resetRequested;
 
-    public List<Color> usedColors;
+    public KeyValuePair<string, List<Color>> nextPal;
+    [HideInInspector] public bool palSet = false;
+    public KeyValuePair<string, List<Color>> usedColors;
 
     //UI Button and Slider Fields
-    bool colorBlindMode = false;
-    int numOfColors = 3;
-    bool randomNumOfColors = false;
-
+    [HideInInspector] public bool colorBlindMode = false;
+    [HideInInspector] public int numOfColors = 3;
+    [HideInInspector] public bool randomNumOfColors;
+    [HideInInspector] public bool updateColorDropDown = true;
+    [HideInInspector] public bool randomSize;
+    
 
     //private BFS bfs;
     private const int WALL = 0;
     private const int PATH = 1;
+    private const int HEIGHT = 9;
+    private const int WIDTH = 16;
+
     public List<GameObject> AllGameObjects;
     List<Tuple<int, int>> beats;
     List<Tuple<Color, float>> color_and_inc;
     List<int> rows;
     List<int> cols;
-    ColorController colorController;
+    [HideInInspector] public ColorController colorController;
 
     System.Random rand;
     int[,] board;
@@ -56,13 +63,14 @@ public class MazeController : MonoBehaviour {
         }
     }
 
-    // Start is called before the first frame update
     void Awake() {
+        Screen.orientation = ScreenOrientation.LandscapeLeft; //Should auto rotate screen when first loading scene
+
         rand = new System.Random();
         AllGameObjects = new List<GameObject>();
-        sizeMultiplier = 1;
         width = 16;
         height = 9;
+        sizeMultiplier = 4;
         colorController = new ColorController(); // Automatically initalizes palletes
         InitializeMaze();
     }
@@ -70,8 +78,8 @@ public class MazeController : MonoBehaviour {
     private void InitializeMaze() {
         Resources.UnloadUnusedAssets();
         AllGameObjects.Clear();
+        updateColorDropDown = true;
 
-        sizeMultiplier = rand.Next(4, 10);
         beats = new List<Tuple<int, int>>();
         color_and_inc = new List<Tuple<Color, float>>();
 
@@ -79,17 +87,16 @@ public class MazeController : MonoBehaviour {
         if (randomNumOfColors) 
             numOfColors = 0;
 
-        usedColors = colorController.HexListToColor(ColorPalettes.RandomPalette(colors: numOfColors, colorBlind: colorBlindMode).Value);
-
-        if (usedColors.Count % 2 == 0)
-            (beats, color_and_inc) = CirclePairings(usedColors);
+        if(palSet) {
+            usedColors = nextPal;
+        }
         else
-            (beats, color_and_inc) = SpockPairings(usedColors);
+            usedColors = colorController.HexColorAndPair(ColorPalettes.RandomPalette(colors: numOfColors, colorBlind: colorBlindMode));
 
-        /*(beats, color_and_inc) = SpockPairings(usedColors);
-        for(int i = 0; i < beats.Count; i++) {
-            Debug.Log(beats[i].Item1 + " -> " + beats[i].Item2);
-        }*/
+        if (usedColors.Value.Count % 2 == 0)
+            (beats, color_and_inc) = CirclePairings(usedColors.Value);
+        else
+            (beats, color_and_inc) = SpockPairings(usedColors.Value);
 
         (height, width) = SetSizes();
 
@@ -178,7 +185,7 @@ public class MazeController : MonoBehaviour {
     }
 
     private void PlaceStartBlocks() {
-        for (int i = 0; i < usedColors.Count; i++) {
+        for (int i = 0; i < usedColors.Value.Count; i++) {
             bool placed = false;
             do {
                 int x = UnityEngine.Random.Range(0, height);
@@ -204,11 +211,6 @@ public class MazeController : MonoBehaviour {
     }
 
     private void Update() {
-
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            Application.Quit();
-        }
-
 
         float diff = Time.time - timeSinceReset;
         if (resetRequested || (timeSinceReset > 0 && diff > ResetAfter)) {
@@ -368,7 +370,7 @@ public class MazeController : MonoBehaviour {
         //GameObject newObject = Instantiate(FlowBlock, Vector3.one, Quaternion.identity);
         Renderer rend = editBlock.gameObject.GetComponent<Renderer>();
         rend.enabled = (true);
-        rend.material.color = usedColors[currBlock.ID]; //so we can change color while runnning
+        rend.material.color = usedColors.Value[currBlock.ID]; //so we can change color while runnning
         editBlock.SetVals(editBlock.gameObject, currBlock.ID, p.dir, p.dest,
             increment: baseIncrement, sizePercent: currBlock.increment);
 
@@ -499,7 +501,7 @@ public class MazeController : MonoBehaviour {
 
     private void CheckForWinners() {
         int alive = 0;
-        for (int i = 0; i < usedColors.Count; i++) {
+        for (int i = 0; i < usedColors.Value.Count; i++) {
             if (GameObject.Find("Parent: " + i).transform.childCount > 0)
                 alive++;
             if (alive >= 2)
@@ -523,13 +525,13 @@ public class MazeController : MonoBehaviour {
     }
 
     private (int height, int width) SetSizes() {
-        if (sizeMultiplier != 1) {
-            height = 9;
-            width = 16;
+        if (randomSize) {
+            sizeMultiplier = UnityEngine.Random.Range(4, 8);
         }
 
-        height *= sizeMultiplier;
-        width *= sizeMultiplier;
+
+        height = HEIGHT * sizeMultiplier;
+        width = WIDTH * sizeMultiplier;
         if (height % 2 == 0) {
             height--;
         }
@@ -550,33 +552,4 @@ public class MazeController : MonoBehaviour {
         return beats.Contains(new Tuple<int, int>(a, b));
     }
 
-    //Slider Methods
-    public void ResetTimeChange(float value) {
-        ResetAfter = (int) value;
-    }
-
-    public void ChangeNumberOfColors(float value) {
-        numOfColors = (int) value;
-    }
-
-    public void SpeedChange(float value) {
-        baseIncrement = value;
-    }
-
-    public void WallsRemoveChange(float value) {
-        wallsRemoved = value;
-    }
-
-    //Button Methods
-    public void SetRequestReset() {
-        resetRequested = true;
-    }
-
-    public void SetColorBindMode(bool val) {
-        colorBlindMode = val;
-    }
-
-    public void SetRandomNumOfColors(bool val) {
-        randomNumOfColors = val;
-    }
 }

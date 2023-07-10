@@ -712,4 +712,20 @@ public class ColorPalettes {
         }
         return clist;
     }
+
+    public static List<KeyValuePair<string, List<string>>> GetColorListAll() {
+        return colorListAll;
+    }
+
+    public static List<KeyValuePair<string, List<string>>> GetCBColorListAll() {
+        return cbColorListAll;
+    }
+
+    public static List<Dictionary<string, List<string>>> GetColorMap() {
+        return colorMap;
+    }
+
+    public static List<Dictionary<string, List<string>>> GetCBColorMap() {
+        return cbColorMap;
+    }
 }
