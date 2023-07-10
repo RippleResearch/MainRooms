@@ -10,7 +10,7 @@ public class CanvasController : MonoBehaviour {
     public MazeController maze;
     public GameObject SideMenu, dropdown;
     public List<GameObject> Buttons;
-    Toggle randomNum, randomSize;
+    Toggle randomPal, randomSize, randomNumOfColors;
     Slider resetSlider, speedSlider, wallsSlider, colorSlider, sizeSlider;
     TMPro.TextMeshProUGUI resetText, speedText, wallsText, colorText, sizeText;
     TMP_Dropdown colorPalletes;
@@ -48,11 +48,13 @@ public class CanvasController : MonoBehaviour {
         Debug.Assert(colorText != null);
         Debug.Assert(sizeText != null);
 
-        randomNum = GameObject.Find("RandomNumber").GetComponent<Toggle>();
+        randomPal = GameObject.Find("RandomPal").GetComponent<Toggle>();
         randomSize = GameObject.Find("RandomSize").GetComponent<Toggle>();
+        randomNumOfColors = GameObject.Find("RandomNum").GetComponent<Toggle>();
 
-        Debug.Assert(randomNum != null);
+        Debug.Assert(randomPal != null);
         Debug.Assert(randomSize != null);
+        Debug.Assert(randomNumOfColors != null);
 
         colorPalletes = dropdown.GetComponent<TMP_Dropdown>();
 
@@ -65,7 +67,7 @@ public class CanvasController : MonoBehaviour {
 
         //Defaults
         colorSlider.value = Random.Range(3, 13);
-        randomNum.isOn = true;
+        randomPal.isOn = true;
         UpdateDropDownPals();
     }
 
@@ -76,7 +78,7 @@ public class CanvasController : MonoBehaviour {
         sizeText.text = "Size Multiplier: " + (randomSize.isOn ? maze.sizeMultiplier :  sizeSlider.value);
 
         int colorSliderValue;
-        if (randomNum.isOn || maze.palSet) {
+        if (randomNumOfColors.isOn || maze.palSet) {
             colorSliderValue = maze.usedColors.Value.Count;
         }
         else {
@@ -151,7 +153,7 @@ public class CanvasController : MonoBehaviour {
 
 
         //Random color needs to be false since pallete selected
-        if (randomNum.isOn) randomNum.isOn = false;
+        if (randomPal.isOn) randomPal.isOn = false;
 
         SetNextPal(pal);
     }
@@ -177,7 +179,7 @@ public class CanvasController : MonoBehaviour {
     public void ChangeNumberOfColors(float value) {
         maze.numOfColors = (int)value;
         maze.palSet = false;
-        randomNum.isOn = false;
+        //randomPal.isOn = false;
         UpdateDropDownPals();
     }
 
@@ -202,6 +204,9 @@ public class CanvasController : MonoBehaviour {
 
     public void SetRandomNumOfColors(bool val) {
         maze.randomNumOfColors = val;
+    }
+
+    public void SetRandomPal(bool val) {
         if (val == false) { //if we turn off the button keep the pal we are on
             maze.palSet = true;
             maze.nextPal = maze.usedColors;
