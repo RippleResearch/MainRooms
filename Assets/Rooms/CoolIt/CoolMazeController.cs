@@ -50,6 +50,7 @@ public class CoolMazeController : MonoBehaviour
         width = 16;
         height = 9;
         InitializeMaze();
+        Debug.Break();
     }
 
     private void InitializeMaze() {
