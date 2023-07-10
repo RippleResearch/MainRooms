@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BurgBerg.unity
     guid: 15dc6f2f93436ba41b9b8e4eb5e92147
+  - enabled: 1
+    path: Assets/Scenes/Ripple Room.unity
+    guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects: {}
