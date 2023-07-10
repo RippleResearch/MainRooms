@@ -80,6 +80,7 @@ public class CanvasController : MonoBehaviour {
         int colorSliderValue;
         if (randomNumOfColors.isOn || maze.palSet) {
             colorSliderValue = maze.usedColors.Value.Count;
+            colorSlider.value = maze.usedColors.Value.Count;
         }
         else {
             colorSliderValue = (int)colorSlider.value;
@@ -177,6 +178,7 @@ public class CanvasController : MonoBehaviour {
     }
 
     public void ChangeNumberOfColors(float value) {
+
         maze.numOfColors = (int)value;
         maze.palSet = false;
         //randomPal.isOn = false;
@@ -210,6 +212,7 @@ public class CanvasController : MonoBehaviour {
         if (val == false) { //if we turn off the button keep the pal we are on
             maze.palSet = true;
             maze.nextPal = maze.usedColors;
+            randomNumOfColors.isOn = false;
         }
         else {
             maze.palSet = false; //else give me random pals

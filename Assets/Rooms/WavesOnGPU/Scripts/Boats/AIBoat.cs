@@ -113,6 +113,8 @@ public abstract class AIBoat : MonoBehaviour {
     public IEnumerator DestroyAfterTime(float time) {
         yield return new WaitForSeconds(time);
         CancelInvoke(); // Prevent null error when setting path to main boat
+        StopAllCoroutines();
+        
         Destroy(this.gameObject);
         Destroy(targetObject);
     }
