@@ -64,7 +64,7 @@ public class RippleController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         CheckTouches();
         Vector3[] verts = waveMesh.vertices;
@@ -121,8 +121,8 @@ public class RippleController : MonoBehaviour
             for (int i = 0; i < Input.touchCount; i++)
                 NewTouchWave(Input.GetTouch(i)); 
 
-        /*if (Input.GetMouseButtonDown(0))
-                NewMouseWave();*/
+        if (Input.GetMouseButton(0))
+                NewMouseWave();
     }
     private void NewTouchWave(Touch touch)
     {

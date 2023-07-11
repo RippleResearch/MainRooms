@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2529648898970941963}
   - component: {fileID: 2529648898970941964}
   - component: {fileID: 2529648898970941965}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: RGBPathTile
   m_TagString: Path
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 225664944046599595}
   - component: {fileID: 3714350198199801879}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: BrightGrass
   m_TagString: Untagged
   m_Icon: {fileID: 0}

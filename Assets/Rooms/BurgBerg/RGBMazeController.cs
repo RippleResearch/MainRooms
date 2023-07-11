@@ -67,7 +67,7 @@ public class RGBMazeController : MonoBehaviour {
 
         if (sizeMultiplier != 1) {
             height = 9;
-            width = 16;
+            width = 19;
         }
 
         //if (sizeMultiplier > 2) {

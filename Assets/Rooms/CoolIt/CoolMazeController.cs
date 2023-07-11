@@ -47,7 +47,7 @@ public class CoolMazeController : MonoBehaviour
         rand = new System.Random();
         AllGameObjects = new List<GameObject>();
         sizeMultiplier = 1;
-        width = 16;
+        width = 19;
         height = 9;
         InitializeMaze();
     }
@@ -55,10 +55,8 @@ public class CoolMazeController : MonoBehaviour
     private void InitializeMaze() {
         sizeMultiplier = rand.Next(1, 4);
 
-        if (sizeMultiplier != 1) {
-            height = 9;
-            width = 16;
-        }
+        width = 19;
+        height = 9;
 
         height *= sizeMultiplier;
         width *= sizeMultiplier;

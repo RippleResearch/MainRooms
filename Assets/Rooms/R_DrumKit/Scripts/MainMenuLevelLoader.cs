@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.Rendering.HighDefinition.ScalableSettingLevelParameter;
 
 public class MainMenuLevelLoader : LevelLoader
 {
@@ -23,6 +24,9 @@ public class MainMenuLevelLoader : LevelLoader
 
     public override void CheckHit()
     {
+        if(Input.GetKey(KeyCode.Escape)) {
+            SceneManager.LoadScene(txt.text);
+        }
         // GetMouseButtonDown == (Input.touch.phase == begin)
         if (Input.GetMouseButtonDown(0))
         {

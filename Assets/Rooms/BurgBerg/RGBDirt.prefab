@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2529648898970941963}
   - component: {fileID: 2529648898970941964}
   - component: {fileID: 2529648898970941965}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: RGBDirt
   m_TagString: Dirt
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 960834748966219353}
   - component: {fileID: 1987259789029221454}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Grass (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

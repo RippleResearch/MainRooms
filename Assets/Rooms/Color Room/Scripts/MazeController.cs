@@ -42,7 +42,7 @@ public class MazeController : MonoBehaviour {
     private const int WALL = 0;
     private const int PATH = 1;
     private const int HEIGHT = 9;
-    private const int WIDTH = 16;
+    private const int WIDTH = 19;
 
     public List<GameObject> AllGameObjects;
     List<Tuple<int, int>> beats;
