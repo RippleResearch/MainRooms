@@ -26,16 +26,20 @@ public class MazeController : MonoBehaviour {
     public int active;
     public bool resetRequested;
 
-    public KeyValuePair<string, List<Color>> nextPal;
+    //Colors
+    [HideInInspector] public KeyValuePair<string, List<Color>> nextPal;
     [HideInInspector] public bool palSet = false;
-    public KeyValuePair<string, List<Color>> usedColors;
+    [HideInInspector] public KeyValuePair<string, List<Color>> usedColors;
 
     //UI Button and Slider Fields
     [HideInInspector] public bool colorBlindMode = false;
-    [HideInInspector] public int numOfColors = 3;
+    [HideInInspector] public int numOfColors;
     [HideInInspector] public bool randomNumOfColors;
     [HideInInspector] public bool updateColorDropDown = true;
     [HideInInspector] public bool randomSize;
+    [HideInInspector] public bool rulesSet = false;
+    [HideInInspector] public string methodName;
+    [HideInInspector] public Dictionary<string, int> ruleMethodName = new Dictionary<string, int> { ["Spock Rules"] = 0, ["Random Rules"] = 1, ["No Rules"] = 2 } ;
     
 
     //private BFS bfs;
@@ -101,12 +105,38 @@ public class MazeController : MonoBehaviour {
         //if (usedColors.Value.Count % 2 == 0)
         //    beats = CirclePairings(usedColors.Value);
         //else
-        beats = SpockPairings(usedColors.Value);
-        Debug.Log("Pairs: " + beats.Count);
-        Debug.Log("Items: " + string.Join("; ", beats));
+       
+        //Set pairing rules
+        int methodIndex = rulesSet ? ruleMethodName[methodName] : UnityEngine.Random.Range(0, 3);
 
+        switch (methodIndex) {
+            case 0:
+                beats = SpockPairings(usedColors.Value);
+                methodName = "Spock Rules";
+                Debug.Log("Spock");
+                break;
+            case 1: 
+                beats = RandomPairings(usedColors.Value);
+                methodName = "Random Rules";
+                Debug.Log("Rand");
+                break;
+            case 2:
+                beats = EmptyPairings(usedColors.Value);
+                methodName = "No Rules";
+                Debug.Log("None");
+                break;
+            default:
+                Debug.Log("error");
+                Debug.Break();
+                break;
+        }
+        //beats = SpockPairings(usedColors.Value);
+        //Debug.Log("Pairs: " + beats.Count);
+        //Debug.Log("Items: " + string.Join("; ", beats));
+
+        
+        
         (height, width) = SetSizes();
-
         //Set camera
         Vector3 center = new Vector3(height / 2, height, width / 2);
         Camera.main.transform.position = center;

@@ -10,10 +10,10 @@ public class CanvasController : MonoBehaviour {
     public MazeController maze;
     public GameObject SideMenu, dropdown;
     public List<GameObject> Buttons;
-    Toggle randomPal, randomSize, randomNumOfColors;
+    Toggle randomPal, randomSize, randomNumOfColors, randomRules;
     Slider resetSlider, speedSlider, wallsSlider, colorSlider, sizeSlider;
     TMPro.TextMeshProUGUI resetText, speedText, wallsText, colorText, sizeText;
-    TMP_Dropdown colorPalletes;
+    TMP_Dropdown colorPalletes, rulesDropdown;
     private List<string> currentPals;
 
     private void OnEnable() {
@@ -48,27 +48,35 @@ public class CanvasController : MonoBehaviour {
         Debug.Assert(colorText != null);
         Debug.Assert(sizeText != null);
 
+        //Get Toggles
         randomPal = GameObject.Find("RandomPal").GetComponent<Toggle>();
         randomSize = GameObject.Find("RandomSize").GetComponent<Toggle>();
         randomNumOfColors = GameObject.Find("RandomNum").GetComponent<Toggle>();
+        randomRules = GameObject.Find("RandomRules").GetComponent<Toggle>();
 
         Debug.Assert(randomPal != null);
         Debug.Assert(randomSize != null);
         Debug.Assert(randomNumOfColors != null);
+        Debug.Assert(randomRules != null);
 
+        //Get Dropdowns
         colorPalletes = dropdown.GetComponent<TMP_Dropdown>();
+        rulesDropdown = GameObject.Find("RulesDropDown").GetComponent<TMP_Dropdown>();
 
-        //Add buts to array so we can change color
+        //Add buttons to array so we can change color
         GameObject buttonParent = GameObject.Find("ColorButtons");
         for (int i = 0; i < buttonParent.transform.childCount; i++) {
             Buttons.Add(buttonParent.transform.GetChild(i).gameObject);
         }
+
         Debug.Assert(colorPalletes != null);
+        Debug.Assert(rulesDropdown != null);
 
         //Defaults
         colorSlider.value = Random.Range(3, 13);
         randomPal.isOn = true;
         UpdateDropDownPals();
+        BuildRules();
     }
 
     public void FixedUpdate() {
@@ -87,10 +95,50 @@ public class CanvasController : MonoBehaviour {
         }
         colorText.text = "Colors: " + colorSliderValue;
 
-
+        //Change drop downs and buttons
         if (!maze.palSet && (maze.updateColorDropDown || maze.resetRequested)) {
             UpdateDropDownPals();
             maze.updateColorDropDown = false;
+        }
+        //if we have random rules and we need a reset update the drop down
+        if (randomRules.isOn && (maze.updateColorDropDown || maze.resetRequested)) { 
+            BuildRules();
+        }
+
+
+    }
+
+    void BuildRules() {
+        rulesDropdown.options.Clear();
+        //Make sure correct name is selected on start
+        List<string> names = new List<string>();
+        foreach (string name in maze.ruleMethodName.Keys) {
+            if (name.Equals(maze.methodName)) {
+                names.Insert(0, name);
+            }
+            else {
+                names.Add(name);
+            }
+        }
+        rulesDropdown.AddOptions(names);
+
+        Debug.Log("Updating dropdown new first index should be: " + names[0]);
+    }
+    
+    public void SetRules(int val) {
+        randomRules.isOn = false;
+
+        maze.rulesSet = true; //Rules have been set for next reset
+        maze.methodName = rulesDropdown.options[val].text; //Set method name for method to call
+    }
+
+    public void RandomRules(bool val) {
+        if (!val) {
+            maze.methodName = rulesDropdown.options[rulesDropdown.value].text;
+            maze.rulesSet = true; //Rules have been set for next reset
+        }
+        else {
+            maze.rulesSet = false;
         }
     }
 
