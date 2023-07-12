@@ -82,7 +82,7 @@ public class CanvasController : MonoBehaviour {
     public void FixedUpdate() {
         resetText.text = "Reset After: " + resetSlider.value + " sec";
         speedText.text = "Speed: " + System.MathF.Round(speedSlider.value * 100f) + "%";
-        wallsText.text = "Remove: " + System.MathF.Round(wallsSlider.value * 100f) + "%";
+        wallsText.text = "Remove " + System.MathF.Round(wallsSlider.value * 100f) + "% Walls";
         
         //Size slider
         int sizeSliderValue = randomSize.isOn ? maze.sizeMultiplier : (int) sizeSlider.value;
@@ -109,7 +109,7 @@ public class CanvasController : MonoBehaviour {
             maze.updateColorDropDown = false;
         }
         //if we have random rules and we need a reset update the drop down
-        if (randomRules.isOn && (maze.updateColorDropDown || maze.resetRequested)) { 
+        if (maze.updateRuleDropDown && (maze.updateColorDropDown || maze.resetRequested)) { 
             BuildRules();
         }
     }
@@ -135,8 +135,8 @@ public class CanvasController : MonoBehaviour {
             }
         }
         rulesDropdown.AddOptions(names);
-
-        //Debug.Log("Updating dropdown new first index should be: " + names[0]);
+        maze.updateRuleDropDown = false;
+        Debug.Log("Updating dropdown new first index should be: " + names[0]);
     }
     
     public void SetRules(int val) {
