@@ -38,8 +38,9 @@ public class MazeController : MonoBehaviour {
     [HideInInspector] public bool rulesSet;
     [HideInInspector] public bool updateRuleDropDown;
     [HideInInspector] public string methodName;
-    [HideInInspector] public Dictionary<string, int> ruleMethodName;
-    
+    //[HideInInspector] public Dictionary<string, int> ruleMethodName;
+    public List<string> ruleList; 
+
 
     //private BFS bfs;
     private const int WALL = 0;
@@ -85,7 +86,8 @@ public class MazeController : MonoBehaviour {
         updateColorDropDown = true; // Update the color drop down pallete values
         rulesSet = false; // Use random rules
         updateRuleDropDown = true;
-        ruleMethodName = new Dictionary<string, int> { ["Spock Order"] = 0, ["Chaotic Order"] = 1, ["No Order"] = 2, ["Circle Order"] = 3}; //Probably don't need but works for now
+        ruleList = new List<string> () { "Spock Order", "Chaotic Order", "Circle Order", "No Order"};
+        //ruleMethodName = new Dictionary<string, int> { ["Spock Order"] = 0, ["Chaotic Order"] = 1, ["Circle Order"] = 2, ["No Order"] = 3 }; //Probably don't need but works for now
 
         InitializeMaze();
     }
@@ -115,36 +117,36 @@ public class MazeController : MonoBehaviour {
         //if (usedColors.Value.Count % 2 == 0)
         //    beats = CirclePairings(usedColors.Value);
         //else
-       
-        //Set pairing rules
-        int methodIndex = rulesSet ? ruleMethodName[methodName] : UnityEngine.Random.Range(0, 3);
 
-        switch (methodIndex) {
-            case 0:
+        //Set pairing rules
+        //int methodIndex = rulesSet ? ruleMethodName[methodName] : UnityEngine.Random.Range(0, ruleList.Count);
+        if(!rulesSet) {
+            methodName = ruleList[UnityEngine.Random.Range(0, ruleList.Count)];
+            updateRuleDropDown = true;
+            //Debug.Log("Picking a random one:"+methodName);
+        }
+
+        switch (methodName) {
+            case "Spock Order":
                 beats = SpockPairings(usedColors.Value);
-                methodName = "Spock Rules";
                // Debug.Log("Spock");
                 break;
-            case 1: 
+            case "Chaotic Order": 
                 beats = RandomPairings(usedColors.Value);
-                methodName = "Random Rules";
                 //Debug.Log("Rand");
                 break;
-            case 2:
+            case "No Order":
                 beats = EmptyPairings(usedColors.Value);
-                methodName = "No Rules";
                 //Debug.Log("None");
                 break;
-            case 3:
+            case "Circle Order":
                 beats = CirclePairings(usedColors.Value);
-                methodName = "Circle Rules";
                 break;
             default:
                 Debug.Assert(false, "This case should not be used");
                // Debug.Break();
                 break;
         }
-        updateRuleDropDown = true;
         //beats = SpockPairings(usedColors.Value);
         //Debug.Log("Pairs: " + beats.Count);
         //Debug.Log("Items: " + string.Join("; ", beats));

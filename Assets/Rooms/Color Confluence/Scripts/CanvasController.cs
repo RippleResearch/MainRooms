@@ -79,7 +79,7 @@ public class CanvasController : MonoBehaviour {
         BuildRules();
     }
 
-    public void FixedUpdate() {
+    public void Update() {
         resetText.text = "Reset After: " + resetSlider.value + " sec";
         speedText.text = "Speed: " + System.MathF.Round(speedSlider.value * 100f) + "%";
         wallsText.text = "Remove " + System.MathF.Round(wallsSlider.value * 100f) + "% Walls";
@@ -109,12 +109,11 @@ public class CanvasController : MonoBehaviour {
             maze.updateColorDropDown = false;
         }
         //if we have random rules and we need a reset update the drop down
-        if (maze.updateRuleDropDown && (maze.updateColorDropDown || maze.resetRequested)) { 
+        //if (maze.updateRuleDropDown && (maze.updateColorDropDown || maze.resetRequested)) {
+        if (randomRules.isOn && (maze.updateRuleDropDown || maze.resetRequested)) {
             BuildRules();
         }
-    }
 
-    public void Update() {
         if (Input.GetMouseButtonDown(0) && SideMenu.GetComponent<SimpleSideMenu>().CurrentState.ToString().Equals("Open")) {
             if(eventSystem.GetComponent<EventSystem>().currentSelectedGameObject == null) {
                 SideMenu.GetComponent<SimpleSideMenu>().Close();
@@ -126,7 +125,7 @@ public class CanvasController : MonoBehaviour {
         rulesDropdown.options.Clear();
         //Make sure correct name is selected on start
         List<string> names = new List<string>();
-        foreach (string name in maze.ruleMethodName.Keys) {
+        foreach (string name in maze.ruleList) {
             if (name.Equals(maze.methodName)) {
                 names.Insert(0, name);
             }
@@ -136,7 +135,7 @@ public class CanvasController : MonoBehaviour {
         }
         rulesDropdown.AddOptions(names);
         maze.updateRuleDropDown = false;
-        Debug.Log("Updating dropdown new first index should be: " + names[0]);
+        //Debug.Log("Updating dropdown new first index should be: " + names[0]);
     }
     
     public void SetRules(int val) {
