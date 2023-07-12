@@ -85,7 +85,7 @@ public class MazeController : MonoBehaviour {
         updateColorDropDown = true; // Update the color drop down pallete values
         rulesSet = false; // Use random rules
         updateRuleDropDown = true;
-        ruleMethodName = new Dictionary<string, int> { ["Spock Rules"] = 0, ["Random Rules"] = 1, ["No Rules"] = 2, ["Circle Rules"] = 3}; //Probably don't need but works for now
+        ruleMethodName = new Dictionary<string, int> { ["Spock Order"] = 0, ["Chaotic Order"] = 1, ["No Order"] = 2, ["Circle Order"] = 3}; //Probably don't need but works for now
 
         InitializeMaze();
     }
