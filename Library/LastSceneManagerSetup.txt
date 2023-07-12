@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Color Maze.unity
+- path: Assets/Rooms/ThrowingRoom/Scenes/SampleScene.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
