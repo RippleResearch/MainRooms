@@ -1,9 +1,6 @@
 using DanielLochner.Assets.SimpleSideMenu;
-using JetBrains.Annotations;
 using System.Collections.Generic;
-using System.Globalization;
 using TMPro;
-using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;

@@ -51,6 +51,8 @@ public class RGBMazeController : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
+        Screen.orientation = ScreenOrientation.LandscapeLeft; //Should auto rotate screen when first loading scene
+
         rand = new System.Random();
         AllGameObjects = new List<GameObject>();
         sizeMultiplier = 1;

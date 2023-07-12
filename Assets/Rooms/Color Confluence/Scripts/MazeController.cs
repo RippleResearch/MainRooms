@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.ShaderData;
 using Color = UnityEngine.Color;
 
 public class MazeController : MonoBehaviour {
@@ -85,7 +83,7 @@ public class MazeController : MonoBehaviour {
         randomNumOfColors = true; // start with random num of colors
         updateColorDropDown = true; // Update the color drop down pallete values
         rulesSet = false; // Use random rules
-        ruleMethodName = new Dictionary<string, int> { ["Spock Rules"] = 0, ["Random Rules"] = 1, ["No Rules"] = 2 }; //Probably don't need but works for now
+        ruleMethodName = new Dictionary<string, int> { ["Spock Rules"] = 0, ["Random Rules"] = 1, ["No Rules"] = 2, ["Circle Rules"] = 3}; //Probably don't need but works for now
 
         InitializeMaze();
     }
@@ -134,6 +132,10 @@ public class MazeController : MonoBehaviour {
                 beats = EmptyPairings(usedColors.Value);
                 methodName = "No Rules";
                 //Debug.Log("None");
+                break;
+            case 3:
+                beats = CirclePairings(usedColors.Value);
+                methodName = "Circle Rules";
                 break;
             default:
                 Debug.Assert(false, "This case should not be used");
