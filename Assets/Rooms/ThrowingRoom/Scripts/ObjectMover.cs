@@ -125,14 +125,10 @@ public class ObjectMover : MonoBehaviour {
         (Vector2 point1, Vector2 point2, float dTime) = LinearRegression(touch);
         Vector2 force = point2 - point1;
 
-        //Debug.Log("Before: X: " + forces.x + " Y: " + forces.y + " Z: " + forces.magnitude / Mathf.Ceil(Mathf.Abs(forces.x / forces.y)));
         if (Mathf.Abs(force.x) > force.y)
             force.x *= 2f;
 
-        //Debug.Log("Dtime: " + dTime);
-        //Debug.Log("After: X: " + forces.x + " Y: " + forces.y + " Z: " + forces.magnitude / Mathf.Ceil(Mathf.Abs(forces.x / forces.y)));
         return new Vector3(force.x, force.y, force.magnitude) * 2f;
-        //return new Vector3(forces.x, forces.y, forces.magnitude / Mathf.Ceil(Mathf.Abs(forces.x / forces.y)));
     }
 
     public (Vector2, Vector2, float) LinearRegression(Touch touch) {
