@@ -36,6 +36,7 @@ public class MazeController : MonoBehaviour {
     [HideInInspector] public bool updateColorDropDown;
     [HideInInspector] public bool randomSize;
     [HideInInspector] public bool rulesSet;
+    [HideInInspector] public bool updateRuleDropDown;
     [HideInInspector] public string methodName;
     [HideInInspector] public Dictionary<string, int> ruleMethodName;
     
@@ -83,6 +84,7 @@ public class MazeController : MonoBehaviour {
         randomNumOfColors = true; // start with random num of colors
         updateColorDropDown = true; // Update the color drop down pallete values
         rulesSet = false; // Use random rules
+        updateRuleDropDown = true;
         ruleMethodName = new Dictionary<string, int> { ["Spock Rules"] = 0, ["Random Rules"] = 1, ["No Rules"] = 2, ["Circle Rules"] = 3}; //Probably don't need but works for now
 
         InitializeMaze();
@@ -142,12 +144,13 @@ public class MazeController : MonoBehaviour {
                // Debug.Break();
                 break;
         }
+        updateRuleDropDown = true;
         //beats = SpockPairings(usedColors.Value);
         //Debug.Log("Pairs: " + beats.Count);
         //Debug.Log("Items: " + string.Join("; ", beats));
 
-        
-        
+
+
         (height, width) = SetSizes();
         //Set camera
         Vector3 center = new Vector3(height / 2, height, width / 2);
