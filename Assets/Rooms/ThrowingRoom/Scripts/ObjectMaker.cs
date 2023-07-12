@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -35,7 +36,6 @@ public class ObjectMaker : MonoBehaviour
                 }
             }
             if ((touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary) && active == true) {
-                
                 newObj.SetActive(true);
                 newObj.transform.localScale *= 1.02f;
             }

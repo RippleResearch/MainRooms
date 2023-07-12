@@ -12,29 +12,17 @@ public class ObjectMover : MonoBehaviour {
     float swipeDistance;
     private Vector2 startPos, endPos;
 
-    public float MinSwipDist = 0;
-    public float MaxBallSpeed = 350;
-
     int count;
 
     private Vector3 newPosition;
     private Vector3 lastPos;
 
-    //[SerializeField] private int numOfPoints;
     [SerializeField] private Dictionary<int, GameObject> movObj;
     [SerializeField] private Dictionary<int, SlidingBuffer<Vector2>> pastPoints;
     [SerializeField] private Dictionary<int, SlidingBuffer<float>> swipeTime;
-    /*[SerializeField][Range(-100f, 100f)] float xVector;
-    [SerializeField][Range(0f, 100f)] float comDiv;
-    [SerializeField][Range(0f, 100f)] float num;*/
 
     void Start() {
         movObj = new Dictionary<int, GameObject>();
-        /*      xVector = 20f;
-              comDiv = 2f;
-              num = 1.5f;*/
-        //numOfPoints = 20;
-        count = 1;
         pastPoints = new Dictionary<int, SlidingBuffer<Vector2>>(); //make new SB when a new unique finger ID is registered
         swipeTime = new Dictionary<int, SlidingBuffer<float>>();
     }
@@ -42,17 +30,14 @@ public class ObjectMover : MonoBehaviour {
     void Update() {
         for (int i = 0; i < Input.touchCount; i++) {
             Touch touch = Input.touches[i];
-            float theta = Mathf.Atan2(touch.deltaPosition.y, touch.deltaPosition.x);
-            theta = theta * 180f / (float)Math.PI;
-            Debug.Log(count + ": DP: " + touch.deltaPosition + " DT: " + touch.deltaTime + " Th: " + theta);
+            //float theta = Mathf.Atan2(touch.deltaPosition.y, touch.deltaPosition.x);
+            //theta = theta * 180f / (float)Math.PI;
+            //Debug.Log(count + ": DP: " + touch.deltaPosition + " DT: " + touch.deltaTime + " Th: " + theta);
 
             if (touch.phase == TouchPhase.Began) {
                 RaycastHit hit;
                 Ray ray = Camera.main.ScreenPointToRay(touch.position);
                 if (Physics.Raycast(ray, out hit) && hit.transform.CompareTag("Moveable") && hit.rigidbody) {
-                    //StopAllCoroutines(); // Remove this later
-
-                    
                     // Begin to move ball if it has the right tag and a rigidbody
                     // putting the moveable game object into an indexed array based on unique touch ID
                     movObj[touch.fingerId] = hit.transform.gameObject;
@@ -88,7 +73,7 @@ public class ObjectMover : MonoBehaviour {
                 PickupBall(touch);
             }
             else if (touch.phase == TouchPhase.Ended && movObj.ContainsKey(touch.fingerId)) {
-                Debug.Log("**********************************");
+                //Debug.Log("**********************************");
                 // Throw the ball
                 ThrowBall(touch);
                 pastPoints[touch.fingerId].Clear();
@@ -138,23 +123,17 @@ public class ObjectMover : MonoBehaviour {
 
     private Vector3 CalculateBallForce(Touch touch) {
         (Vector2 point1, Vector2 point2, float dTime) = LinearRegression(touch);
-        Vector2 forces = point2 - point1;
+        Vector2 force = point2 - point1;
 
         //Debug.Log("Before: X: " + forces.x + " Y: " + forces.y + " Z: " + forces.magnitude / Mathf.Ceil(Mathf.Abs(forces.x / forces.y)));
-        if (Mathf.Abs(forces.x) > forces.y)
-            forces.x *= 2f;
+        if (Mathf.Abs(force.x) > force.y)
+            force.x *= 2f;
 
         //Debug.Log("Dtime: " + dTime);
         //Debug.Log("After: X: " + forces.x + " Y: " + forces.y + " Z: " + forces.magnitude / Mathf.Ceil(Mathf.Abs(forces.x / forces.y)));
-        return new Vector3(forces.x, forces.y, forces.magnitude) * 2f;
+        return new Vector3(force.x, force.y, force.magnitude) * 2f;
         //return new Vector3(forces.x, forces.y, forces.magnitude / Mathf.Ceil(Mathf.Abs(forces.x / forces.y)));
     }
-
-    /*public float SigmoidFunction(int scale, float x) {
-        // | scale / (1+e^(-x/(scale/2))) - (scale/2) | << abs val
-        float denom = (float)(1 + Math.Pow(Math.E, -x / (scale/2)));
-        return (scale / denom) - (scale/2);
-    }*/
 
     public (Vector2, Vector2, float) LinearRegression(Touch touch) {
 
@@ -204,12 +183,9 @@ public class ObjectMover : MonoBehaviour {
 
         //Debug.Log("xP0: " + xPointZero + " xPn: " + xPointN + " Slp: " + slope + " yInt: " + yIntercept);
 
-        Vector2 point1 = new Vector2(xPointZero, (slope * xPointZero) + yIntercept);
-        Vector2 point2 = new Vector2(xPointN, (slope * xPointN) + yIntercept);
+        Vector2 point1 = new(xPointZero, (slope * xPointZero) + yIntercept);
+        Vector2 point2 = new(xPointN, (slope * xPointN) + yIntercept);
 
-        //Vector2 result = point2 - point1;
-        //Debug.Log("Point1: " + point1 + " Point2: " + point2);
-        //Debug.Log("X: " + result.x + " Y: " + result.y);
         return (point1, point2, dTime);
     }
 
@@ -217,7 +193,6 @@ public class ObjectMover : MonoBehaviour {
         Vector2 sum = Vector2.zero;
 
         //CalculateVectorAngle(touch);
-        //PrintQueue(touch);
 
         if (pastPoints[touch.fingerId].Count() == 0)
             throw new NullReferenceException(); // Nothing in past points, should not happen?
@@ -240,10 +215,6 @@ public class ObjectMover : MonoBehaviour {
         for (int i = 0; i < pp.Length - 2; i++) {
             Vector2 v1 = pp[i] - pp[i + 1];
             Vector2 v2 = pp[i + 2] - pp[i + 1];
-            //if (v1 == Vector2.zero || v2 == Vector2.zero) {
-            //i += 1;
-            //}
-            //else {
             float angle = Mathf.Acos(Vector2.Dot(v1, v2) / (v1.magnitude * v2.magnitude));
             angle = (float)(angle * 180 / Math.PI);
             Debug.Log("v1: " + v1 + " v2: " + v2 + " Angle " + (i + 1) + ": " + angle);
@@ -252,7 +223,6 @@ public class ObjectMover : MonoBehaviour {
             if (angle < 165f && !(i + 1 > pp.Length - 5)) {
                 index = i + 1;
             }
-            //}
         }
         Debug.Log("Index: " + index);
         Queue<Vector2> q = new Queue<Vector2>();
@@ -276,7 +246,6 @@ public class ObjectMover : MonoBehaviour {
         endPos = Vector2.zero;
         startPos = Vector2.zero;
         swipeDistance = 0;
-        //holding = false;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = true;
@@ -288,7 +257,6 @@ public class ObjectMover : MonoBehaviour {
         endPos = Vector2.zero;
         startPos = Vector2.zero;
         swipeDistance = 0;
-        //holding = false;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = true;
