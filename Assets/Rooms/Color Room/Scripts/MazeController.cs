@@ -79,6 +79,7 @@ public class MazeController : MonoBehaviour {
         waitTime = 2; //Do not wait after restart
         ResetAfter = 15; // Once filled, reset after 15 seconds
         sizeMultiplier = 4; // Need size so UI Can be seen (should not need this but do because of bad programming, you can fix it, I believe in you!)
+        randomSize = true; // start with random size between 4 and 8
         palSet = false; // Start with random pals
         colorBlindMode = false; // Start with normal colors
         randomNumOfColors = true; // start with random num of colors
@@ -176,18 +177,18 @@ public class MazeController : MonoBehaviour {
                 if (x >= 0 && z >= 0 && z < width && x < height) {
                     cells[x, z] = cell;
                     if (cell.Block1.gameObject.CompareTag("Dirt")) {
-                        cells[x, z].isActive = false;
+                        cells[x, z].isActive = false;   
                     }
                 }
             }
         }
-
+        timeSinceReset = Time.time;
         PlaceStartBlocks();
+       
         //For random processing
         rows = Enumerable.Range(0, height).ToList();
         cols = Enumerable.Range(0, width).ToList();
         
-        timeSinceReset = -1;
         resetRequested = false;
     }
 
@@ -257,6 +258,9 @@ public class MazeController : MonoBehaviour {
     }
 
     private void Update() {
+        if(Time.time - timeSinceReset < waitTime) {
+            return;
+        }
 
         float diff = Time.time - timeSinceReset;
         if (resetRequested || (timeSinceReset > 0 && diff > ResetAfter)) {
@@ -589,11 +593,10 @@ public class MazeController : MonoBehaviour {
                 Destroy(go);
             }
         }
-        StopAllCoroutines();
         InitializeMaze();
-
+        StopAllCoroutines();
         yield return new WaitForSeconds(waitTime);
-        Debug.Log("You will see me");
+
     }
 
     private (int height, int width) SetSizes() {

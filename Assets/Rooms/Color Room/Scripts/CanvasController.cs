@@ -1,14 +1,16 @@
+using DanielLochner.Assets.SimpleSideMenu;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Globalization;
 using TMPro;
 using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CanvasController : MonoBehaviour {
     public MazeController maze;
-    public GameObject SideMenu, dropdown;
+    public GameObject SideMenu, dropdown, eventSystem;
     public List<GameObject> Buttons;
     Toggle randomPal, randomSize, randomNumOfColors, randomRules;
     Slider resetSlider, speedSlider, wallsSlider, colorSlider, sizeSlider;
@@ -74,6 +76,7 @@ public class CanvasController : MonoBehaviour {
 
         //Defaults
         colorSlider.value = Random.Range(3, 13);
+        randomNumOfColors.isOn = true;
         randomPal.isOn = true;
         UpdateDropDownPals();
         BuildRules();
@@ -83,18 +86,26 @@ public class CanvasController : MonoBehaviour {
         resetText.text = "Reset After: " + resetSlider.value + " sec";
         speedText.text = "Speed: " + System.MathF.Round(speedSlider.value * 100f) + "%";
         wallsText.text = "Remove: " + System.MathF.Round(wallsSlider.value * 100f) + "%";
-        sizeText.text = "Size Multiplier: " + (randomSize.isOn ? maze.sizeMultiplier :  sizeSlider.value);
+        
+        //Size slider
+        int sizeSliderValue = randomSize.isOn ? maze.sizeMultiplier : (int) sizeSlider.value;
+        if(sizeSliderValue == maze.sizeMultiplier) {
+            bool before = randomSize.isOn;
+            sizeSlider.value = maze.sizeMultiplier;
+            randomSize.isOn = before;
+        }
+        sizeText.text = "Size Multiplier: " + sizeSliderValue;
+        
 
-        int colorSliderValue;
-        if (randomNumOfColors.isOn || maze.palSet) {
-            colorSliderValue = maze.usedColors.Value.Count;
+        //Color slider
+        int colorSliderValue = (randomNumOfColors.isOn || maze.palSet) ? maze.usedColors.Value.Count : (int)colorSlider.value;
+        if(colorSliderValue == maze.usedColors.Value.Count) {
+            bool before = randomNumOfColors.isOn;
             colorSlider.value = maze.usedColors.Value.Count;
+            randomNumOfColors.isOn = before;
         }
-        else {
-            colorSliderValue = (int)colorSlider.value;
-        }
-        colorText.text = "Colors: " + colorSliderValue;
 
+        colorText.text = "Colors: " + colorSliderValue;
         //Change drop downs and buttons
         if (!maze.palSet && (maze.updateColorDropDown || maze.resetRequested)) {
             UpdateDropDownPals();
@@ -104,8 +115,14 @@ public class CanvasController : MonoBehaviour {
         if (randomRules.isOn && (maze.updateColorDropDown || maze.resetRequested)) { 
             BuildRules();
         }
+    }
 
-
+    public void Update() {
+        if (Input.GetMouseButtonDown(0) && SideMenu.GetComponent<SimpleSideMenu>().CurrentState.ToString().Equals("Open")) {
+            if(eventSystem.GetComponent<EventSystem>().currentSelectedGameObject == null) {
+                SideMenu.GetComponent<SimpleSideMenu>().Close();
+            }
+        }
     }
 
     void BuildRules() {
@@ -226,10 +243,9 @@ public class CanvasController : MonoBehaviour {
     }
 
     public void ChangeNumberOfColors(float value) {
-
-        maze.numOfColors = (int)value;
+        maze.numOfColors = (int) value;
         maze.palSet = false;
-        //randomPal.isOn = false;
+        randomNumOfColors.isOn = false;
         UpdateDropDownPals();
     }
 

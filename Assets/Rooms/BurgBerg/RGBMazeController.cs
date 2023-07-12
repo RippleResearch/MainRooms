@@ -258,9 +258,7 @@ public class RGBMazeController : MonoBehaviour {
     }
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            Application.Quit();
-        }
+        
         if(createTime>0) {
             float sinceCreate = Time.time - createTime;
             if(sinceCreate>2) {
