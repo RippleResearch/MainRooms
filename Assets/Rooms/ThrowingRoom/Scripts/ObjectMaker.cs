@@ -31,12 +31,13 @@ public class ObjectMaker : MonoBehaviour
                     newObj.GetComponent<Rigidbody>().useGravity = false;
                     newObj.GetComponent<Collider>().enabled = true;
                     active = true;
+                    //newObj.transform.localScale = Vector3.one;
                 }
             }
             if ((touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary) && active == true) {
-                newObj.transform.localScale = Vector3.one;
+                
                 newObj.SetActive(true);
-                newObj.transform.localScale *= 2f;
+                newObj.transform.localScale *= 1.02f;
             }
             if (touch.phase == TouchPhase.Ended && active == true) {
                 newObj.GetComponent<Rigidbody>().useGravity = true;
