@@ -44,8 +44,10 @@ public class ScrollingText : MonoBehaviour
     }
 
     public void ActivateText() {
+        StopAllCoroutines();
         StartCoroutine(AnimateText());
-        
+        currentDisplayingText++;
+        currentDisplayingText = (currentDisplayingText >= itemInfo.Length) ? 0 : currentDisplayingText;
     }
 
     IEnumerator AnimateText() {
@@ -53,8 +55,5 @@ public class ScrollingText : MonoBehaviour
             itemInfoText.text = itemInfo[currentDisplayingText].Substring(0, i);
             yield return new WaitForSeconds(textSpeed);
         }
-
-        currentDisplayingText++;
-        currentDisplayingText = (currentDisplayingText >= itemInfo.Length) ? 0 : currentDisplayingText;
     }
 }
