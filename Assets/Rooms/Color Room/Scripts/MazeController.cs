@@ -15,31 +15,31 @@ public class MazeController : MonoBehaviour {
     public int sizeMultiplier;
     public int height, width;
     [Range(0f, 4f)]
-    public float waitTime = 0;
+    public float waitTime;
     [Range(1 / 64.0f, 1f)]
     public float baseIncrement;
     [Range(0f, 1f)]
     public float wallsRemoved;
     [Range(1, 120)]
-    public int ResetAfter = 15;
+    public int ResetAfter;
     public float timeSinceReset;
     public int active;
     public bool resetRequested;
 
     //Colors
     [HideInInspector] public KeyValuePair<string, List<Color>> nextPal;
-    [HideInInspector] public bool palSet = false;
+    [HideInInspector] public bool palSet;
     [HideInInspector] public KeyValuePair<string, List<Color>> usedColors;
 
     //UI Button and Slider Fields
-    [HideInInspector] public bool colorBlindMode = false;
+    [HideInInspector] public bool colorBlindMode;
     [HideInInspector] public int numOfColors;
     [HideInInspector] public bool randomNumOfColors;
-    [HideInInspector] public bool updateColorDropDown = true;
+    [HideInInspector] public bool updateColorDropDown;
     [HideInInspector] public bool randomSize;
-    [HideInInspector] public bool rulesSet = false;
+    [HideInInspector] public bool rulesSet;
     [HideInInspector] public string methodName;
-    [HideInInspector] public Dictionary<string, int> ruleMethodName = new Dictionary<string, int> { ["Spock Rules"] = 0, ["Random Rules"] = 1, ["No Rules"] = 2 } ;
+    [HideInInspector] public Dictionary<string, int> ruleMethodName;
     
 
     //private BFS bfs;
@@ -73,10 +73,19 @@ public class MazeController : MonoBehaviour {
 
         rand = new System.Random();
         AllGameObjects = new List<GameObject>();
-        width = 16;
-        height = 9;
-        sizeMultiplier = 4;
         colorController = new ColorController(); // Automatically initalizes palletes
+
+        //Default values on start
+        waitTime = 2; //Do not wait after restart
+        ResetAfter = 15; // Once filled, reset after 15 seconds
+        sizeMultiplier = 4; // Need size so UI Can be seen (should not need this but do because of bad programming, you can fix it, I believe in you!)
+        palSet = false; // Start with random pals
+        colorBlindMode = false; // Start with normal colors
+        randomNumOfColors = true; // start with random num of colors
+        updateColorDropDown = true; // Update the color drop down pallete values
+        rulesSet = false; // Use random rules
+        ruleMethodName = new Dictionary<string, int> { ["Spock Rules"] = 0, ["Random Rules"] = 1, ["No Rules"] = 2 }; //Probably don't need but works for now
+
         InitializeMaze();
     }
 
@@ -113,21 +122,21 @@ public class MazeController : MonoBehaviour {
             case 0:
                 beats = SpockPairings(usedColors.Value);
                 methodName = "Spock Rules";
-                Debug.Log("Spock");
+               // Debug.Log("Spock");
                 break;
             case 1: 
                 beats = RandomPairings(usedColors.Value);
                 methodName = "Random Rules";
-                Debug.Log("Rand");
+                //Debug.Log("Rand");
                 break;
             case 2:
                 beats = EmptyPairings(usedColors.Value);
                 methodName = "No Rules";
-                Debug.Log("None");
+                //Debug.Log("None");
                 break;
             default:
-                Debug.Log("error");
-                Debug.Break();
+                Debug.Assert(false, "This case should not be used");
+               // Debug.Break();
                 break;
         }
         //beats = SpockPairings(usedColors.Value);
@@ -575,7 +584,6 @@ public class MazeController : MonoBehaviour {
     }
 
     public IEnumerator RequestReset(float waitTime) {
-        yield return new WaitForSeconds(waitTime);
         foreach (GameObject go in AllGameObjects) {
             if (go != null) {
                 Destroy(go);
@@ -584,6 +592,8 @@ public class MazeController : MonoBehaviour {
         StopAllCoroutines();
         InitializeMaze();
 
+        yield return new WaitForSeconds(waitTime);
+        Debug.Log("You will see me");
     }
 
     private (int height, int width) SetSizes() {

@@ -122,7 +122,7 @@ public class CanvasController : MonoBehaviour {
         }
         rulesDropdown.AddOptions(names);
 
-        Debug.Log("Updating dropdown new first index should be: " + names[0]);
+        //Debug.Log("Updating dropdown new first index should be: " + names[0]);
     }
     
     public void SetRules(int val) {
