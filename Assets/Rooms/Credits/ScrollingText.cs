@@ -14,7 +14,9 @@ public class ScrollingText : MonoBehaviour
     void Start()
     {
         itemInfo = new string[] {
-            "Acoustic_Crash_Cymbal1.wav. (n.d.). Freesound. https://freesound.org/people/mhc/sounds/102782/",
+            "Creators/Designers: \nCharles Cusack\nJustin Fay\nJack Rutherford",
+            "Funding: \nHope College\nHope College Computer Science\n",
+            "Asset: Acoustic_Crash_Cymbal1.wav. (n.d.). Freesound. https://freesound.org/people/mhc/sounds/102782/",
             "Acoustic_tom1.wav. (n.d.). Freesound. https://freesound.org/people/mhc/sounds/102797/",
             "Acoustic_tom3.wav. (n.d.). Freesound. https://freesound.org/people/mhc/sounds/102799/",
             "cymbal big2.wav. (n.d.). Freesound. https://freesound.org/people/shpira/sounds/317078/\r\n",

@@ -2405,7 +2405,9 @@ MonoBehaviour:
   updateColorDropDown: 1
   randomSize: 0
   rulesSet: 0
+  updateRuleDropDown: 0
   methodName: 
+  ruleList: []
   AllGameObjects: []
 --- !u!1 &483593819
 GameObject:

@@ -93,6 +93,8 @@ public class MazeController : MonoBehaviour {
     }
 
     private void InitializeMaze() {
+        resetRequested = true;
+
         Resources.UnloadUnusedAssets();
         AllGameObjects.Clear();
         updateColorDropDown = true;
@@ -196,6 +198,9 @@ public class MazeController : MonoBehaviour {
         rows = Enumerable.Range(0, height).ToList();
         cols = Enumerable.Range(0, width).ToList();
         
+        
+        Debug.ClearDeveloperConsole();
+        Debug.Log("Done Making");
         resetRequested = false;
     }
 
@@ -265,14 +270,16 @@ public class MazeController : MonoBehaviour {
     }
 
     private void Update() {
-        if(Time.time - timeSinceReset < waitTime) {
-            return;
-        }
 
         float diff = Time.time - timeSinceReset;
+        if (diff< waitTime) {
+            return;
+        }
+        Debug.Log("Stepping");
         if (resetRequested || (timeSinceReset > 0 && diff > ResetAfter)) {
             resetRequested = true;
             StartCoroutine(RequestReset(waitTime));
+            return;
         }
 
         bool filled = true;
