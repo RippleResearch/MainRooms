@@ -121,8 +121,10 @@ public class RippleController : MonoBehaviour
             for (int i = 0; i < Input.touchCount; i++)
                 NewTouchWave(Input.GetTouch(i)); 
 
-        if (Input.GetMouseButton(0))
-                NewMouseWave();
+        // If this line is used and multiple touch points are registered 
+        // a new wave will be created at the average location between thte touch points
+        /*if (Input.GetMouseButton(0))
+                NewMouseWave();*/
     }
     private void NewTouchWave(Touch touch)
     {
