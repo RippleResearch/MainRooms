@@ -270,7 +270,9 @@ public class MazeController : MonoBehaviour {
     }
 
     private void Update() {
-
+        if (Time.timeScale == 0) {
+            return;
+        }
         float diff = Time.time - timeSinceReset;
         if (diff< waitTime) {
             return;

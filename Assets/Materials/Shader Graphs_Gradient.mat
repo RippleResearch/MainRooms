@@ -38,11 +38,11 @@ Material:
     - _QueueOffset: 0
     - _RippleSmoothing: 1
     - _RippleSpeed: 3
-    - _RippleStartTime: 212.2312
+    - _RippleStartTime: 61.46644
     m_Colors:
-    - _BaseColor: {r: 0.31934118, g: 1, b: 0, a: 1}
-    - _RippleCenter: {r: 0.11753106, g: 4.156154, b: 1.2959299, a: 0}
-    - _RippleColor: {r: 1, g: 0.57614505, b: 0, a: 1}
+    - _BaseColor: {r: 0.7953975, g: 1, b: 0, a: 1}
+    - _RippleCenter: {r: -0.10182881, g: 4.0785437, b: 1.3389034, a: 0}
+    - _RippleColor: {r: 0.07708907, g: 1, b: 0, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &858179582738688217
 MonoBehaviour:
