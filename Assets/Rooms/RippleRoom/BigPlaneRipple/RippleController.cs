@@ -82,7 +82,7 @@ public class RippleController : MonoBehaviour
                     y += scale * MathF.Sin(time * (-speed) + cirFunc + (verts[i].z * Waves[j].OffSet).z * zoom + (verts[i].x * Waves[j].OffSet.x * zoom)) * Waves[j].WaveAmp;
                 }
             }
-            y += scale * Mathf.Sin(time * (-speed) + (verts[i].x + verts[i].z)); //Diaganol Wave When Idle
+            y += scale * Mathf.Sin(2*time * (-speed) + 3*(verts[i].x + verts[i].z)); //Diaganol Wave When Idle
             verts[i] = new Vector3(verts[i].x, y, verts[i].z);
        });
         changeAmps();
