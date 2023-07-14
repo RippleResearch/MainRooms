@@ -40,6 +40,9 @@ public class WaveSceneLevelLoader : LevelLoader
             /*Debug.Log("Name: " + other.gameObject.name);*/
             if (other.gameObject.name.ToLower().Contains("island"))
             {
+                if(other.gameObject.name.ToLower().Contains("island exit")) {
+                    Application.Quit();
+                }
                 /*Debug.Log("Name: " + other.gameObject.name);
                 Debug.Log("1");*/
                 level = other.GetComponentInChildren<TMP_Text>().text;
