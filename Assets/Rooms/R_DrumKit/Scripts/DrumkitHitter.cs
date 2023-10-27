@@ -30,10 +30,11 @@ public class DrumkitHitter : MonoBehaviour
                     {
                         try
                         {
-                            hit.collider.gameObject.GetComponent<AudioSource>().Play();
+                            if(hit.collider.gameObject.name != "Ship Loader")
+                                hit.collider.gameObject.GetComponent<AudioSource>().Play();
                         }catch (System.Exception e)
                         {
-                            Debug.LogError(e.Message);
+                            Debug.LogError(e);
                         }
                     }
                 }
