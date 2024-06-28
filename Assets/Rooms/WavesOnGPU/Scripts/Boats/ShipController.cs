@@ -41,7 +41,7 @@ public class ShipController : MonoBehaviour
     void CheckMove()
     {
         //Check if they are trying to rotate camera using right click
-        if(Input.GetMouseButton(1)) { return; }
+        if(Input.GetMouseButtonDown(1)) { return; }
 
 
         //If Left mouse button is being clicked (or held down) 
