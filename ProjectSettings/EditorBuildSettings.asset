@@ -35,4 +35,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Draw.unity
     guid: 48963081c4517ab418205b3170495d9f
+  - enabled: 1
+    path: Assets/Scenes/Splat.unity
+    guid: 732e466e501b57e4abb8df74985166c1
   m_configObjects: {}
