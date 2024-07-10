@@ -12,6 +12,7 @@ public class DrawingCanvas : MonoBehaviour
     public GameObject drawLayer;
     private SpriteRenderer canvasBackground;
 
+    //scripts
     private ObjectSpawn objectSpawnScript;
     private ObjectSpawnTouch objectSpawnTouchScript;
     private ParticleDraw drawScript;
@@ -25,9 +26,8 @@ public class DrawingCanvas : MonoBehaviour
     public bool canRotate = true; //
     public float size = 3;
     public bool isErasing = false;
+
     public bool gravityOn = false;
-
-
     public string gravityDirection;
 
 
@@ -55,55 +55,29 @@ public class DrawingCanvas : MonoBehaviour
     //sets the current brush used for drawing
     public void SetCurrentBrush(GameObject newBrush){
         //currentBrush = newBrush;
-        if(newBrush.tag=="Brush"){
-            drawScript.particles = newBrush;
-            drawTouchScript.particles = newBrush;
-            objectSpawnScript.currentPrefab = null;
-            objectSpawnTouchScript.currentPrefab = null;
+        //checks the type of brush and assigns it to the appropriate script
+        if(newBrush.tag=="Brush"){ //particle effects
+            drawScript.particles = drawTouchScript.particles = newBrush;
+            objectSpawnScript.currentPrefab = objectSpawnTouchScript.currentPrefab = null;
             lineDrawScript.lineObject = null;
 
         }
-        else if(newBrush.tag=="Stamp"){
-            objectSpawnScript.currentPrefab = newBrush;
-            objectSpawnTouchScript.currentPrefab = newBrush;
-            drawScript.particles = null;
-            drawTouchScript.particles = null;
+        else if(newBrush.tag=="Stamp"){ //stamp
+            objectSpawnScript.currentPrefab = objectSpawnTouchScript.currentPrefab = newBrush;
+            drawScript.particles = drawTouchScript.particles = null;
             lineDrawScript.lineObject = null;
 
         }
-        else{
+        else{ //line
+            objectSpawnScript.currentPrefab = objectSpawnTouchScript.currentPrefab = null;
+            drawScript.particles = drawTouchScript.particles = null;
             lineDrawScript.lineObject = newBrush;
-            objectSpawnScript.currentPrefab = null;
-            objectSpawnTouchScript.currentPrefab = null;
-            drawScript.particles = null;
-            drawTouchScript.particles = null;
+
 
         }
 
 
     }
-
-    // public void SetCurrentPrefab(GameObject objectPrefab){
-    //     objectSpawnScript.currentPrefab = objectPrefab;
-    //     objectSpawnTouchScript.currentPrefab = objectPrefab;
-
-    //     drawScript.particles = null;
-    //     lineDrawScript.lineObject = null;
-
-    //     lineDrawScript.lineObject = null;
-
-    // }
-
-    // public void SetCurrentLine(GameObject linePrefab){
-    //     objectSpawnScript.currentPrefab = null;
-    //     objectSpawnTouchScript.currentPrefab = null;
-
-    //     drawScript.particles = null;
-    //     drawTouchScript.particles = null;
-
-    //     lineDrawScript.lineObject = linePrefab;
-
-    // }
 
     //cycles through color options of the background layer
     public void ChangeCanvasBackground(){
@@ -125,17 +99,39 @@ public class DrawingCanvas : MonoBehaviour
     }
 
 
-    public void ClearStars(){
-        GameObject[] stars = GameObject.FindGameObjectsWithTag("Stamp");
-        objectSpawnScript.orderInLayer = 0;
-        objectSpawnTouchScript.orderInLayer = 0;
-        foreach(GameObject star in stars){
-            if(star.activeInHierarchy){
-                //star.SetActive(false);
-                Destroy(star);
-            }
+    // public void ClearStars(){
+    //     GameObject[] stars = GameObject.FindGameObjectsWithTag("Stamp");
+    //     objectSpawnScript.orderInLayer = 0;
+    //     objectSpawnTouchScript.orderInLayer = 0;
+    //     foreach(GameObject star in stars){
+    //         if(star.activeInHierarchy){
+    //             //star.SetActive(false);
+    //             Destroy(star);
+    //         }
+    //     }
+    // }
+
+    public void ClearCanvas(){ //removes all particles, lines, and gameobjects from the canvas
+        objectSpawnScript.orderInLayer = objectSpawnTouchScript.orderInLayer = 0;
+        GameObject[] particles = GameObject.FindGameObjectsWithTag("Brush");
+        foreach(GameObject ps in particles){
+            Destroy(ps);
         }
+        GameObject[] stamps = GameObject.FindGameObjectsWithTag("Stamp");
+        foreach(GameObject stamp in stamps){
+            //if(star.activeInHierarchy){
+                //star.SetActive(false);
+            Destroy(stamp);
+            //}
+        }
+        GameObject[] lines = GameObject.FindGameObjectsWithTag("Line");
+        foreach(GameObject line in lines){
+            Destroy(line);
+        }
+
+        
     }
+
 
     public int GetOrderInLayer(){
         int order = objectSpawnScript.orderInLayer;
@@ -144,12 +140,6 @@ public class DrawingCanvas : MonoBehaviour
 
     }
 
-    public void ClearCanvas(){ //removes all particles and lines, and gameobjects from the canvas
-        GameObject[] lines = GameObject.FindGameObjectsWithTag("Brush");
-        foreach(GameObject line in lines){
-            Destroy(line);
-        }
-    }
 
     //switch the drawing mode
     //options are static, collision, and disappearing
@@ -157,13 +147,15 @@ public class DrawingCanvas : MonoBehaviour
         drawMode = newDrawMode;
     }
 
+    //toggles the eraser
     public void IsErasingToggle(Toggle toggle){
         isErasing = toggle.isOn;
     }
 
+    //toggles fixed rotation
     public void SetRotation(Toggle toggle){
         canRotate = !toggle.isOn;
-        Debug.Log(canRotate);
+        //Debug.Log(canRotate);
     }
 
     public void SetSize(float newValue){
@@ -173,7 +165,7 @@ public class DrawingCanvas : MonoBehaviour
     public void SetGravity(Toggle toggle){
         gravityOn = toggle.isOn;
         gravityDirection = toggle.name;
-        switch (toggle.name){ //lerp  between old and new gravity
+        switch (toggle.name){ //change to lerp between old and new gravity
             case "Up":
                 Physics2D.gravity = new Vector3(0f,2f,0);
                 //Parti.y = 2f;
@@ -193,7 +185,7 @@ public class DrawingCanvas : MonoBehaviour
 
         }
 
-        Debug.Log(gravityOn);
+        //Debug.Log(gravityOn);
         GameObject[] stamps = GameObject.FindGameObjectsWithTag("Stamp");
         foreach(GameObject stamp in stamps){
             Rigidbody2D rb2D =stamp.GetComponent<Rigidbody2D>();
@@ -209,6 +201,7 @@ public class DrawingCanvas : MonoBehaviour
 
     }
 
+    //for buttons with multipe stamp variations sets the sprite of the button to the last variatoin selected
     public void ChangeButtonSprite(GameObject toggle){
         Image image = toggle.transform.GetChild(0).GetComponent<Image>();
         Image parentImage = toggle.transform.parent.parent.GetChild(0).GetComponent<Image>();
