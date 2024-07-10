@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class ColorPicker : MonoBehaviour
 {
     /// <summary>
@@ -15,19 +16,16 @@ public class ColorPicker : MonoBehaviour
     /// </returns>
     public static bool done = true;
 
-    //onColorChanged event
+    // onColorChanged event
     private static ColorEvent onCC;
-    //onColorSelected event
+    // onColorSelected event
     private static ColorEvent onCS;
 
-    //Color before editing
+    // Color before editing
     private static Color32 originalColor;
-    //current Color
+    // Current Color
     private static Color32 modifiedColor;
     private static HSV modifiedHsv;
-
-    //useAlpha bool
-    private static bool useA;
 
     private bool interact;
 
@@ -37,7 +35,6 @@ public class ColorPicker : MonoBehaviour
     public Slider rComponent;
     public Slider gComponent;
     public Slider bComponent;
-    public Slider aComponent;
     public InputField hexaComponent;
     public RawImage colorComponent;
 
@@ -46,7 +43,6 @@ public class ColorPicker : MonoBehaviour
         instance = this;
         gameObject.SetActive(false);
     }
-
 
     /// <summary>
     /// Creates a new Colorpicker
@@ -73,12 +69,10 @@ public class ColorPicker : MonoBehaviour
             modifiedColor = original;
             onCC = onColorChanged;
             onCS = onColorSelected;
-            useA = useAlpha;
             instance.gameObject.SetActive(true);
             instance.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = message;
-            instance.aComponent.gameObject.SetActive(useAlpha);
             instance.RecalculateMenu(true);
-            instance.hexaComponent.placeholder.GetComponent<Text>().text = "RRGGBB" + (useAlpha ? "AA" : "");
+            instance.hexaComponent.placeholder.GetComponent<Text>().text = "RRGGBB";
             return true;
         }
         else
@@ -88,7 +82,7 @@ public class ColorPicker : MonoBehaviour
         }
     }
 
-    //called when color is modified, to update other UI components
+    // called when color is modified, to update other UI components
     private void RecalculateMenu(bool recalculateHSV)
     {
         interact = false;
@@ -106,11 +100,6 @@ public class ColorPicker : MonoBehaviour
         gComponent.transform.GetChild(3).GetComponent<InputField>().text = modifiedColor.g.ToString();
         bComponent.value = modifiedColor.b;
         bComponent.transform.GetChild(3).GetComponent<InputField>().text = modifiedColor.b.ToString();
-        if (useA)
-        {
-            aComponent.value = modifiedColor.a;
-            aComponent.transform.GetChild(3).GetComponent<InputField>().text = modifiedColor.a.ToString();
-        }
         mainComponent.value = (float)modifiedHsv.H;
         rComponent.transform.GetChild(0).GetComponent<RawImage>().color = new Color32(255, modifiedColor.g, modifiedColor.b, 255);
         rComponent.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().color = new Color32(0, modifiedColor.g, modifiedColor.b, 255);
@@ -118,17 +107,16 @@ public class ColorPicker : MonoBehaviour
         gComponent.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().color = new Color32(modifiedColor.r, 0, modifiedColor.b, 255);
         bComponent.transform.GetChild(0).GetComponent<RawImage>().color = new Color32(modifiedColor.r, modifiedColor.g, 255, 255);
         bComponent.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().color = new Color32(modifiedColor.r, modifiedColor.g, 0, 255);
-        if (useA) aComponent.transform.GetChild(0).GetChild(0).GetComponent<RawImage>().color = new Color32(modifiedColor.r, modifiedColor.g, modifiedColor.b, 255);
         positionIndicator.parent.GetChild(0).GetComponent<RawImage>().color = new HSV(modifiedHsv.H, 1d, 1d).ToColor();
         positionIndicator.anchorMin = new Vector2((float)modifiedHsv.S, (float)modifiedHsv.V);
         positionIndicator.anchorMax = positionIndicator.anchorMin;
-        hexaComponent.text = useA ? ColorUtility.ToHtmlStringRGBA(modifiedColor) : ColorUtility.ToHtmlStringRGB(modifiedColor);
+        hexaComponent.text = ColorUtility.ToHtmlStringRGB(modifiedColor);
         colorComponent.color = modifiedColor;
         onCC?.Invoke(modifiedColor);
         interact = true;
     }
 
-    //used by EventTrigger to calculate the chosen value in color box
+    // used by EventTrigger to calculate the chosen value in color box
     public void SetChooser()
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(positionIndicator.parent as RectTransform, Input.mousePosition, GetComponentInParent<Canvas>().worldCamera, out Vector2 localpoint);
@@ -143,7 +131,7 @@ public class ColorPicker : MonoBehaviour
         }
     }
 
-    //gets main Slider value
+    // gets main Slider value
     public void SetMain(float value)
     {
         if (interact)
@@ -153,7 +141,7 @@ public class ColorPicker : MonoBehaviour
         }
     }
 
-    //gets r Slider value
+    // gets r Slider value
     public void SetR(float value)
     {
         if (interact)
@@ -162,7 +150,7 @@ public class ColorPicker : MonoBehaviour
             RecalculateMenu(true);
         }
     }
-    //gets r InputField value
+    // gets r InputField value
     public void SetR(string value)
     {
         if(interact)
@@ -171,7 +159,7 @@ public class ColorPicker : MonoBehaviour
             RecalculateMenu(true);
         }
     }
-    //gets g Slider value
+    // gets g Slider value
     public void SetG(float value)
     {
         if(interact)
@@ -180,7 +168,7 @@ public class ColorPicker : MonoBehaviour
             RecalculateMenu(true);
         }
     }
-    //gets g InputField value
+    // gets g InputField value
     public void SetG(string value)
     {
         if (interact)
@@ -189,7 +177,7 @@ public class ColorPicker : MonoBehaviour
             RecalculateMenu(true);
         }
     }
-    //gets b Slider value
+    // gets b Slider value
     public void SetB(float value)
     {
         if (interact)
@@ -198,7 +186,7 @@ public class ColorPicker : MonoBehaviour
             RecalculateMenu(true);
         }
     }
-    //gets b InputField value
+    // gets b InputField value
     public void SetB(string value)
     {
         if (interact)
@@ -207,42 +195,23 @@ public class ColorPicker : MonoBehaviour
             RecalculateMenu(true);
         }
     }
-    //gets a Slider value
-    public void SetA(float value)
-    {
-        if (interact)
-        {
-            modifiedHsv.A = (byte)value;
-            RecalculateMenu(false);
-        }
-    }
-    //gets a InputField value
-    public void SetA(string value)
-    {
-        if (interact)
-        {
-            modifiedHsv.A = (byte)Mathf.Clamp(int.Parse(value), 0, 255);
-            RecalculateMenu(false);
-        }
-    }
-    //gets hexa InputField value
+    // gets hexa InputField value
     public void SetHexa(string value)
     {
         if (interact)
         {
             if (ColorUtility.TryParseHtmlString("#" + value, out Color c))
             {
-                if (!useA) c.a = 1;
                 modifiedColor = c;
                 RecalculateMenu(true);
             }
             else
             {
-                hexaComponent.text = useA ? ColorUtility.ToHtmlStringRGBA(modifiedColor) : ColorUtility.ToHtmlStringRGB(modifiedColor);
+                hexaComponent.text = ColorUtility.ToHtmlStringRGB(modifiedColor);
             }
         }
     }
-    //cancel button call
+    // cancel button call
     public void CCancel()
     {
         Cancel();
@@ -255,7 +224,7 @@ public class ColorPicker : MonoBehaviour
         modifiedColor = originalColor;
         Done();
     }
-    //done button call
+    // done button call
     public void CDone()
     {
         Done();
@@ -270,11 +239,10 @@ public class ColorPicker : MonoBehaviour
         onCS?.Invoke(modifiedColor);
         instance.transform.gameObject.SetActive(false);
     }
-    //HSV helper class
+    // HSV helper class
     private sealed class HSV
     {
         public double H = 0, S = 1, V = 1;
-        public byte A = 255;
         public HSV () { }
         public HSV (double h, double s, double v)
         {
@@ -312,7 +280,6 @@ public class ColorPicker : MonoBehaviour
             H = hue;
             S = (max == 0) ? 0 : 1d - ((double)min / max);
             V = max;
-            A = (byte)(color.a * 255);
         }
         public Color32 ToColor()
         {
@@ -328,17 +295,17 @@ public class ColorPicker : MonoBehaviour
             switch(hi)
             {
                 case 0:
-                    return new Color32(v, t, p, A);
+                    return new Color32(v, t, p, 255);
                 case 1:
-                    return new Color32(q, v, p, A);
+                    return new Color32(q, v, p, 255);
                 case 2:
-                    return new Color32(p, v, t, A);
+                    return new Color32(p, v, t, 255);
                 case 3:
-                    return new Color32(p, q, v, A);
+                    return new Color32(p, q, v, 255);
                 case 4:
-                    return new Color32(t, p, v, A);
+                    return new Color32(t, p, v, 255);
                 case 5:
-                    return new Color32(v, p, q, A);
+                    return new Color32(v, p, q, 255);
                 default:
                     return new Color32();
             }

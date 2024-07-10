@@ -148,41 +148,38 @@ public class ParticleDraw : MonoBehaviour
             var sub = ps.subEmitters;
             sub.enabled = true;
             Debug.Log("Collision enabled");
-
-
-            var fo = ps.forceOverLifetime;
-            if(canvasScript.gravityOn){
-                fo.enabled = true;
-                //fo.x = 100;
-                Debug.Log("Particle System Gravity On");
-
-                switch (canvasScript.gravityDirection){ 
-                    case "Up":
-                        fo.y = 3f;
-                        fo.x = 0;
-                        break;
-                    case "Down":
-                        fo.y = -3f;
-                        fo.x = 0;
-                        break;
-                    case "Right":
-                        fo.x = 3f;
-                        fo.y = 0;
-                        break;
-                    case "Left":
-                        fo.x = -3f;
-                        fo.y = 0;
-                        break;
-
-                }
-            }
-            else{
-                fo.enabled = false;
-                Debug.Log("Particle System Gravity Off");
-            }
         }
 
-        
+        var fo = ps.forceOverLifetime;
+        if(canvasScript.gravityOn){
+            fo.enabled = true;
+            //fo.x = 100;
+            Debug.Log("Particle System Gravity On");
+
+            switch (canvasScript.gravityDirection){ 
+                case "Up":
+                    fo.y = 3f;
+                    fo.x = 0;
+                    break;
+                case "Down":
+                    fo.y = -3f;
+                    fo.x = 0;
+                    break;
+                case "Right":
+                    fo.x = 3f;
+                    fo.y = 0;
+                    break;
+                case "Left":
+                    fo.x = -3f;
+                    fo.y = 0;
+                    break;
+
+            }
+        }
+        else{
+            fo.enabled = false;
+            Debug.Log("Particle System Gravity Off");
+        }
 
         while(true){
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);

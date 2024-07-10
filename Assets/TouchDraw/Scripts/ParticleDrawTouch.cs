@@ -138,51 +138,8 @@ public class ParticleDrawTouch : MonoBehaviour
                         // }
 
                         if(!EventSystem.current.IsPointerOverGameObject(id)){ 
-                            GameObject newGameObject = Instantiate(particles, new Vector3(0,0,0), Quaternion.identity);
-                            ParticleSystem line = newGameObject.GetComponent<ParticleSystem>();
-                            newGameObject.GetComponent<Renderer>().sortingOrder = canvasScript.GetOrderInLayer();
 
-                            newLine = newGameObject;
-                            ps = line;
-
-                            var fo = ps.forceOverLifetime;
-                            if(canvasScript.drawMode.Equals("collision")){
-                                var col = line.collision;
-                                col.enabled = true;
-                                var sub = ps.subEmitters;
-                                sub.enabled = true;
-                                //Debug.Log("Collision enabled");
-
-                                if(canvasScript.gravityOn){
-                                    fo.enabled = true;
-                                    Debug.Log("Particle System Gravity On");
-
-                                    switch (canvasScript.gravityDirection){ 
-                                        case "Up":
-                                            fo.y = 3f;
-                                            fo.x = 0;
-                                            break;
-                                        case "Down":
-                                            fo.y = -3f;
-                                            fo.x = 0;
-                                            break;
-                                        case "Right":
-                                            fo.x = 3f;
-                                            fo.y = 0;
-                                            break;
-                                        case "Left":
-                                            fo.x = -3f;
-                                            fo.y = 0;
-                                            break;
-
-                                    }
-                                }
-                                else{
-                                    fo.enabled = false;
-                                    //Debug.Log("Particle System Gravity Off");
-                                }
-                            }
-                            //StartLine(touch);
+                            StartLine(touch);
                         }
 
 
@@ -197,7 +154,7 @@ public class ParticleDrawTouch : MonoBehaviour
                         //Destroy(particleSystems[touch.fingerId]);
                         //Debug.Log("The touch has ended"); 
 
-                        //FinishLine(touch);
+                        FinishLine(touch);
 
                         break;
                 }
@@ -262,51 +219,43 @@ public class ParticleDrawTouch : MonoBehaviour
             col.enabled = true;
             var sub = ps.subEmitters;
             sub.enabled = true;
-            //Debug.Log("Collision enabled");
-
-            if(canvasScript.gravityOn){
-                fo.enabled = true;
-                Debug.Log("Particle System Gravity On");
-
-                switch (canvasScript.gravityDirection){ 
-                    case "Up":
-                        fo.y = 3f;
-                        fo.x = 0;
-                        break;
-                    case "Down":
-                        fo.y = -3f;
-                        fo.x = 0;
-                        break;
-                    case "Right":
-                        fo.x = 3f;
-                        fo.y = 0;
-                        break;
-                    case "Left":
-                        fo.x = -3f;
-                        fo.y = 0;
-                        break;
-
-                }
-            }
-            else{
-                fo.enabled = false;
-                //Debug.Log("Particle System Gravity Off");
-            }
+            Debug.Log("Collision enabled");
         }
 
-        
+        if(canvasScript.gravityOn){
+            fo.enabled = true;
+            Debug.Log("Particle System Gravity On");
+
+            switch (canvasScript.gravityDirection){ 
+                case "Up":
+                    fo.y = 3f;
+                    fo.x = 0;
+                    break;
+                case "Down":
+                    fo.y = -3f;
+                    fo.x = 0;
+                    break;
+                case "Right":
+                    fo.x = 3f;
+                    fo.y = 0;
+                    break;
+                case "Left":
+                    fo.x = -3f;
+                    fo.y = 0;
+                    break;
+
+            }
+        }
+        else{
+            fo.enabled = false;
+            Debug.Log("Particle System Gravity Off");
+        }
 
         while(true){
             
-            foreach(Touch t in Input.touches){
-                if(t.fingerId==id){
-                    Vector3 touchPosition = Camera.main.ScreenToWorldPoint(t.position);
-                    touchPosition.z = 0;
-                    line.transform.position = touchPosition;
-                    yield break;
-                }
-            }
-
+            Vector3 touchPosition = Camera.main.ScreenToWorldPoint(touch.position);
+            touchPosition.z = 0;
+            line.transform.position = touchPosition;
             yield return null;
         }
         
