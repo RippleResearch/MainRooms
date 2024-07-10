@@ -3,35 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TouchDraw : MonoBehaviour
+public class ParticleDraw : MonoBehaviour
 {
 
     Coroutine drawing;
     //public GameObject lineObject;
     public GameObject particles; //prefab added in inspector
     private ParticleSystem ps;
+    //public Vector3 fo;
     private GameObject newLine;
+    public GameObject canvas;
+    private DrawingCanvas canvasScript;
+
+    
     //private ParticleSystem line; //the particle system component
 
     void Start(){
         particles = null;
         ps = GetComponent<ParticleSystem>();
+        //canvas = GameObject.Find("Canvas"); //maybe a better way to get order in layer than use find method
+        canvasScript = canvas.GetComponent<DrawingCanvas>();
         //SelectLine(particleSystem);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(!EventSystem.current.IsPointerOverGameObject()){
-            if(particles!=null){
+        if(particles!=null){
+            if(!EventSystem.current.IsPointerOverGameObject()){
                 if(Input.GetMouseButtonDown(0)){
                     StartLine();
                 }
-                if(Input.GetMouseButtonUp(0)){
-                    FinishLine();
-                }
+            }
+            if(Input.GetMouseButtonUp(0)){
+                FinishLine();
             }
         }
+    
 
             
 
@@ -112,9 +120,14 @@ public class TouchDraw : MonoBehaviour
     }
 
     private void FinishLine(){
-        StopCoroutine(drawing);
-        ps.Stop();
-        Destroy(newLine,20f); //or change depending on how long the particles take to disappear
+        if(drawing!=null){
+            StopCoroutine(drawing);
+            if(ps!=null){
+                ps.Stop();
+            }
+            Destroy(newLine,20f); //or change depending on how long the particles take to disappear
+        }
+
 
     }
 
@@ -123,10 +136,51 @@ public class TouchDraw : MonoBehaviour
         //using a particle system
         GameObject newGameObject = Instantiate(particles, new Vector3(0,0,0), Quaternion.identity);
         ParticleSystem line = newGameObject.GetComponent<ParticleSystem>();
+        //newGameObject.GetComponent<Renderer>().orderInLayer = order that is in the other script
         //line.positionCount = 0;
+        newGameObject.GetComponent<Renderer>().sortingOrder = canvasScript.GetOrderInLayer();
 
         newLine = newGameObject;
         ps = line;
+        if(canvasScript.drawMode.Equals("collision")){
+            var col = line.collision;
+            col.enabled = true;
+            var sub = ps.subEmitters;
+            sub.enabled = true;
+            Debug.Log("Collision enabled");
+        }
+
+        var fo = ps.forceOverLifetime;
+        if(canvasScript.gravityOn){
+            fo.enabled = true;
+            //fo.x = 100;
+            Debug.Log("Particle System Gravity On");
+
+            switch (canvasScript.gravityDirection){ 
+                case "Up":
+                    fo.y = 3f;
+                    fo.x = 0;
+                    break;
+                case "Down":
+                    fo.y = -3f;
+                    fo.x = 0;
+                    break;
+                case "Right":
+                    fo.x = 3f;
+                    fo.y = 0;
+                    break;
+                case "Left":
+                    fo.x = -3f;
+                    fo.y = 0;
+                    break;
+
+            }
+        }
+        else{
+            fo.enabled = false;
+            Debug.Log("Particle System Gravity Off");
+        }
+
         while(true){
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePosition.z = 0;
@@ -136,6 +190,8 @@ public class TouchDraw : MonoBehaviour
             line.transform.position = mousePosition;
             yield return null;
         }
+        
+        
         //  using a lineRenderer
         //     GameObject newGameObject = Instantiate(lineObject, new Vector3(0,0,0), Quaternion.identity);
         //     LineRenderer line = newGameObject.GetComponent<LineRenderer>();

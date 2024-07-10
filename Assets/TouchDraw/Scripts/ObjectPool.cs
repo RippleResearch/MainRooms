@@ -7,7 +7,9 @@ public class ObjectPool : MonoBehaviour
 
     public static ObjectPool SharedInstance;
     public List<GameObject> pooledObjects;
+    public List<GameObject> starPool;
     public GameObject objectToPool;
+    public GameObject starObjectToPool;
     public int amountToPool;
 
 
@@ -23,6 +25,13 @@ public class ObjectPool : MonoBehaviour
             tmp.SetActive(false);
             pooledObjects.Add(tmp);
         }
+        starPool = new List<GameObject>();
+        GameObject tmp2;
+        for(int i=0;i<amountToPool;i++){
+            tmp2 = Instantiate(starObjectToPool);
+            tmp2.SetActive(false);
+            starPool.Add(tmp2);
+        }
 
     }
 
@@ -32,12 +41,20 @@ public class ObjectPool : MonoBehaviour
         
     }
 
-    public GameObject GetPooledObject(){
+    public GameObject GetPooledObject(List<GameObject> objectPool){
         for(int i=0;i<amountToPool;i++){
-            if(!pooledObjects[i].activeInHierarchy){
-                return pooledObjects[i];
+            if(!objectPool[i].activeInHierarchy){
+                return objectPool[i];
             }
         }
         return null;
     }
+    // public GameObject GetPooledObject(){
+    //     for(int i=0;i<amountToPool;i++){
+    //         if(!pooledObjects[i].activeInHierarchy){
+    //             return pooledObjects[i];
+    //         }
+    //     }
+    //     return null;
+    // }
 }

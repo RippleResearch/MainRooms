@@ -3,35 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TouchDrawLine : MonoBehaviour
+public class LineDraw : MonoBehaviour
 {
 
     Coroutine drawing;
     public GameObject lineObject;
+    public GameObject canvas;
+    private DrawingCanvas canvasScript;
+
+    public FlexibleColorPicker fcp;
     //private LineRenderer line;
 
     void Start(){
-        //particles = null;
-        //lr = GetComponent<LineRenderer>();
-        //SelectLine(particleSystem);
+        canvasScript = canvas.GetComponent<DrawingCanvas>();
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(!EventSystem.current.IsPointerOverGameObject()){
-            //if(particles!=null){
-                if(Input.GetMouseButtonDown(0)){
+    void Update(){
+
+        //if lineObject is line
+        //else if it is particle system
+        //else it is null or something else
+        if(lineObject!=null){ 
+
+            if(Input.GetMouseButtonDown(0)){
+                if(!EventSystem.current.IsPointerOverGameObject()){
+
                     StartLine();
                 }
-                if(Input.GetMouseButtonUp(0)){
-                    FinishLine();
-                }
             }
-        }
-
+            if(Input.GetMouseButtonUp(0)){
+                FinishLine();
+            }
+        
             
-
+        }
+        
+    }
+                
         // if(Input.touchCount>0){
         // Touch[] touches = Input.touches;
         
@@ -109,7 +118,9 @@ public class TouchDrawLine : MonoBehaviour
     }
 
     private void FinishLine(){
-        StopCoroutine(drawing);
+        if(drawing!=null){
+            StopCoroutine(drawing);
+        }
     }
 
     IEnumerator DrawLine(){
@@ -134,21 +145,82 @@ public class TouchDrawLine : MonoBehaviour
             LineRenderer line = newGameObject.GetComponent<LineRenderer>();
             line.positionCount = 0;
 
+            EdgeCollider2D edgeCollider = newGameObject.GetComponent<EdgeCollider2D>();
+            List<Vector2> points = new List<Vector2>();
+            if(canvasScript.drawMode.Equals("collision")){
+                edgeCollider.isTrigger = false;
+            }
+            edgeCollider.edgeRadius = canvasScript.size*.05f;
+
+            newGameObject.GetComponent<Renderer>().sortingOrder = canvasScript.GetOrderInLayer();
+
+            line.endColor = line.startColor = fcp.color;
+            line.startWidth = line.endWidth = canvasScript.size*.1f;
+            //Debug.Log(canvasScript.size);
+
+            if(canvasScript)
+
             while(true){
                 Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 position.z = 0;
                 line.positionCount++;
+
+                points.Add(position);
+
+
                 line.SetPosition(line.positionCount-1,position);
+                
+                
+                edgeCollider.points = points.ToArray();
+
+
                 yield return null;
             }
     }
 
 
 
-    // public void SelectLine(GameObject newParticleSystem){
-    //     GameObject newGameObject = Instantiate(newParticleSystem, new Vector3(0,0,0), Quaternion.identity);
-    //     ParticleSystem line = newGameObject.GetComponent<ParticleSystem>();
-    //     Debug.Log("Line Selected");
 
-    // }
+
+
+    void SetSingleColor(LineRenderer lineRendererToChange, Color newColor){
+        lineRendererToChange.startColor = newColor;
+        lineRendererToChange.endColor = newColor;
+    }
+
+    void SetSingleColor2(LineRenderer lineRendererToChange,Color newColor){
+        Gradient tempGradient = new Gradient();
+
+        GradientColorKey[] tempColorKeys = new GradientColorKey[2];
+        tempColorKeys[0] = new GradientColorKey(newColor,0);
+        tempColorKeys[1] = new GradientColorKey(newColor,1);
+        tempGradient.colorKeys = tempColorKeys;
+        lineRendererToChange.colorGradient = tempGradient;
+    }
+
+    Color RandomColor(){
+        return Random.ColorHSV();
+    }
+
+    IEnumerator RandomSingleColorMorphing(LineRenderer lineRendererToChange, float timeToMorph){
+        Debug.Log("Color Changing");
+        float time = 0;
+        Color initialColor = lineRendererToChange.colorGradient.colorKeys[0].color;
+        SetSingleColor2(lineRendererToChange,initialColor);
+        while(true){
+            initialColor = lineRendererToChange.colorGradient.colorKeys[0].color;
+            Color targetColor = Random.ColorHSV();
+            time = 0;
+            while(time<timeToMorph){
+                time+=Time.deltaTime;
+                float progress = time/timeToMorph;
+                Color currentColor = Color.Lerp(initialColor,targetColor,progress);
+                SetSingleColor(lineRendererToChange,currentColor);
+                yield return null;
+            }
+            yield return null;
+            
+        }
+    }
+
 }

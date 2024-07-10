@@ -1,12 +1,25 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class LineDrawer : MonoBehaviour
+
+public class ParticleDrawTouch : MonoBehaviour
 {
     // A reference to the line prefab game object.
    // public GameObject linePrefab;
-    public GameObject currentBrush;
+    //public GameObject currentBrush;
+
+
+    Coroutine drawing;
+    public GameObject particles; //prefab added in inspector
+    private ParticleSystem ps;
+    private GameObject newLine;
+    public GameObject canvas;
+    private DrawingCanvas canvasScript;
+
+
+    private ParticleSystem[] particleSystems = new ParticleSystem[5];
 
     // A reference to the current line game object.
     //private GameObject _currentLine;
@@ -19,7 +32,6 @@ public class LineDrawer : MonoBehaviour
     //private ParticleSystem[] particleSystems;
 
     //private List<ParticleSystem> particleSystems = new List<ParticleSystem>();
-    private ParticleSystem[] particleSystems = new ParticleSystem[5];
 
     // A reference to the EdgeCollider2D component of the current line game object.
     //private EdgeCollider2D _edgeCollider;
@@ -32,6 +44,9 @@ public class LineDrawer : MonoBehaviour
 
 
     void Start(){
+        particles = null;
+        ps = GetComponent<ParticleSystem>();
+        canvasScript = canvas.GetComponent<DrawingCanvas>();
     }
 
     // private void FixedUpdate(){
@@ -43,16 +58,13 @@ public class LineDrawer : MonoBehaviour
     {
 
         //if(!EventSystem.current.IsPointerOverGameObject()){
-            if(currentBrush!= null){
+            if(particles!= null){
                 CheckTouches();
             }
             else{
                 Debug.Log("No Brush Selected");
             }
         //}
-
-
-        //check touches
 
 
         //CheckTouches();
@@ -107,6 +119,161 @@ public class LineDrawer : MonoBehaviour
         //     HandleClickUp();
         // }
     }
+    
+    private void CheckTouches(){
+        Debug.Log("Checking Touches");
+        if(Input.touchCount>0){
+            for(int i=0;i<Input.touchCount;i++){
+                //Debug.Log(Input.GetTouch(i).fingerId);
+                Touch touch = Input.GetTouch(i);
+                int id = touch.fingerId;
+                Debug.Log(i + " " + id);
+
+
+                switch (touch.phase){
+                    case TouchPhase.Began:
+                        // Debug.Log("Starting New Line");
+                        // if(!EventSystem.current.IsPointerOverGameObject(id)){ //so you don't draw through the UI
+                        //     DrawNewLine(touch);
+                        // }
+
+                        if(!EventSystem.current.IsPointerOverGameObject(id)){ 
+
+                            StartLine(touch);
+                        }
+
+
+                        break;
+                    case TouchPhase.Moved:
+                        // Debug.Log("Touch is moving");
+                        // particleSystems[touch.fingerId].transform.position = Camera.main.ScreenToWorldPoint(touch.position);
+                        break;
+                    case TouchPhase.Stationary:
+                        break;
+                    case TouchPhase.Ended:
+                        //Destroy(particleSystems[touch.fingerId]);
+                        //Debug.Log("The touch has ended"); 
+
+                        FinishLine(touch);
+
+                        break;
+                }
+            }
+
+            // if(!EventSystem.current.IsPointerOverGameObject()){
+            //     if(Input.GetMouseButtonDown(0)){
+            //         StartLine();
+            //     }
+            // }
+            // if(Input.GetMouseButtonUp(0)){
+            //     FinishLine();
+            // }
+        
+        }
+    }
+
+    // private void DrawNewLine(Touch touch){
+    //     int id = touch.fingerId;
+    //     GameObject newGameObject = Instantiate(particles,Camera.main.ScreenToWorldPoint(touch.position),Quaternion.identity);
+
+    //     ParticleSystem newPS = newGameObject.GetComponent<ParticleSystem>();
+    //     //brushStrokes[id] = newLine;
+    //     particleSystems[id] = newPS;
+    //     //particleSystems.Add(newParticle); //problem is how to access this specific particle system after this method? can't add to list by index
+    // }
+   
+
+   
+    void StartLine(Touch touch){
+        if(drawing!=null){
+            StopCoroutine(drawing);
+        }
+        drawing = StartCoroutine(DrawLine(touch));
+    }
+
+    private void FinishLine(Touch touch){
+        if(drawing!=null){
+            StopCoroutine(drawing);
+            if(ps!=null){
+                ps.Stop();
+            }
+            Destroy(newLine,20f); //or change depending on how long the particles take to disappear
+        }
+
+
+    }
+
+   
+    IEnumerator DrawLine(Touch touch){
+        int id = touch.fingerId;
+        GameObject newGameObject = Instantiate(particles, new Vector3(0,0,0), Quaternion.identity);
+        ParticleSystem line = newGameObject.GetComponent<ParticleSystem>();
+        newGameObject.GetComponent<Renderer>().sortingOrder = canvasScript.GetOrderInLayer();
+
+        newLine = newGameObject;
+        ps = line;
+
+        var fo = ps.forceOverLifetime;
+        if(canvasScript.drawMode.Equals("collision")){
+            var col = line.collision;
+            col.enabled = true;
+            var sub = ps.subEmitters;
+            sub.enabled = true;
+            Debug.Log("Collision enabled");
+        }
+
+        if(canvasScript.gravityOn){
+            fo.enabled = true;
+            Debug.Log("Particle System Gravity On");
+
+            switch (canvasScript.gravityDirection){ 
+                case "Up":
+                    fo.y = 3f;
+                    fo.x = 0;
+                    break;
+                case "Down":
+                    fo.y = -3f;
+                    fo.x = 0;
+                    break;
+                case "Right":
+                    fo.x = 3f;
+                    fo.y = 0;
+                    break;
+                case "Left":
+                    fo.x = -3f;
+                    fo.y = 0;
+                    break;
+
+            }
+        }
+        else{
+            fo.enabled = false;
+            Debug.Log("Particle System Gravity Off");
+        }
+
+        while(true){
+            
+            Vector3 touchPosition = Camera.main.ScreenToWorldPoint(touch.position);
+            touchPosition.z = 0;
+            line.transform.position = touchPosition;
+            yield return null;
+        }
+        
+        
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // private void CheckTouches(){
@@ -134,44 +301,9 @@ public class LineDrawer : MonoBehaviour
     //     // }
     // }
 
-    private void DrawNewLine(Touch touch){
-        int id = touch.fingerId;
-        GameObject newLine = Instantiate(currentBrush,Camera.main.ScreenToWorldPoint(Input.mousePosition),Quaternion.identity);
-        ParticleSystem newParticle = newLine.GetComponent<ParticleSystem>();
-        //brushStrokes[id] = newLine;
-        particleSystems[id] = newParticle;
-        //particleSystems.Add(newParticle); //problem is how to access this specific particle system after this method? can't add to list by index
-    }
 
-    private void CheckTouches(){
-        Debug.Log("Checking Touches");
-        if(Input.touchCount>0){
-            for(int i=0;i<Input.touchCount;i++){
-                //Debug.Log(Input.GetTouch(i).fingerId);
-                Touch touch = Input.GetTouch(i);
-                Debug.Log(i + " " + touch.fingerId);
 
-                if(touch.phase==TouchPhase.Began){
-                    Debug.Log("Starting New Line");
-                    if(!EventSystem.current.IsPointerOverGameObject(touch.fingerId)){ //so you don't draw through the UI
-                        DrawNewLine(touch);
-                    }
-                }
-                else if(touch.phase==TouchPhase.Moved){//||touch.phase==TouchPhase.Stationary){
-                    Debug.Log("Touch is moving");
-                    particleSystems[touch.fingerId].transform.position = Camera.main.ScreenToWorldPoint(touch.position);
-                    
-                }
-                else if(touch.phase==TouchPhase.Ended){
-                    //Destroy(particleSystems[touch.fingerId]);
-                    Debug.Log("The touch has ended"); 
 
-                }
-            }
-
-        
-        }
-    }
 
     // private void DrawNewLine(Touch touch){
     //     int id = touch.fingerId;
